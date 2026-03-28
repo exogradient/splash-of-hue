@@ -1,0 +1,10 @@
+[project]
+name = "true-to-hue"
+version = "0.1.0"
+description = "Color memory game that teaches color perception"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.135.2",
+    "uvicorn[standard]>=0.42.0",
+]

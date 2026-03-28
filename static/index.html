@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>splash of hue</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #1a1a2e; --surface: #16213e; --border: #0f3460;
+    --text: #e0e0e0; --text-dim: #8888aa; --accent: #e94560;
+    --radius: 10px;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.05em; }
+  .screen { display: none; width: 100%; max-width: 480px; padding: 20px; flex-direction: column; align-items: center; gap: 16px; }
+  .screen.active { display: flex; }
+  button {
+    background: var(--accent); color: white; border: none; border-radius: var(--radius);
+    padding: 12px 28px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.secondary { background: var(--surface); border: 1px solid var(--border); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  /* Menu */
+  #menu { padding-top: 60px; text-align: center; }
+  #menu h1 { font-size: 2rem; margin-bottom: 4px; }
+  .subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
+  .settings { font-size: 0.8rem; color: var(--text-dim); margin-top: 12px; }
+  .settings label { cursor: pointer; }
+  .settings select {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 6px; font-size: 0.8rem;
+  }
+
+  /* Countdown */
+  #countdown { justify-content: center; align-items: center; min-height: 80dvh; }
+  .countdown-num { font-size: 5rem; font-weight: 800; color: var(--accent); }
+
+  /* Memorize — near-fullscreen color fill */
+  #memorize { padding: 0; max-width: 100%; width: 100%; height: 100dvh; min-height: 100dvh; position: relative; gap: 0; }
+  .color-grid { display: flex; width: 100%; flex: 1; min-height: 0; }
+  .color-swatch {
+    flex: 1; border-radius: 0; border: none;
+  }
+  .memorize-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 16px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  }
+  .timer-bar {
+    width: 100%; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden;
+  }
+  .timer-fill { height: 100%; background: var(--accent); transition: width 0.1s linear; }
+
+  /* Pick */
+  #pick { gap: 12px; padding: 20px; min-height: 100dvh; max-width: 100%; width: 100%; }
+  #swatchArea { width: 100%; flex: 1; display: flex; flex-direction: column; }
+  #pickerContainer { width: 100%; max-width: 480px; }
+  .pick-header { text-align: center; }
+  .pick-progress { font-size: 0.8rem; color: var(--text-dim); }
+  .pick-hsb { font-size: 0.8rem; color: var(--text-dim); text-align: center; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .dial-target { font-size: 1.8rem; font-weight: 700; text-align: center; padding: 20px 0; letter-spacing: 0.03em; font-variant-numeric: tabular-nums; }
+  .dial-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; flex: 1; }
+  .dial-choice {
+    border-radius: var(--radius); cursor: pointer; min-height: 80px;
+    border: 3px solid transparent; transition: border-color 0.15s;
+  }
+  .dial-choice.selected { border-color: white; box-shadow: 0 0 0 2px var(--accent); }
+  .preview-swatch {
+    width: 100%; flex: 1; min-height: 60px; border-radius: var(--radius);
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  /* Match mode: side-by-side swatch comparison */
+  .match-compare { display: flex; gap: 12px; width: 100%; flex: 1; }
+  .match-compare-col { flex: 1; display: flex; flex-direction: column; }
+  .match-compare-swatch {
+    flex: 1; min-height: 120px; border-radius: var(--radius);
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .match-compare-label {
+    font-size: 0.72rem; color: var(--text-dim);
+    text-align: center; margin-top: 4px;
+  }
+
+  /* Sliders picker */
+  .slider-group { width: 100%; }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .slider-label { width: 14px; font-size: 0.8rem; color: var(--text-dim); font-weight: 600; }
+  .slider-val { width: 40px; font-size: 0.8rem; color: var(--text-dim); text-align: right; }
+  input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 8px; border-radius: 4px;
+    background: var(--surface); outline: none; touch-action: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: white; border: 2px solid var(--border); cursor: pointer;
+  }
+
+  /* Field picker */
+  .field-picker { width: 100%; }
+  .hue-bar {
+    width: 100%; height: 28px; border-radius: 6px; cursor: crosshair; position: relative;
+    background: linear-gradient(to right,
+      hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
+      hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));
+    margin-bottom: 10px; touch-action: none;
+  }
+  .hue-thumb {
+    position: absolute; top: -2px; width: 6px; height: 32px;
+    background: white; border-radius: 3px; pointer-events: none;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5); transform: translateX(-3px);
+  }
+  .sb-field {
+    width: 100%; aspect-ratio: 1.5; border-radius: var(--radius); cursor: crosshair;
+    position: relative; overflow: hidden; touch-action: none;
+  }
+  .sb-field-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+  .sb-thumb {
+    position: absolute; width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    pointer-events: none; transform: translate(-8px, -8px);
+  }
+
+  /* Results */
+  #results { gap: 10px; padding-top: 32px; }
+  .total-score { font-size: 2.5rem; font-weight: 800; }
+  .total-label { font-size: 0.85rem; color: var(--text-dim); }
+  .result-card {
+    width: 100%; background: var(--surface); border-radius: var(--radius);
+    padding: 12px; display: flex; gap: 12px; align-items: center;
+  }
+  .result-swatches { display: flex; flex-direction: column; gap: 4px; min-width: 60px; }
+  .result-swatch { width: 60px; height: 30px; border-radius: 6px; }
+  .result-info { flex: 1; font-size: 0.8rem; }
+  .result-score { font-size: 1.3rem; font-weight: 700; min-width: 44px; text-align: right; }
+  .result-detail { color: var(--text-dim); font-size: 0.72rem; line-height: 1.4; }
+  .feedback-text { font-size: 0.85rem; color: var(--text-dim); text-align: center; font-style: italic; }
+
+  /* History */
+  .history-list { width: 100%; font-size: 0.8rem; }
+  .history-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+
+  /* Results: advanced detail toggle */
+  .result-detail-wrap { display: none; }
+  .result-detail-wrap.visible { display: block; }
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="menu" class="screen active">
+  <h1>splash of hue</h1>
+  <div class="btn-row">
+    <button onclick="startGame('play')">Play</button>
+    <button class="secondary" onclick="startGame('match')">Match</button>
+    <button class="secondary" onclick="startGame('dial')">Dial It In</button>
+    <button class="secondary" disabled>Name It</button>
+    <button class="secondary" disabled>Read It</button>
+  </div>
+  <div class="btn-row" style="margin-top:8px;">
+    <button class="secondary" onclick="showHistory()">History</button>
+  </div>
+  <div class="settings">
+    <label>Picker:
+      <select id="pickerSelect" onchange="savePicker()">
+        <option value="field">Field (Hue + SB)</option>
+        <option value="sliders">Sliders (H/S/B)</option>
+      </select>
+    </label>
+  </div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countdown" class="screen">
+  <p style="color:var(--text-dim);margin-bottom:8px;">Get ready to memorize!</p>
+  <div class="countdown-num" id="countdownNum">3</div>
+</div>
+
+<!-- MEMORIZE -->
+<div id="memorize" class="screen">
+  <div class="color-grid" id="memorizeGrid"></div>
+  <div class="memorize-overlay">
+    <p id="memorizeLabel" style="font-size:0.9rem;"></p>
+    <div class="timer-bar" style="width:200px;max-width:80%;"><div class="timer-fill" id="timerFill"></div></div>
+    <p id="timerText" style="font-size:0.8rem;color:var(--text-dim);"></p>
+  </div>
+</div>
+
+<!-- PICK -->
+<div id="pick" class="screen">
+  <div class="pick-header">
+    <p class="pick-progress" id="pickProgress">Color 1 of 5</p>
+  </div>
+  <div id="swatchArea"></div>
+  <div id="pickerContainer"></div>
+  <button id="confirmBtn" onclick="confirmPick()">Confirm</button>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+  <div style="text-align:center;cursor:pointer;" onclick="toggleAdvanced()" title="">
+    <div class="total-score" id="totalScore"></div>
+    <div class="total-label">/ 50</div>
+  </div>
+  <p class="feedback-text" id="totalFeedback"></p>
+  <div id="resultCards"></div>
+  <div class="btn-row">
+    <button onclick="goMenu()">Menu</button>
+    <button class="secondary" onclick="startGame(lastMode)">Play Again</button>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="historyScreen" class="screen">
+  <h1>Recent Games</h1>
+  <div class="history-list" id="historyList"></div>
+  <button class="secondary" onclick="goMenu()" style="margin-top:12px;">Back</button>
+</div>
+
+<script>
+// --- State ---
+let gameId, targetColors, guesses, currentPick, lastMode, dialChoices, selectedChoice;
+let pickerType = localStorage.getItem('pickerType') || 'field';
+let currentHSB = { h: 180, s: 50, b: 50 };
+let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
+
+document.getElementById('pickerSelect').value = pickerType;
+
+// --- Navigation ---
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goMenu() { showScreen('menu'); }
+
+function savePicker() {
+  pickerType = document.getElementById('pickerSelect').value;
+  localStorage.setItem('pickerType', pickerType);
+}
+
+// --- HSB to CSS ---
+function hsbToHsl(h, s, b) {
+  const sN = s / 100, bN = b / 100;
+  const l = bN * (1 - sN / 2);
+  const sl = l === 0 || l === 1 ? 0 : (bN - l) / Math.min(l, 1 - l);
+  return `hsl(${h}, ${(sl * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%)`;
+}
+
+// --- Game Flow ---
+async function startGame(mode) {
+  lastMode = mode;
+  const res = await fetch('/api/game/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode, picker_type: pickerType })
+  });
+  const data = await res.json();
+  gameId = data.game_id;
+  targetColors = data.target_colors;
+  dialChoices = data.choices || null;
+  guesses = [];
+  currentPick = 0;
+
+  if (mode === 'play') {
+    runCountdown();
+  } else {
+    // Match/Dial: skip memorize, go straight to picking
+    startPicking();
+  }
+}
+
+function runCountdown() {
+  showScreen('countdown');
+  let count = 3;
+  document.getElementById('countdownNum').textContent = count;
+  const iv = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(iv);
+      startMemorize();
+    } else {
+      document.getElementById('countdownNum').textContent = count;
+    }
+  }, 1000);
+}
+
+function startMemorize() {
+  showScreen('memorize');
+  document.getElementById('memorizeLabel').textContent = `Color ${currentPick + 1} of 5 — memorize!`;
+  const grid = document.getElementById('memorizeGrid');
+  grid.innerHTML = '';
+  const c = targetColors[currentPick];
+  const div = document.createElement('div');
+  div.className = 'color-swatch';
+  div.style.background = hsbToHsl(c.h, c.s, c.b);
+  grid.appendChild(div);
+
+  let remaining = 5;
+  const fill = document.getElementById('timerFill');
+  const txt = document.getElementById('timerText');
+  fill.style.width = '100%';
+  txt.textContent = '5s';
+
+  const iv = setInterval(() => {
+    remaining -= 0.1;
+    fill.style.width = (remaining / 5 * 100) + '%';
+    txt.textContent = Math.ceil(remaining) + 's';
+    if (remaining <= 0) {
+      clearInterval(iv);
+      startPicking();
+    }
+  }, 100);
+}
+
+// --- Picking ---
+function startPicking() {
+  showScreen('pick');
+  currentHSB = { h: 180, s: 50, b: 50 };
+  selectedChoice = -1;
+  const pickerEl = document.getElementById('pickerContainer');
+  if (lastMode === 'dial') {
+    pickerEl.style.display = 'none';
+  } else {
+    pickerEl.style.display = '';
+    renderPicker();
+  }
+  updatePickUI();
+}
+
+function updatePickUI() {
+  document.getElementById('pickProgress').textContent = `Color ${currentPick + 1} of 5`;
+  const area = document.getElementById('swatchArea');
+  const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
+
+  if (lastMode === 'dial') {
+    const tc = targetColors[currentPick];
+    const choices = dialChoices[currentPick];
+    area.innerHTML = `
+      <div class="dial-target">${'H' + Math.round(tc.h) + '° S' + Math.round(tc.s) + '% B' + Math.round(tc.b) + '%'}</div>
+      <div class="dial-choices">${choices.map((c, i) =>
+        `<div class="dial-choice${selectedChoice === i ? ' selected' : ''}"
+              onclick="selectChoice(${i})"
+              style="background:${hsbToHsl(c.h, c.s, c.b)}"></div>`
+      ).join('')}</div>`;
+    document.getElementById('confirmBtn').disabled = selectedChoice < 0;
+  } else if (lastMode === 'match') {
+    const tc = targetColors[currentPick];
+    const targetCss = hsbToHsl(tc.h, tc.s, tc.b);
+    // Build DOM once, then update guess background on subsequent calls
+    if (!area.querySelector('.match-compare')) {
+      area.innerHTML = `
+        <div class="match-compare">
+          <div class="match-compare-col">
+            <div class="match-compare-swatch" id="targetSwatch"></div>
+            <div class="match-compare-label">Target</div>
+          </div>
+          <div class="match-compare-col">
+            <div class="match-compare-swatch" id="guessSwatch"></div>
+            <div class="match-compare-label">Your guess</div>
+          </div>
+        </div>
+        <div class="pick-hsb" id="pickHSB"></div>`;
+    }
+    document.getElementById('targetSwatch').style.background = targetCss;
+    document.getElementById('guessSwatch').style.background = guessCss;
+    document.getElementById('pickHSB').textContent = `H${Math.round(currentHSB.h)}° S${Math.round(currentHSB.s)}% B${Math.round(currentHSB.b)}%`;
+  } else {
+    // Play mode: single preview swatch, no target shown
+    if (!area.querySelector('.preview-swatch')) {
+      area.innerHTML = `<div class="preview-swatch" id="previewSwatch"></div>
+        <div class="pick-hsb" id="pickHSB"></div>`;
+    }
+    document.getElementById('previewSwatch').style.background = guessCss;
+    document.getElementById('pickHSB').textContent = `H${Math.round(currentHSB.h)}° S${Math.round(currentHSB.s)}% B${Math.round(currentHSB.b)}%`;
+  }
+}
+
+function confirmPick() {
+  if (lastMode === 'dial') {
+    if (selectedChoice < 0) return;
+    const chosen = dialChoices[currentPick][selectedChoice];
+    guesses.push({ h: chosen.h, s: chosen.s, b: chosen.b });
+  } else {
+    guesses.push({ ...currentHSB });
+  }
+  currentPick++;
+  if (currentPick >= 5) {
+    submitGuesses();
+  } else if (lastMode === 'play') {
+    startMemorize();
+  } else if (lastMode === 'dial') {
+    selectedChoice = -1;
+    document.getElementById('swatchArea').innerHTML = '';
+    updatePickUI();
+  } else { // match
+    currentHSB = { h: 180, s: 50, b: 50 };
+    document.getElementById('swatchArea').innerHTML = '';
+    renderPicker();
+    updatePickUI();
+  }
+}
+
+function selectChoice(idx) {
+  selectedChoice = idx;
+  updatePickUI();
+}
+
+async function submitGuesses() {
+  const res = await fetch('/api/game/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ game_id: gameId, guesses })
+  });
+  const data = await res.json();
+  showResults(data);
+}
+
+// --- Picker Rendering ---
+function renderPicker() {
+  const container = document.getElementById('pickerContainer');
+  if (pickerType === 'sliders') {
+    renderSliders(container);
+  } else {
+    renderField(container);
+  }
+}
+
+// Sliders
+function renderSliders(container) {
+  container.innerHTML = `
+    <div class="slider-group">
+      <div class="slider-row">
+        <span class="slider-label">H</span>
+        <input type="range" id="slH" min="0" max="360" step="1" value="${currentHSB.h}">
+        <span class="slider-val" id="valH">${Math.round(currentHSB.h)}°</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">S</span>
+        <input type="range" id="slS" min="0" max="100" step="1" value="${currentHSB.s}">
+        <span class="slider-val" id="valS">${Math.round(currentHSB.s)}%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">B</span>
+        <input type="range" id="slB" min="0" max="100" step="1" value="${currentHSB.b}">
+        <span class="slider-val" id="valB">${Math.round(currentHSB.b)}%</span>
+      </div>
+    </div>`;
+
+  const update = () => {
+    currentHSB.h = +document.getElementById('slH').value;
+    currentHSB.s = +document.getElementById('slS').value;
+    currentHSB.b = +document.getElementById('slB').value;
+    document.getElementById('valH').textContent = Math.round(currentHSB.h) + '°';
+    document.getElementById('valS').textContent = Math.round(currentHSB.s) + '%';
+    document.getElementById('valB').textContent = Math.round(currentHSB.b) + '%';
+    updatePickUI();
+  };
+
+  ['slH', 'slS', 'slB'].forEach(id => {
+    document.getElementById(id).addEventListener('input', update);
+  });
+}
+
+// Field (hue bar + SB plane)
+function renderField(container) {
+  container.innerHTML = `
+    <div class="field-picker">
+      <div class="hue-bar" id="hueBar"><div class="hue-thumb" id="hueThumb"></div></div>
+      <div class="sb-field" id="sbField">
+        <canvas class="sb-field-bg" id="sbCanvas"></canvas>
+        <div class="sb-thumb" id="sbThumb"></div>
+      </div>
+    </div>`;
+
+  const hueBar = document.getElementById('hueBar');
+  const hueThumb = document.getElementById('hueThumb');
+  const sbField = document.getElementById('sbField');
+  const sbCanvas = document.getElementById('sbCanvas');
+  const sbThumb = document.getElementById('sbThumb');
+
+  function updateHueThumb() {
+    const pct = currentHSB.h / 360;
+    hueThumb.style.left = (pct * 100) + '%';
+  }
+
+  function drawSB() {
+    const rect = sbField.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    sbCanvas.width = w;
+    sbCanvas.height = h;
+    const ctx = sbCanvas.getContext('2d');
+
+    // HSB SB field using gradient overlays (much faster than pixel-by-pixel)
+    // Layer 1: horizontal gradient from white to pure hue
+    const hGrad = ctx.createLinearGradient(0, 0, w, 0);
+    hGrad.addColorStop(0, '#fff');
+    hGrad.addColorStop(1, `hsl(${currentHSB.h}, 100%, 50%)`);
+    ctx.fillStyle = hGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Layer 2: vertical gradient from transparent to black
+    const vGrad = ctx.createLinearGradient(0, 0, 0, h);
+    vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vGrad.addColorStop(1, '#000');
+    ctx.fillStyle = vGrad;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function updateSBThumb() {
+    const pctX = currentHSB.s / 100;
+    const pctY = 1 - currentHSB.b / 100;
+    sbThumb.style.left = (pctX * 100) + '%';
+    sbThumb.style.top = (pctY * 100) + '%';
+  }
+
+  // Hue bar interaction
+  function handleHue(e) {
+    const rect = hueBar.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    currentHSB.h = Math.round(x * 360);
+    updateHueThumb();
+    drawSB();
+    updatePickUI();
+  }
+
+  let hueDown = false;
+  hueBar.addEventListener('pointerdown', e => { hueDown = true; hueBar.setPointerCapture(e.pointerId); handleHue(e); });
+  hueBar.addEventListener('pointermove', e => { if (hueDown) handleHue(e); });
+  hueBar.addEventListener('pointerup', () => { hueDown = false; });
+
+  // SB field interaction
+  function handleSB(e) {
+    const rect = sbField.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    currentHSB.s = Math.round(x * 100);
+    currentHSB.b = Math.round((1 - y) * 100);
+    updateSBThumb();
+    updatePickUI();
+  }
+
+  let sbDown = false;
+  sbField.addEventListener('pointerdown', e => { sbDown = true; sbField.setPointerCapture(e.pointerId); handleSB(e); });
+  sbField.addEventListener('pointermove', e => { if (sbDown) handleSB(e); });
+  sbField.addEventListener('pointerup', () => { sbDown = false; });
+
+  // Initial draw
+  updateHueThumb();
+  requestAnimationFrame(() => { drawSB(); updateSBThumb(); });
+}
+
+// --- Results ---
+function showResults(data) {
+  showScreen('results');
+  document.getElementById('totalScore').textContent = data.total_score.toFixed(1);
+  const feedbackEl = document.getElementById('totalFeedback');
+  feedbackEl.textContent = totalFeedbackText(data.total_score);
+  feedbackEl.style.display = showAdvanced ? '' : 'none';
+
+  const cards = document.getElementById('resultCards');
+  cards.innerHTML = '';
+  const detailClass = showAdvanced ? 'result-detail-wrap visible' : 'result-detail-wrap';
+  data.results.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-swatches">
+        <div class="result-swatch" style="background:${hsbToHsl(r.target.h, r.target.s, r.target.b)}" title="Target"></div>
+        <div class="result-swatch" style="background:${hsbToHsl(r.guess.h, r.guess.s, r.guess.b)}" title="Guess"></div>
+      </div>
+      <div class="result-info">
+        <div><strong>#${i + 1}</strong></div>
+        <div class="${detailClass}">
+          ${r.target_name} — ${colorFeedbackText(r.score)}<br>
+          <span class="result-detail">
+            Target: H${Math.round(r.target.h)}° S${Math.round(r.target.s)}% B${Math.round(r.target.b)}%<br>
+            Guess: H${Math.round(r.guess.h)}° S${Math.round(r.guess.s)}% B${Math.round(r.guess.b)}%<br>
+            ΔE: ${r.delta_e} (L${r.delta_l > 0 ? '+' : ''}${r.delta_l} C${r.delta_c > 0 ? '+' : ''}${r.delta_c} H${r.delta_h > 0 ? '+' : ''}${r.delta_h})
+          </span>
+        </div>
+      </div>
+      <div class="result-score">${r.score.toFixed(1)}</div>`;
+    cards.appendChild(card);
+  });
+}
+
+function toggleAdvanced() {
+  showAdvanced = !showAdvanced;
+  document.getElementById('totalFeedback').style.display = showAdvanced ? '' : 'none';
+  document.querySelectorAll('.result-detail-wrap').forEach(el => {
+    el.classList.toggle('visible', showAdvanced);
+  });
+}
+
+function colorFeedbackText(score) {
+  if (score >= 9.5) return 'Perfect!';
+  if (score >= 8.5) return 'Excellent';
+  if (score >= 7) return 'Great';
+  if (score >= 5) return 'Good';
+  if (score >= 3) return 'Okay';
+  return 'Keep practicing';
+}
+
+function totalFeedbackText(score) {
+  if (score >= 47) return 'Incredible — near-perfect color perception!';
+  if (score >= 40) return 'Excellent eye for color.';
+  if (score >= 32) return 'Solid performance. You see color well.';
+  if (score >= 22) return 'Not bad! Room to grow.';
+  return 'Color is tricky — keep at it!';
+}
+
+// --- History ---
+async function showHistory() {
+  showScreen('historyScreen');
+  const res = await fetch('/api/history');
+  const data = await res.json();
+  const list = document.getElementById('historyList');
+
+  if (data.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:20px;">No games yet. Play one!</p>';
+    return;
+  }
+
+  list.innerHTML = data.map(g => {
+    const d = new Date(g.created_at);
+    const time = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const modeIcons = { match: '🎯', play: '🧠', dial: '🎛️' };
+    const mode = modeIcons[g.mode] || g.mode;
+    return `<div class="history-row">
+      <span>${mode} ${time}</span>
+      <span><strong>${g.total_score.toFixed(1)}</strong>/50 (${g.picker_type})</span>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
