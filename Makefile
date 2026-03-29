@@ -4,7 +4,7 @@ help: ## Show available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*##' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
 
 dev: ## Start dev server with hot reload
-	uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
 
 docs: ## List managed docs
 	@echo "Docs:"

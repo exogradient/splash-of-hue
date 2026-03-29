@@ -2,6 +2,7 @@
 
 import json
 import math
+import os
 import random
 import sqlite3
 import uuid
@@ -10,13 +11,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel
+
+# Local dev: serve index.html directly. Vercel: public/ is CDN-served, not in function bundle.
+_INDEX_HTML_PATH = Path(__file__).resolve().parent.parent / "public" / "index.html"
 
 # --- Database ---
 
-DB_PATH = Path("data/games.db")
+DB_PATH = Path("/tmp/games.db") if os.environ.get("VERCEL") else Path("data/games.db")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS games (
@@ -293,12 +296,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="true-to-hue", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/")
 async def index():
-    return FileResponse("static/index.html")
+    if _INDEX_HTML_PATH.exists():
+        return FileResponse(_INDEX_HTML_PATH)
+    return RedirectResponse("/index.html", status_code=307)
 
 
 @app.post("/api/game/start")

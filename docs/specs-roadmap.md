@@ -5,6 +5,16 @@ stability: volatile
 responsibility: Prioritized direction — what we might build, ordered by readiness
 ---
 
+## Next
+
+### Custom icon for app
+
+### Custom icons for home menu mode rows
+Replace placeholder icons with custom SVG icons for each game mode. Current mode rows use generic shapes — need distinct, recognizable icons that match the visual identity.
+
+### Show intermediate score after each guess
+Display a running score/feedback after each individual guess during a round, not just at the end. Lets the player track how they're doing in real time.
+
 ## Critical
 
 ### Frontend design overhaul (deferred until user journey finalized)

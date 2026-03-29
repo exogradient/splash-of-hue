@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>splash of hue</title>
+<meta name="theme-color" content="#0a0a0a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gray-1: #080808;
+    --gray-2: #101010;
+    --gray-3: #161616;
+    --gray-4: #1d1d1d;
+    --gray-5: #272727;
+    --gray-6: #323232;
+    --gray-7: #404040;
+    --gray-8: #5d5d5d;
+    --gray-9: #777777;
+    --gray-10: #949494;
+    --gray-11: #b2b2b2;
+    --gray-12: #ededed;
+
+    --bg: var(--gray-1);
+    --surface: #111111;
+    --surface-strong: #151515;
+    --surface-raised: #1a1a1a;
+    --border: var(--gray-5);
+    --border-strong: var(--gray-6);
+    --text: var(--gray-12);
+    --text-dim: var(--gray-11);
+    --text-muted: var(--gray-9);
+    --text-soft: var(--gray-10);
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 96px;
+    --space-10: 128px;
+
+    --radius-sm: 6px;
+    --radius: 14px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+
+    --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.22);
+    --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.2);
+    --shell-max: 1180px;
+    --content-max: 560px;
+  }
+
+  html { background: var(--bg); }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 500;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.035), transparent 24%),
+      linear-gradient(180deg, #0d0d0d 0%, #090909 58%, #0a0a0a 100%);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    opacity: 0;
+    position: relative;
+    overflow-x: hidden;
+    transition: opacity 0.15s ease;
+  }
+
+  body.fonts-ready { opacity: 1; }
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+  body::before {
+    background: radial-gradient(circle at top center, rgba(255, 255, 255, 0.03), transparent 38%);
+    opacity: 1;
+  }
+  body::after { display: none; }
+
+  h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: -0.03em; }
+  p { line-height: 1.45; }
+  button, select, input { font: inherit; }
+
+  .screen {
+    display: none;
+    width: 100%;
+    min-height: 100dvh;
+    padding: var(--space-5);
+    align-items: center;
+    justify-content: center;
+  }
+  .screen.active {
+    display: flex;
+    animation: screen-in var(--duration-normal) var(--ease-out);
+  }
+
+  @keyframes screen-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 10px 24px rgba(0, 0, 0, 0.14);
+    backdrop-filter: none;
+    border-radius: var(--radius-lg);
+  }
+  .panel-subtle {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius-lg);
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  button {
+    background: var(--gray-12);
+    color: var(--gray-1);
+    border: none;
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      opacity var(--duration-fast),
+      background var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  button.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  button.ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .btn-row {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #menu {
+    padding-block: clamp(var(--space-6), 6vw, var(--space-9));
+  }
+  .menu-shell {
+    width: min(100%, 680px);
+    display: grid;
+    gap: clamp(var(--space-5), 4vw, 40px);
+  }
+  .hero-panel {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .hero-heading {
+    max-width: 36rem;
+  }
+  .hero-heading h1 {
+    font-size: clamp(4rem, 13vw, 7rem);
+    line-height: 0.84;
+    letter-spacing: -0.1em;
+    font-weight: 600;
+  }
+  .hero-heading h1 > span { display: block; }
+  .hero-line {
+    word-spacing: 0.14em;
+    white-space: nowrap;
+  }
+  .menu-main { display: block; }
+  .menu-stage {
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .mode-list {
+    display: grid;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .mode-row {
+    width: 100%;
+    padding: 18px 20px 18px 16px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.045);
+    color: var(--text);
+    border: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 24px rgba(0, 0, 0, 0.12);
+    display: grid;
+    grid-template-columns: 56px 1fr 20px;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+  }
+  .mode-icon {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    border-radius: 18px;
+  }
+  .mode-icon svg,
+  .utility-history svg,
+  .icon-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .mode-body {
+    display: grid;
+    gap: 0;
+  }
+  .mode-title {
+    font-size: clamp(1.36rem, 3.6vw, 1.72rem);
+    letter-spacing: -0.05em;
+    font-weight: 500;
+  }
+  .mode-arrow {
+    color: rgba(255, 255, 255, 0.22);
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .menu-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 2px;
+  }
+  .picker-segment {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+  button.picker-chip {
+    width: 44px;
+    height: 44px;
+    display: inline-grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted);
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    font-size: 0;
+    line-height: 1;
+    transform: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  button.picker-chip.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  button.picker-chip svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  button.picker-chip:hover,
+  button.picker-chip:active,
+  .mode-row:hover,
+  .mode-row:active {
+    transform: none;
+    opacity: 1;
+  }
+  .utility-history {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  button.secondary.utility-history {
+    border: none;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .utility-history svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #countdown {
+    text-align: center;
+  }
+  .countdown-shell {
+    display: grid;
+    gap: 0;
+    justify-items: center;
+    padding: clamp(var(--space-5), 6vw, var(--space-8));
+  }
+  .countdown-num {
+    font-size: clamp(6rem, 28vw, 9rem);
+    line-height: 0.92;
+    font-weight: 600;
+    letter-spacing: -0.08em;
+    color: var(--text);
+  }
+  .countdown-num.exit {
+    animation: digit-out var(--duration-fast) var(--ease-out) forwards;
+  }
+  .countdown-num.enter {
+    animation: digit-in var(--duration-fast) var(--ease-out) forwards;
+  }
+
+  @keyframes digit-out {
+    to { transform: translateY(20px); opacity: 0; filter: blur(4px); }
+  }
+  @keyframes digit-in {
+    from { transform: translateY(-20px); opacity: 0; filter: blur(4px); }
+    to { transform: translateY(0); opacity: 1; filter: blur(0); }
+  }
+
+  #memorize {
+    padding: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    position: relative;
+    gap: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+  .color-grid {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    min-height: 100%;
+  }
+  .color-swatch {
+    flex: 1;
+    min-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+  .memorize-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  }
+  .memorize-pill {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(14px);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .memorize-pill,
+  #timerText {
+    display: none;
+  }
+  .timer-bar {
+    width: min(320px, 82vw);
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .timer-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.82);
+    transition: width 0.1s linear;
+    position: relative;
+  }
+  .timer-fill::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: -3px;
+    width: 6px;
+    height: 10px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 16px rgba(255,255,255,0.2);
+  }
+
+  #pick {
+    width: 100%;
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    align-items: stretch;
+  }
+  .play-shell {
+    width: min(100%, var(--shell-max));
+    margin: 0 auto;
+    display: grid;
+    gap: var(--space-4);
+    align-content: center;
+  }
+  .play-header {
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .pick-progress {
+    font-size: clamp(1.8rem, 4.8vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .pick-readout-wrap { display: none; }
+  .pick-hsb {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .play-stage-row {
+    display: grid;
+    gap: var(--space-4);
+  }
+  #pick[data-mode="picture"] .play-stage-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #pick[data-mode="picture"] .picker-panel {
+    display: none;
+  }
+  .stage-panel,
+  .picker-panel {
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+    border-radius: var(--radius-lg);
+  }
+  .stage-panel {
+    min-height: 320px;
+    align-content: stretch;
+  }
+  #swatchArea {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage-frame,
+  .picture-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 100%;
+  }
+  .stage-head { display: none; }
+  .stage-title {
+    font-size: clamp(1.25rem, 4vw, 1.8rem);
+    letter-spacing: -0.05em;
+  }
+  .picker-meta {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  #pickModeEyebrow,
+  .picker-meta {
+    display: none;
+  }
+  .picker-title {
+    color: var(--text-soft);
+    font-size: 0.92rem;
+  }
+  .picker-note {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  #pickerContainer {
+    width: 100%;
+  }
+  .picker-empty { display: none; }
+  .confirm-btn {
+    width: 64px;
+    height: 64px;
+    justify-self: end;
+    align-self: end;
+    margin-top: auto;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    font-size: 0;
+    min-height: 0;
+    border-radius: 999px;
+    background: var(--gray-12);
+    color: var(--gray-1);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  }
+  .confirm-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .confirm-btn:disabled {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .picture-target {
+    font-size: clamp(1.7rem, 7vw, 2.5rem);
+    line-height: 1;
+    text-align: center;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .picture-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    width: 100%;
+    flex: 1;
+  }
+  .picture-stage-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+  }
+  .picture-choice {
+    border-radius: calc(var(--radius-lg) - 8px);
+    cursor: pointer;
+    min-height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast) var(--ease-out);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  .picture-choice.selected {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    transform: translateY(-2px);
+  }
+  .preview-swatch {
+    width: 100%;
+    flex: 1;
+    min-height: 240px;
+    border-radius: calc(var(--radius-lg) - 8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .match-compare {
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+    flex: 1;
+  }
+  .match-compare-col {
+    display: grid;
+    gap: 0;
+  }
+  .match-compare-swatch {
+    min-height: 180px;
+    border-radius: calc(var(--radius-lg) - 8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .match-compare-label { display: none; }
+
+  .slider-group { width: 100%; }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: var(--space-4);
+  }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--gray-5);
+    outline: none;
+    touch-action: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gray-12);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+  }
+
+  .field-picker { width: 100%; }
+  .hue-bar {
+    width: 100%;
+    height: 34px;
+    border-radius: 999px;
+    cursor: crosshair;
+    position: relative;
+    background: linear-gradient(to right,
+      hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
+      hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));
+    margin-bottom: var(--space-4);
+    touch-action: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .hue-thumb {
+    position: absolute;
+    inset: 5px auto 5px 0;
+    width: 10px;
+    background: white;
+    border-radius: 999px;
+    pointer-events: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    transform: translateX(-5px);
+  }
+  .sb-field {
+    width: 100%;
+    aspect-ratio: 1.2;
+    border-radius: calc(var(--radius-lg) - 8px);
+    cursor: crosshair;
+    position: relative;
+    overflow: hidden;
+    touch-action: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  }
+  .sb-field-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+  .sb-thumb {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transform: translate(-11px, -11px);
+  }
+
+  #results {
+    padding-block: clamp(var(--space-5), 6vw, var(--space-8));
+  }
+  .results-shell {
+    width: min(100%, 920px);
+    display: grid;
+    gap: var(--space-4);
+  }
+  #resultCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+  }
+  .results-hero {
+    padding: clamp(var(--space-5), 5vw, var(--space-7));
+    display: grid;
+    gap: var(--space-4);
+    cursor: pointer;
+    background: var(--surface);
+    box-shadow: none;
+  }
+  .results-hero-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .score-cluster {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .total-score {
+    font-size: clamp(4rem, 14vw, 6.6rem);
+    line-height: 0.88;
+    letter-spacing: -0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+  .total-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .score-tier {
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .analysis-hint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+  #resultsMeta,
+  .analysis-hint,
+  .swatch-labels,
+  .result-names,
+  .total-label,
+  .score-tier,
+  .feedback-text,
+  .result-verdict {
+    display: none;
+  }
+  .result-card {
+    width: 100%;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: end;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .result-card > div:first-child {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .result-card.tier-elite { border-color: rgba(255, 255, 255, 0.18); }
+  .result-card.tier-strong { border-color: rgba(255, 255, 255, 0.12); }
+  .result-card.tier-learning { border-color: rgba(255, 255, 255, 0.08); }
+  .result-card.tier-rough { opacity: 0.92; }
+  .swatch-compare {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: calc(var(--radius) - 4px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  .swatch-target, .swatch-guess {
+    position: absolute; inset: 0;
+  }
+  .swatch-target { clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .swatch-guess { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+  .swatch-divider {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(135deg, transparent calc(50% - 0.5px), var(--gray-5) calc(50% - 0.5px), var(--gray-5) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  }
+  .swatch-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .result-info {
+    display: grid;
+    gap: 0;
+    min-width: 0;
+  }
+  .result-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+  }
+  .result-num {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .result-names {
+    color: var(--text-soft);
+    font-size: 0.84rem;
+  }
+  .result-verdict {
+    color: var(--text);
+    font-size: 1rem;
+    letter-spacing: -0.03em;
+  }
+  .result-score {
+    font-size: 1.35rem;
+    font-weight: 600;
+    min-width: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.05em;
+  }
+  .result-score span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    background: var(--surface-raised);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .result-detail {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+  }
+  .feedback-text {
+    font-size: 0.94rem;
+    color: var(--text-soft);
+    max-width: 36rem;
+  }
+  .result-detail-wrap { display: none; }
+  .result-detail-wrap.visible { display: block; }
+  .delta-grid {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+  .delta-row {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .delta-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+  .delta-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.55));
+  }
+  .delta-value {
+    color: var(--text-soft);
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+  }
+  .results-actions {
+    justify-content: flex-start;
+  }
+  .results-icon-btn {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+  }
+  .results-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .history-shell {
+    width: min(100%, 760px);
+    padding: clamp(var(--space-5), 5vw, var(--space-7));
+    display: grid;
+    gap: var(--space-4);
+    background: var(--surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 10px 24px rgba(0, 0, 0, 0.14);
+  }
+  .history-top {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .history-list {
+    width: 100%;
+    display: grid;
+    gap: 10px;
+  }
+  .history-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .history-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .history-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+  }
+  .history-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .history-meta {
+    display: grid;
+    gap: 2px;
+  }
+  .history-mode {
+    display: none;
+  }
+  .history-sub {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .history-score {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  .result-card {
+    animation: card-in var(--duration-slow) var(--ease-out) both;
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .total-score {
+    animation: score-in 400ms var(--ease-sheet) both;
+  }
+
+  @keyframes score-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @media (hover: hover) {
+    button:hover { opacity: 0.96; transform: scale(1.02); }
+    button.secondary:hover,
+    button.ghost:hover {
+      background: rgba(255, 255, 255, 0.03);
+      transform: scale(1.02);
+    }
+    .mode-row:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    button.picker-chip:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .picture-choice:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .play-header {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+    .play-stage-row {
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      align-items: stretch;
+    }
+    .match-compare {
+      grid-template-columns: 1fr 1fr;
+    }
+    #resultCards {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 540px) {
+    .menu-tools {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .picker-segment {
+      width: 100%;
+    }
+    .picker-chip {
+      flex: 1 1 0;
+    }
+    .result-card {
+      grid-template-columns: 1fr;
+    }
+    .result-score {
+      text-align: left;
+    }
+    .results-hero-head {
+      flex-direction: column;
+      align-items: start;
+    }
+    .picker-meta {
+      flex-direction: column;
+    }
+  }
+
+  #pick, #results, #historyScreen {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes card-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes score-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes digit-out { to { opacity: 0; } }
+    @keyframes digit-in { from { opacity: 0; } to { opacity: 1; } }
+    button:active { transform: none; }
+    .mode-row:hover,
+    .picture-choice:hover,
+    button:hover {
+      transform: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="menu" class="screen active">
+  <div class="menu-shell">
+    <section class="hero-panel panel">
+      <div class="hero-heading">
+        <h1><span>splash</span><span class="hero-line">of hue</span></h1>
+      </div>
+    </section>
+
+    <div class="menu-main">
+      <section class="menu-stage panel">
+        <div class="mode-list">
+          <button class="mode-row" onclick="startGame('play')">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="5" width="14" height="14" rx="3"></rect>
+                <circle cx="12" cy="12" r="2.5"></circle>
+              </svg>
+            </span>
+            <span class="mode-body">
+              <span class="mode-title">Play</span>
+            </span>
+            <span class="mode-arrow">→</span>
+          </button>
+          <button class="mode-row" onclick="startGame('match')">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="4.5" y="7" width="8.5" height="10" rx="2.2"></rect>
+                <rect x="11" y="7" width="8.5" height="10" rx="2.2"></rect>
+              </svg>
+            </span>
+            <span class="mode-body">
+              <span class="mode-title">Match</span>
+            </span>
+            <span class="mode-arrow">→</span>
+          </button>
+          <button class="mode-row" onclick="startGame('picture')">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="7.2"></circle>
+                <circle cx="12" cy="12" r="2.2"></circle>
+                <path d="M12 4.8v5"></path>
+                <path d="M18.2 8.4l-4.3 2.5"></path>
+                <path d="M18.2 15.6l-4.3-2.5"></path>
+                <path d="M12 19.2v-5"></path>
+                <path d="M5.8 15.6l4.3-2.5"></path>
+                <path d="M5.8 8.4l4.3 2.5"></path>
+              </svg>
+            </span>
+            <span class="mode-body">
+              <span class="mode-title">Picture It</span>
+            </span>
+            <span class="mode-arrow">→</span>
+          </button>
+        </div>
+        <div class="menu-tools">
+          <div class="picker-segment" role="group" aria-label="Picker">
+            <button type="button" class="picker-chip" id="pickerFieldBtn" onclick="setPicker('field')" aria-label="Field picker">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4.5" y="4.5" width="15" height="15" rx="3"></rect>
+                <path d="M12 4.5v15"></path>
+                <path d="M4.5 12h15"></path>
+              </svg>
+            </button>
+            <button type="button" class="picker-chip" id="pickerSlidersBtn" onclick="setPicker('sliders')" aria-label="Sliders picker">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6h12"></path>
+                <path d="M6 12h12"></path>
+                <path d="M6 18h12"></path>
+                <circle cx="9" cy="6" r="2"></circle>
+                <circle cx="15" cy="12" r="2"></circle>
+                <circle cx="11" cy="18" r="2"></circle>
+              </svg>
+            </button>
+          </div>
+          <button class="secondary icon-btn utility-history" onclick="showHistory()" aria-label="History">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 7v5l3 2"></path>
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"></path>
+              <path d="M20 4v4h-4"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countdown" class="screen">
+  <div class="countdown-shell">
+    <div class="countdown-num" id="countdownNum">3</div>
+  </div>
+</div>
+
+<!-- MEMORIZE -->
+<div id="memorize" class="screen">
+  <div class="color-grid" id="memorizeGrid"></div>
+  <div class="memorize-overlay">
+    <p id="memorizeLabel" class="memorize-pill"></p>
+    <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+    <p id="timerText" style="font-size:0.82rem;color:rgba(255,255,255,0.86);"></p>
+  </div>
+</div>
+
+<!-- PICK -->
+<div id="pick" class="screen">
+  <div class="play-shell">
+    <div class="play-header panel">
+      <div>
+        <p class="eyebrow" id="pickModeEyebrow">Memory</p>
+        <p class="pick-progress" id="pickProgress">1/5</p>
+      </div>
+      <div class="pick-readout-wrap">
+        <p class="pick-hsb" id="pickReadout"></p>
+      </div>
+    </div>
+    <div class="play-stage-row">
+      <div id="swatchArea" class="stage-panel panel"></div>
+      <div class="picker-panel panel">
+        <div class="picker-meta">
+          <div>
+            <p class="eyebrow">Picker</p>
+            <p class="picker-title" id="pickerTitle">Hue, saturation, and brightness</p>
+          </div>
+          <p class="picker-note" id="pickerTypeNote">Field</p>
+        </div>
+        <div id="pickerContainer"></div>
+        <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 12.5l4 4 8-9"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+  <div class="results-shell">
+    <section class="results-hero panel" id="resultsHero" onclick="toggleAdvanced()">
+      <p class="eyebrow" id="resultsMeta">Round complete</p>
+      <div class="results-hero-head">
+        <div class="score-cluster">
+          <div class="total-score" id="totalScore"></div>
+          <div class="total-label">/ 50</div>
+        </div>
+        <div class="score-tier" id="scoreTier">Solid eye</div>
+      </div>
+      <p class="analysis-hint" id="advancedHint">Tap to reveal analysis.</p>
+      <p class="feedback-text" id="totalFeedback"></p>
+    </section>
+    <div id="resultCards"></div>
+    <div class="btn-row results-actions">
+      <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 11.5 12 5l8 6.5"></path>
+          <path d="M7.5 10.5V19h9v-8.5"></path>
+        </svg>
+      </button>
+      <button class="secondary results-icon-btn" onclick="startGame(lastMode)" aria-label="Play again">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 12a8 8 0 1 1-2.34-5.66"></path>
+          <path d="M20 4v4h-4"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="historyScreen" class="screen">
+  <div class="history-shell panel">
+    <div class="history-top">
+      <button class="icon-btn" onclick="goMenu()" aria-label="Back to menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+
+<script>
+// --- Font loading gate ---
+Promise.race([
+  document.fonts.ready,
+  new Promise(r => setTimeout(r, 2000))
+]).then(() => document.body.classList.add('fonts-ready'));
+
+// --- State ---
+let gameId, targetColors, guesses, currentPick, lastMode, pictureChoices, selectedChoice;
+let pickerType = localStorage.getItem('pickerType') || 'field';
+let currentHSB = { h: 180, s: 50, b: 50 };
+let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
+
+document.body.dataset.screen = 'menu';
+updatePickerControl();
+
+// --- Navigation ---
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.body.dataset.screen = id;
+}
+function goMenu() { showScreen('menu'); }
+
+function setPicker(type) {
+  pickerType = type;
+  localStorage.setItem('pickerType', pickerType);
+  updatePickerControl();
+  if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture') {
+    renderPicker();
+    updatePickUI();
+  }
+}
+
+function updatePickerControl() {
+  document.getElementById('pickerFieldBtn').classList.toggle('active', pickerType === 'field');
+  document.getElementById('pickerSlidersBtn').classList.toggle('active', pickerType === 'sliders');
+  document.getElementById('pickerFieldBtn').setAttribute('aria-pressed', String(pickerType === 'field'));
+  document.getElementById('pickerSlidersBtn').setAttribute('aria-pressed', String(pickerType === 'sliders'));
+}
+
+function modeLabel(mode) {
+  const labels = { play: 'Play', match: 'Match', picture: 'Picture It' };
+  return labels[mode] || mode;
+}
+
+function modeIconMarkup(mode, className = '') {
+  const cls = className ? ` class="${className}"` : '';
+  if (mode === 'match') {
+    return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.5" y="7" width="8.5" height="10" rx="2.2"></rect><rect x="11" y="7" width="8.5" height="10" rx="2.2"></rect></svg></span>`;
+  }
+  if (mode === 'picture') {
+    return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2"></circle><circle cx="12" cy="12" r="2.2"></circle><path d="M12 4.8v5"></path><path d="M18.2 8.4l-4.3 2.5"></path><path d="M18.2 15.6l-4.3-2.5"></path><path d="M12 19.2v-5"></path><path d="M5.8 15.6l4.3-2.5"></path><path d="M5.8 8.4l4.3 2.5"></path></svg></span>`;
+  }
+  return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"></rect><circle cx="12" cy="12" r="2.5"></circle></svg></span>`;
+}
+
+function pickerLabel(type) {
+  const labels = { field: 'Field', sliders: 'Sliders' };
+  return labels[type] || type;
+}
+
+function confirmIconMarkup() {
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"></path></svg>';
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function buildPictureFallbackChoices(target, index) {
+  const variants = [
+    { h: 32, s: -18, b: 12 },
+    { h: -44, s: 16, b: -14 },
+    { h: 96, s: -10, b: -8 },
+  ];
+  const options = [target, ...variants.map((shift, i) => ({
+    h: (target.h + shift.h + 360) % 360,
+    s: clamp(target.s + shift.s + (index % 2 ? i * 3 : -i * 2), 35, 100),
+    b: clamp(target.b + shift.b + (index % 2 ? -i * 2 : i * 3), 35, 100),
+  }))];
+  const rotateBy = index % options.length;
+  return options.map((_, i) => options[(i + rotateBy) % options.length]);
+}
+
+function pictureOptionsFor(index) {
+  const options = Array.isArray(pictureChoices) ? pictureChoices[index] : null;
+  if (Array.isArray(options) && options.length >= 4) return options;
+  const target = targetColors?.[index];
+  return target ? buildPictureFallbackChoices(target, index) : [];
+}
+
+function pickEyebrow(mode) {
+  const labels = {
+    play: 'Memory',
+    match: 'Match',
+    picture: 'Picture',
+  };
+  return labels[mode] || 'Color training';
+}
+
+function scoreTierText(score) {
+  if (score >= 47) return 'Near perfect';
+  if (score >= 40) return 'Very strong eye';
+  if (score >= 32) return 'Solid eye';
+  if (score >= 22) return 'Learning curve';
+  return 'Early reps';
+}
+
+function resultTierClass(score) {
+  if (score >= 8.8) return 'tier-elite';
+  if (score >= 6.2) return 'tier-strong';
+  if (score >= 3.2) return 'tier-learning';
+  return 'tier-rough';
+}
+
+function formatSigned(value) {
+  return `${value > 0 ? '+' : ''}${value}`;
+}
+
+function deltaMeter(label, value) {
+  const width = Math.min(100, Math.abs(value) * 2.5);
+  return `
+    <div class="delta-row">
+      <span>${label}</span>
+      <div class="delta-track"><div class="delta-fill" style="width:${width}%"></div></div>
+      <span class="delta-value">${formatSigned(value)}</span>
+    </div>`;
+}
+
+function updateAdvancedHint() {
+  document.getElementById('advancedHint').textContent = showAdvanced
+    ? 'Tap to hide analysis.'
+    : 'Tap to reveal analysis.';
+}
+
+// --- HSB to CSS ---
+function hsbToHsl(h, s, b) {
+  const sN = s / 100, bN = b / 100;
+  const l = bN * (1 - sN / 2);
+  const sl = l === 0 || l === 1 ? 0 : (bN - l) / Math.min(l, 1 - l);
+  return `hsl(${h}, ${(sl * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%)`;
+}
+
+function formatHSBCompact(color) {
+  return `H${Math.round(color.h)} S${Math.round(color.s)} B${Math.round(color.b)}`;
+}
+
+// --- Game Flow ---
+async function startGame(mode) {
+  lastMode = mode;
+  const res = await fetch('/api/game/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode, picker_type: pickerType })
+  });
+  const data = await res.json();
+  gameId = data.game_id;
+  targetColors = data.target_colors;
+  pictureChoices = Array.isArray(data.choices) ? data.choices : [];
+  guesses = [];
+  currentPick = 0;
+
+  if (mode === 'play') {
+    runCountdown();
+  } else {
+    // Match and picture modes skip memorize and go straight to picking.
+    startPicking();
+  }
+}
+
+function runCountdown() {
+  showScreen('countdown');
+  let count = 3;
+  const el = document.getElementById('countdownNum');
+  el.textContent = count;
+  el.className = 'countdown-num enter';
+  const iv = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(iv);
+      el.className = 'countdown-num exit';
+      setTimeout(startMemorize, 150);
+    } else {
+      el.className = 'countdown-num exit';
+      setTimeout(() => {
+        el.textContent = count;
+        el.className = 'countdown-num enter';
+      }, 150);
+    }
+  }, 1000);
+}
+
+function startMemorize() {
+  showScreen('memorize');
+  document.getElementById('memorizeLabel').textContent = `Color ${currentPick + 1} of 5 — memorize!`;
+  const grid = document.getElementById('memorizeGrid');
+  grid.innerHTML = '';
+  const c = targetColors[currentPick];
+  const div = document.createElement('div');
+  div.className = 'color-swatch';
+  div.style.background = hsbToHsl(c.h, c.s, c.b);
+  grid.appendChild(div);
+
+  let remaining = 5;
+  const fill = document.getElementById('timerFill');
+  const txt = document.getElementById('timerText');
+  fill.style.width = '100%';
+  txt.textContent = '5s';
+
+  const iv = setInterval(() => {
+    remaining -= 0.1;
+    fill.style.width = (remaining / 5 * 100) + '%';
+    txt.textContent = Math.ceil(remaining) + 's';
+    if (remaining <= 0) {
+      clearInterval(iv);
+      startPicking();
+    }
+  }, 100);
+}
+
+// --- Picking ---
+function startPicking() {
+  showScreen('pick');
+  currentHSB = { h: 180, s: 50, b: 50 };
+  selectedChoice = -1;
+  document.getElementById('pick').dataset.mode = lastMode;
+  document.getElementById('swatchArea').innerHTML = '';
+  const pickerEl = document.getElementById('pickerContainer');
+  if (lastMode === 'picture') {
+    pickerEl.style.display = 'none';
+    pickerEl.innerHTML = '';
+  } else {
+    pickerEl.style.display = '';
+    renderPicker();
+  }
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.innerHTML = confirmIconMarkup();
+  confirmBtn.setAttribute('aria-label', lastMode === 'picture' ? 'Confirm choice' : 'Lock in guess');
+  updatePickUI();
+}
+
+function updatePickUI() {
+  document.getElementById('pickProgress').textContent = `${currentPick + 1}/5`;
+  document.getElementById('pickModeEyebrow').textContent = pickEyebrow(lastMode);
+  document.getElementById('pickerTypeNote').textContent = lastMode === 'picture' ? 'No picker' : pickerLabel(pickerType);
+  document.getElementById('pickerTitle').textContent = lastMode === 'picture'
+    ? 'Multiple choice'
+    : pickerType === 'field'
+      ? 'Hue plus saturation and brightness'
+      : 'Channel-by-channel matching';
+  const area = document.getElementById('swatchArea');
+  const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
+  const pickReadout = document.getElementById('pickReadout');
+
+  if (lastMode === 'picture') {
+    const tc = targetColors[currentPick];
+    const choices = pictureOptionsFor(currentPick);
+    pickReadout.textContent = '';
+    area.innerHTML = `
+      <div class="picture-stage">
+        <div class="picture-target">${formatHSBCompact(tc)}</div>
+        <div class="picture-choices">${choices.map((c, i) =>
+          `<div class="picture-choice${selectedChoice === i ? ' selected' : ''}"
+                onclick="selectChoice(${i})"
+                style="background:${hsbToHsl(c.h, c.s, c.b)}"></div>`
+        ).join('')}</div>
+        <div class="picture-stage-actions">
+          <button class="confirm-btn" onclick="confirmPick()" aria-label="Confirm choice" ${selectedChoice < 0 ? 'disabled' : ''}>
+            ${confirmIconMarkup()}
+          </button>
+        </div>
+      </div>`;
+    document.getElementById('confirmBtn').disabled = selectedChoice < 0;
+  } else if (lastMode === 'match') {
+    const tc = targetColors[currentPick];
+    const targetCss = hsbToHsl(tc.h, tc.s, tc.b);
+    pickReadout.textContent = '';
+    area.innerHTML = `
+      <div class="stage-frame">
+        <div class="match-compare">
+          <div class="match-compare-col">
+            <div class="match-compare-swatch" id="targetSwatch" style="background:${targetCss}"></div>
+            <div class="match-compare-label">Target</div>
+          </div>
+          <div class="match-compare-col">
+            <div class="match-compare-swatch" id="guessSwatch" style="background:${guessCss}"></div>
+            <div class="match-compare-label">Your guess</div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('confirmBtn').disabled = false;
+  } else {
+    pickReadout.textContent = '';
+    area.innerHTML = `
+      <div class="stage-frame">
+        <div class="preview-swatch" id="previewSwatch" style="background:${guessCss}"></div>
+      </div>`;
+    document.getElementById('confirmBtn').disabled = false;
+  }
+}
+
+function confirmPick() {
+  if (lastMode === 'picture') {
+    if (selectedChoice < 0) return;
+    const chosen = pictureOptionsFor(currentPick)[selectedChoice];
+    guesses.push({ h: chosen.h, s: chosen.s, b: chosen.b });
+  } else {
+    guesses.push({ ...currentHSB });
+  }
+  currentPick++;
+  if (currentPick >= 5) {
+    submitGuesses();
+  } else if (lastMode === 'play') {
+    startMemorize();
+  } else if (lastMode === 'picture') {
+    selectedChoice = -1;
+    document.getElementById('swatchArea').innerHTML = '';
+    updatePickUI();
+  } else { // match
+    currentHSB = { h: 180, s: 50, b: 50 };
+    document.getElementById('swatchArea').innerHTML = '';
+    renderPicker();
+    updatePickUI();
+  }
+}
+
+function selectChoice(idx) {
+  selectedChoice = idx;
+  updatePickUI();
+}
+
+async function submitGuesses() {
+  const res = await fetch('/api/game/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ game_id: gameId, guesses })
+  });
+  const data = await res.json();
+  showResults(data);
+}
+
+// --- Picker Rendering ---
+function renderPicker() {
+  const container = document.getElementById('pickerContainer');
+  if (pickerType === 'sliders') {
+    renderSliders(container);
+  } else {
+    renderField(container);
+  }
+}
+
+// Sliders
+function renderSliders(container) {
+  container.innerHTML = `
+    <div class="slider-group">
+      <div class="slider-row">
+        <input type="range" id="slH" min="0" max="360" step="1" value="${currentHSB.h}" aria-label="Hue">
+      </div>
+      <div class="slider-row">
+        <input type="range" id="slS" min="0" max="100" step="1" value="${currentHSB.s}" aria-label="Saturation">
+      </div>
+      <div class="slider-row">
+        <input type="range" id="slB" min="0" max="100" step="1" value="${currentHSB.b}" aria-label="Brightness">
+      </div>
+    </div>`;
+
+  function updateSliderBackgrounds() {
+    document.getElementById('slH').style.background = 'linear-gradient(90deg, hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%), hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%))';
+    document.getElementById('slS').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, 0, currentHSB.b)}, ${hsbToHsl(currentHSB.h, 100, currentHSB.b)})`;
+    document.getElementById('slB').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, currentHSB.s, 0)}, ${hsbToHsl(currentHSB.h, currentHSB.s, 100)})`;
+  }
+
+  const update = () => {
+    currentHSB.h = +document.getElementById('slH').value;
+    currentHSB.s = +document.getElementById('slS').value;
+    currentHSB.b = +document.getElementById('slB').value;
+    updateSliderBackgrounds();
+    updatePickUI();
+  };
+
+  ['slH', 'slS', 'slB'].forEach(id => {
+    document.getElementById(id).addEventListener('input', update);
+  });
+  updateSliderBackgrounds();
+}
+
+// Field (hue bar + SB plane)
+function renderField(container) {
+  container.innerHTML = `
+    <div class="field-picker">
+      <div class="hue-bar" id="hueBar"><div class="hue-thumb" id="hueThumb"></div></div>
+      <div class="sb-field" id="sbField">
+        <canvas class="sb-field-bg" id="sbCanvas"></canvas>
+        <div class="sb-thumb" id="sbThumb"></div>
+      </div>
+    </div>`;
+
+  const hueBar = document.getElementById('hueBar');
+  const hueThumb = document.getElementById('hueThumb');
+  const sbField = document.getElementById('sbField');
+  const sbCanvas = document.getElementById('sbCanvas');
+  const sbThumb = document.getElementById('sbThumb');
+
+  function updateHueThumb() {
+    const pct = currentHSB.h / 360;
+    hueThumb.style.left = (pct * 100) + '%';
+  }
+
+  function drawSB() {
+    const rect = sbField.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    sbCanvas.width = w;
+    sbCanvas.height = h;
+    const ctx = sbCanvas.getContext('2d');
+
+    // HSB SB field using gradient overlays (much faster than pixel-by-pixel)
+    // Layer 1: horizontal gradient from white to pure hue
+    const hGrad = ctx.createLinearGradient(0, 0, w, 0);
+    hGrad.addColorStop(0, '#fff');
+    hGrad.addColorStop(1, `hsl(${currentHSB.h}, 100%, 50%)`);
+    ctx.fillStyle = hGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Layer 2: vertical gradient from transparent to black
+    const vGrad = ctx.createLinearGradient(0, 0, 0, h);
+    vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vGrad.addColorStop(1, '#000');
+    ctx.fillStyle = vGrad;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function updateSBThumb() {
+    const pctX = currentHSB.s / 100;
+    const pctY = 1 - currentHSB.b / 100;
+    sbThumb.style.left = (pctX * 100) + '%';
+    sbThumb.style.top = (pctY * 100) + '%';
+  }
+
+  // Hue bar interaction
+  function handleHue(e) {
+    const rect = hueBar.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    currentHSB.h = Math.round(x * 360);
+    updateHueThumb();
+    drawSB();
+    updatePickUI();
+  }
+
+  let hueDown = false;
+  hueBar.addEventListener('pointerdown', e => { hueDown = true; hueBar.setPointerCapture(e.pointerId); handleHue(e); });
+  hueBar.addEventListener('pointermove', e => { if (hueDown) handleHue(e); });
+  hueBar.addEventListener('pointerup', () => { hueDown = false; });
+
+  // SB field interaction
+  function handleSB(e) {
+    const rect = sbField.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    currentHSB.s = Math.round(x * 100);
+    currentHSB.b = Math.round((1 - y) * 100);
+    updateSBThumb();
+    updatePickUI();
+  }
+
+  let sbDown = false;
+  sbField.addEventListener('pointerdown', e => { sbDown = true; sbField.setPointerCapture(e.pointerId); handleSB(e); });
+  sbField.addEventListener('pointermove', e => { if (sbDown) handleSB(e); });
+  sbField.addEventListener('pointerup', () => { sbDown = false; });
+
+  // Initial draw
+  updateHueThumb();
+  requestAnimationFrame(() => { drawSB(); updateSBThumb(); });
+}
+
+// --- Results ---
+function showResults(data) {
+  showScreen('results');
+  document.getElementById('resultsMeta').textContent = lastMode === 'picture'
+    ? `${modeLabel(lastMode)} · no picker`
+    : `${modeLabel(lastMode)} · ${pickerLabel(pickerType)} picker`;
+  document.getElementById('scoreTier').textContent = scoreTierText(data.total_score);
+  updateAdvancedHint();
+
+  const scoreEl = document.getElementById('totalScore');
+  const target = data.total_score;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    scoreEl.textContent = target.toFixed(1);
+  } else {
+    const duration = Math.min(800, Math.max(300, target * 16));
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      scoreEl.textContent = (eased * target).toFixed(1);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const feedbackEl = document.getElementById('totalFeedback');
+  feedbackEl.textContent = totalFeedbackText(data.total_score);
+  feedbackEl.style.display = showAdvanced ? '' : 'none';
+
+  const cards = document.getElementById('resultCards');
+  cards.innerHTML = '';
+  const detailClass = showAdvanced ? 'result-detail-wrap visible' : 'result-detail-wrap';
+  data.results.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = `result-card ${resultTierClass(r.score)}`;
+    card.style.animationDelay = `${100 * (i + 1)}ms`;
+    const tCss = hsbToHsl(r.target.h, r.target.s, r.target.b);
+    const gCss = hsbToHsl(r.guess.h, r.guess.s, r.guess.b);
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-expanded', String(showAdvanced));
+    card.onclick = () => {
+      const wrap = card.querySelector('.result-detail-wrap');
+      const next = !wrap.classList.contains('visible');
+      wrap.classList.toggle('visible', next);
+      card.setAttribute('aria-expanded', String(next));
+    };
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+    card.innerHTML = `
+      <div>
+        <div class="swatch-compare">
+          <div class="swatch-target" style="background:${tCss}"></div>
+          <div class="swatch-guess" style="background:${gCss}"></div>
+          <div class="swatch-divider"></div>
+        </div>
+        <div class="swatch-labels"><span>T</span><span>G</span></div>
+      </div>
+      <div class="result-info">
+        <div class="result-head">
+          <div>
+            <div class="result-num">${i + 1}</div>
+            <div class="result-verdict">${colorFeedbackText(r.score)}</div>
+          </div>
+          <div class="result-names">${r.target_name} to ${r.guess_name}</div>
+        </div>
+        <div class="${detailClass}">
+          <div class="result-detail">
+            ${formatHSBCompact(r.target)}<br>
+            ${formatHSBCompact(r.guess)}<br>
+            ΔE00 ${r.delta_e}
+          </div>
+          <div class="delta-grid">
+            ${deltaMeter('L', r.delta_l)}
+            ${deltaMeter('C', r.delta_c)}
+            ${deltaMeter('H', r.delta_h)}
+          </div>
+        </div>
+      </div>
+      <div class="result-score"><span>${r.score.toFixed(1)}</span></div>`;
+    cards.appendChild(card);
+  });
+}
+
+function toggleAdvanced() {
+  showAdvanced = !showAdvanced;
+  document.getElementById('totalFeedback').style.display = showAdvanced ? '' : 'none';
+  document.querySelectorAll('.result-detail-wrap').forEach(el => {
+    el.classList.toggle('visible', showAdvanced);
+  });
+  document.querySelectorAll('.result-card').forEach(card => {
+    card.setAttribute('aria-expanded', String(showAdvanced));
+  });
+  updateAdvancedHint();
+}
+
+function colorFeedbackText(score) {
+  if (score >= 9.5) return 'Perfect!';
+  if (score >= 8.5) return 'Excellent';
+  if (score >= 7) return 'Great';
+  if (score >= 5) return 'Good';
+  if (score >= 3) return 'Okay';
+  return 'Keep practicing';
+}
+
+function totalFeedbackText(score) {
+  if (score >= 47) return 'Near-perfect perception. You are reading tiny differences without forcing it.';
+  if (score >= 40) return 'Very strong round. Your eye is already making fine-grain corrections.';
+  if (score >= 32) return 'Solid round. You are seeing the structure, even if a few channels still drift.';
+  if (score >= 22) return 'Useful reps. The misses are readable enough to teach from.';
+  return 'Good training material. The analysis below should make the misses concrete.';
+}
+
+// --- History ---
+async function showHistory() {
+  showScreen('historyScreen');
+  const res = await fetch('/api/history');
+  const data = await res.json();
+  const list = document.getElementById('historyList');
+
+  if (data.length === 0) {
+    list.innerHTML = '<div class="panel-subtle" style="padding:var(--space-5);text-align:center;color:var(--text-muted);">No rounds yet.</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(g => {
+    const d = new Date(g.created_at);
+    const time = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `<div class="history-row">
+      <div class="history-entry">
+        ${modeIconMarkup(g.mode, 'history-icon')}
+        <div class="history-meta">
+          <span class="history-mode">${modeLabel(g.mode)}</span>
+          <span class="history-sub">${time}</span>
+        </div>
+      </div>
+      <div class="history-score">${g.total_score.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+}
+
+updateAdvancedHint();
+</script>
+</body>
+</html>

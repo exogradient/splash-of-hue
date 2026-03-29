@@ -7,7 +7,7 @@ Color memory game that teaches color perception.
 ## Tech Stack
 - Python 3.13+, uv, FastAPI, uvicorn
 - SQLite (auto-created at `data/games.db`)
-- Single-file backend (`main.py`), single-file frontend (`static/index.html`)
+- Single-file backend (`api/index.py`), single-file frontend (`public/index.html`)
 
 ## Conventions
 - Inline everything until forced to split

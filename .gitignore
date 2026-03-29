@@ -14,3 +14,4 @@ data/
 
 # Local settings
 .claude/settings.local.json
+.vercel
