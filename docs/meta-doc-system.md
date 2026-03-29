@@ -37,7 +37,7 @@ Encoded as filename prefix — maximally colocated, zero metadata overhead, self
 
 | Layer | Docs | What belongs here |
 |-------|------|-------------------|
-| **identity** | identity-context.md, identity-model.md | Why and what. Context is external — vision, philosophy, competitive landscape. Model is internal — skill decomposition, modes, game structure |
+| **identity** | identity-context.md, identity-model.md, identity-visual.md | Why, what, and how it looks. Context is external — vision, philosophy, competitive landscape. Model is internal — skill decomposition, modes, game structure. Design is visual — principles, palette, typography, motion, spatial system |
 | **design** | design-log.md | How the design evolves through use — decisions and dogfooding |
 | **specs** | specs-roadmap.md, specs-features.md, specs-journey.md | What to build, what exists today |
 | **meta** | meta-doc-system.md | About the doc system itself |

@@ -43,19 +43,16 @@ Core social loop that made dialed.gg sticky:
 ### Feedback messages — tone and personality
 
 Current messages are generic and encouraging ("Perfect!", "Great", "Keep practicing").
-Dialed.gg has ~102 per-round + ~50 total-game entries with multiple random variants per
-threshold. Voice: deadpan, snarky, never encouraging even on perfect scores. Examples:
-- Perfect: "You're either cheating or broken. Either way, we're concerned."
-- Mid: "Violently average."
-- Bad: "Somewhere, a color is pressing charges."
 
-This is what makes the game fun to lose at.
+**Voice:** Honest, direct, fun. Not brutal/snarky (that's dialed's voice and doesn't match our warm visual identity). Not encouraging/generic (that's boring). A sparring partner — specific about what happened, personality in the delivery.
 
-**Plan:** Tone presets as a poweruser config (progressive disclosure).
-- Initial release: 2 presets — `brutal` (dialed.gg-style, default) + `friendly` (current)
-- Future: `coach` preset (constructive/analytical: "Hue spot-on, saturation 20% high")
-- UI: dropdown on menu screen, same pattern as picker type
-- Bulk of work: writing ~150 hand-crafted messages across both banks
+**Voice varies by mode context:**
+- **Play:** Sharper, more personality. You're testing yourself. "You saw teal. You played cyan." Fun to fail at without being mean.
+- **Skill modes** (Match, Name It, Read It, Picture It): Coach. Constructive, specific. "Hue spot-on, saturation 20% high." The feedback teaches.
+
+No user-facing tone toggle — the mode selection is the toggle.
+
+**Scope:** ~150 hand-crafted messages across per-color and per-round banks, multiple variants per score tier.
 
 Decision: see `design-log` decisions.
 

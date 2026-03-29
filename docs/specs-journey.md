@@ -14,7 +14,7 @@ Menu → Countdown → Memorize → Pick → Results
 
 ## Menu
 
-- **Play** / **Match** / **Dial It In** buttons (active modes)
+- **Play** / **Match** / **Picture It** buttons (active modes)
 - **Name It** / **Read It** buttons (disabled placeholders)
 - **History** button → recent games list (mode, timestamp, score, picker type)
 - **Settings** — picker type dropdown: Field (default) or Sliders
@@ -36,7 +36,7 @@ Menu → Countdown → Memorize → Pick → Results
 - HSB values of current guess shown below swatch in all modes
 - **Play:** preview swatch fills available space — no target visible, recreate from memory
 - **Match:** target and guess swatches side-by-side (equal size, labeled "Target" / "Your guess"), converge by eye
-- **Dial It In:** target shown as HSB text (e.g. "H210° S80% B60%") — pick matching color from 4 choices (no picker)
+- **Picture It:** target shown as HSB text (e.g. "H210° S80% B60%") — pick matching color from 4 choices (no picker)
 - **Play/Match:** Picker (field or sliders, per Menu setting)
 - Confirm button → advances to next color, or Results after color 5
 - Pick screen fills full viewport width; picker controls constrained to 480px

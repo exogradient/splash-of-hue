@@ -39,5 +39,5 @@ Each mode **emphasizes** a skill — not pure isolation (that gets clinical), bu
 | **Match** | Shipped | Perception | Retention, encoding (both visible) | Target and guess shown side-by-side, converge by eye |
 | **Name It** | Idea | Encoding (vocabulary) | Picker, visual feedback (commit before seeing answer) | See color → pick its name from choices (cerulean, burnt sienna, etc.) → reveal correct name + HSB values. Builds color vocabulary |
 | **Read It** | Idea | Encoding (parametric) | Picker, visual feedback (commit before seeing answer) | See color → classify into HSB range buckets (e.g. warm/cool, high/low sat) → reveal answer + color name. Difficulty scales from coarse buckets to narrow ranges |
-| **Dial It In** | Idea | Decoding | Perception, picker (multiple choice) | Given HSB values → pick the matching color from choices → reveal answer. Encoding's inverse |
+| **Picture It** | Idea | Decoding | Perception, picker (multiple choice) | Given HSB values → pick the matching color from choices → reveal answer. Encoding's inverse |
 | **Explore** | Idea | None (engagement) | Everything (not scored) | Color + topic → image search |
