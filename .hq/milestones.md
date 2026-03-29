@@ -1,7 +1,7 @@
 ---
 title: Milestones
 description: Shipped capability inflection points — what became possible, what it proved, what it unblocked.
-summary: "Three modes playable end-to-end on Vercel, working toward alpha release polish."
+summary: "Alpha nearly complete — client-driven architecture, resilience shipped. Scoring calibration and analytics remain before beta."
 ---
 
 ## Beta release `planned`
@@ -14,11 +14,11 @@ All five modes playable, polished UX, custom icons. The game is worth sharing br
 
 ## Alpha release `in-progress`
 
-End-to-end game loop works on Vercel — stateless architecture, client-side CIEDE2000 scoring, per-color reveal with HSB slider visualization, hue-recovery bonus. Three modes playable (Play/Match/Picture).
+Client-driven architecture — color generation + CIEDE2000 scoring fully client-side, games start instantly with no server round-trip. Three modes playable (Play/Match/Picture). Per-color reveal with HSB slider visualization, hue-recovery bonus. Resilience shipped: error handling, localStorage hardening, reduced-motion, font fallback, mobile layout fixes.
 
 **Proving:** The core loop is fun and teaches color perception without jargon.
 **Will unblock:** Broader playtesting, feedback collection, remaining mode implementation.
-**Remaining:** Polish and resilience for the three existing modes.
+**Remaining:** Scoring curve calibration (playtesting), PostHog analytics.
 
 ## 2026-03-29 — v1 live on Vercel `completed`
 

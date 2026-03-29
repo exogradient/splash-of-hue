@@ -1,4 +1,4 @@
-"""true-to-hue: color memory game backend. Stateless API for Vercel serverless."""
+"""splash-of-hue: color memory game backend. Stateless API for Vercel serverless."""
 
 import json
 import math
@@ -10,11 +10,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-# Local dev: serve index.html directly. Vercel: public/ is CDN-served, not in function bundle.
-_INDEX_HTML_PATH = Path(__file__).resolve().parent.parent / "public" / "index.html"
+# Local dev: serve from public/. Vercel: public/ is CDN-served via vercel.json rewrite.
+_PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
 
 # --- Database (lazy-init, append-only) ---
 
@@ -52,7 +52,7 @@ def init_db():
     _db_initialized = True
 
 
-# --- Color Math (kept for server-side color generation) ---
+# --- Color Math (dead code — generation moved client-side; kept for Phase 3 server-side scoring) ---
 
 
 def hsb_to_rgb(h: float, s: float, b: float) -> tuple[float, float, float]:
@@ -178,11 +178,6 @@ def generate_distractors(target: dict, n: int = 3) -> list[dict]:
 # --- API Models ---
 
 
-class StartRequest(BaseModel):
-    mode: str = "play"
-    picker_type: str = "field"
-
-
 class SubmitRequest(BaseModel):
     mode: str
     picker_type: str
@@ -194,28 +189,7 @@ class SubmitRequest(BaseModel):
 
 # --- App ---
 
-app = FastAPI(title="true-to-hue")
-
-
-@app.get("/")
-async def index():
-    if _INDEX_HTML_PATH.exists():
-        return FileResponse(_INDEX_HTML_PATH)
-    return RedirectResponse("/index.html", status_code=307)
-
-
-@app.post("/api/game/start")
-async def start_game(req: StartRequest):
-    colors = generate_colors(5)
-    result = {"target_colors": colors}
-    if req.mode == "picture":
-        choices = []
-        for color in colors:
-            options = [color] + generate_distractors(color, 3)
-            random.shuffle(options)
-            choices.append(options)
-        result["choices"] = choices
-    return result
+app = FastAPI(title="splash-of-hue")
 
 
 @app.post("/api/game/submit")
@@ -231,6 +205,12 @@ async def submit_game(req: SubmitRequest):
                  json.dumps(req.target_colors), json.dumps(req.guesses),
                  json.dumps(req.scores), req.total_score),
             )
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logging.warning("Game persist failed: %s", e)
     return {"ok": True}
+
+
+# Local dev: serve static files from public/. On Vercel, public/ is CDN-served.
+if not os.environ.get("VERCEL") and _PUBLIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(_PUBLIC_DIR), html=True), name="static")

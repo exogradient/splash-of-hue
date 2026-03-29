@@ -39,7 +39,7 @@ Encoded as filename prefix — maximally colocated, zero metadata overhead, self
 |-------|------|-------------------|
 | **identity** | identity-context.md, identity-model.md, identity-visual.md | Why, what, and how it looks. Context is external — vision, philosophy, competitive landscape. Model is internal — skill decomposition, modes, game structure. Design is visual — principles, palette, typography, motion, spatial system |
 | **design** | design-log.md | How the design evolves through use — decisions and dogfooding |
-| **specs** | specs-roadmap.md, specs-features.md, specs-journey.md | What to build, what exists today |
+| **specs** | specs-roadmap.md, specs-features.md, specs-journey.md, specs-hld.md, specs-data-dictionary.md | What to build, what exists today, how it's built |
 | **meta** | meta-doc-system.md | About the doc system itself |
 
 `layer` captures the doc's role. `stability` captures current rate of change. These are independent — identity is *meant* to be stable but may not be yet (rate of change is contextual to project stage).

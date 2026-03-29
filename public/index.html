@@ -1227,6 +1227,12 @@
     .picker-chip {
       flex: 1 1 0;
     }
+    .match-compare {
+      grid-template-columns: 1fr 1fr;
+    }
+    .match-compare-swatch {
+      min-height: 100px;
+    }
     .result-card {
       grid-template-columns: 1fr;
     }
@@ -1320,20 +1326,70 @@
     border-radius: 3px;
   }
 
+  /* --- Error toast --- */
+  .error-toast {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-5));
+    left: 50%;
+    translate: -50% 0;
+    background: var(--surface-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    box-shadow: var(--shadow-elevated);
+    z-index: 100;
+    opacity: 0;
+    translate: -50% 8px;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) var(--ease-out), translate var(--duration-normal) var(--ease-out);
+  }
+  .error-toast.visible {
+    opacity: 1;
+    translate: -50% 0;
+    pointer-events: auto;
+  }
+  .error-toast-msg {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+  .error-toast button {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-sm);
+  }
+
+  /* --- Mode row loading --- */
+  .mode-row.loading .mode-arrow svg {
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     @keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes card-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes score-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes digit-out { to { opacity: 0; } }
     @keyframes digit-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    body { transition: none; }
+    .error-toast { transition: none; }
     button:active { transform: none; }
     .mode-row:hover,
     .picture-choice:hover,
     button:hover {
       transform: none;
     }
+    .countdown-num { transition: none; }
   }
 </style>
+<script src="https://us-assets.i.posthog.com/static/array.js"></script>
+<script src="analytics.js"></script>
 </head>
 <body>
 
@@ -1352,8 +1408,9 @@
           <button class="mode-row" onclick="startGame('play')">
             <span class="mode-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <rect x="5" y="5" width="14" height="14" rx="3"></rect>
-                <circle cx="12" cy="12" r="2.5"></circle>
+                <path d="M4.5 12c1.5-4 4.2-6 7.5-6s6 2 7.5 6c-1.5 4-4.2 6-7.5 6s-6-2-7.5-6z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle>
               </svg>
             </span>
             <span class="mode-body">
@@ -1364,8 +1421,8 @@
           <button class="mode-row" onclick="startGame('match')">
             <span class="mode-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <rect x="4.5" y="7" width="8.5" height="10" rx="2.2"></rect>
-                <rect x="11" y="7" width="8.5" height="10" rx="2.2"></rect>
+                <rect x="4" y="5" width="10" height="14" rx="3"></rect>
+                <rect x="10" y="5" width="10" height="14" rx="3"></rect>
               </svg>
             </span>
             <span class="mode-body">
@@ -1376,14 +1433,11 @@
           <button class="mode-row" onclick="startGame('picture')">
             <span class="mode-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="7.2"></circle>
-                <circle cx="12" cy="12" r="2.2"></circle>
-                <path d="M12 4.8v5"></path>
-                <path d="M18.2 8.4l-4.3 2.5"></path>
-                <path d="M18.2 15.6l-4.3-2.5"></path>
-                <path d="M12 19.2v-5"></path>
-                <path d="M5.8 15.6l4.3-2.5"></path>
-                <path d="M5.8 8.4l4.3 2.5"></path>
+                <circle cx="12" cy="12" r="7.5"></circle>
+                <circle cx="12" cy="12" r="2.5"></circle>
+                <path d="M12 4.5v5"></path>
+                <path d="M5.5 15.75l4.33-2.5"></path>
+                <path d="M18.5 15.75l-4.33-2.5"></path>
               </svg>
             </span>
             <span class="mode-body">
@@ -1396,27 +1450,28 @@
           <div class="picker-segment" role="group" aria-label="Picker">
             <button type="button" class="picker-chip" id="pickerFieldBtn" onclick="setPicker('field')" aria-label="Field picker">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="4.5" y="4.5" width="15" height="15" rx="3"></rect>
-                <path d="M12 4.5v15"></path>
-                <path d="M4.5 12h15"></path>
+                <rect x="4" y="4" width="16" height="16" rx="3"></rect>
+                <line x1="12" y1="4" x2="12" y2="20"></line>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+                <circle cx="15" cy="9" r="1.5" fill="currentColor" stroke="none"></circle>
               </svg>
             </button>
             <button type="button" class="picker-chip" id="pickerSlidersBtn" onclick="setPicker('sliders')" aria-label="Sliders picker">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 6h12"></path>
-                <path d="M6 12h12"></path>
-                <path d="M6 18h12"></path>
-                <circle cx="9" cy="6" r="2"></circle>
+                <line x1="5" y1="7" x2="19" y2="7"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <line x1="5" y1="17" x2="19" y2="17"></line>
+                <circle cx="9" cy="7" r="2"></circle>
                 <circle cx="15" cy="12" r="2"></circle>
-                <circle cx="11" cy="18" r="2"></circle>
+                <circle cx="11" cy="17" r="2"></circle>
               </svg>
             </button>
           </div>
           <button class="secondary icon-btn utility-history" onclick="showHistory()" aria-label="History">
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 7v5l3 2"></path>
+              <path d="M12 7v5l3 2.5"></path>
               <path d="M20 12a8 8 0 1 1-2.34-5.66"></path>
-              <path d="M20 4v4h-4"></path>
+              <path d="M20 4.5v3.5h-3.5"></path>
             </svg>
           </button>
         </div>
@@ -1467,7 +1522,7 @@
         <div id="pickerContainer"></div>
         <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 12.5l4 4 8-9"></path>
+            <path d="M5.5 12.5l4.5 4.5 8.5-9.5"></path>
           </svg>
         </button>
       </div>
@@ -1521,14 +1576,14 @@
     <div class="btn-row results-actions">
       <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 11.5 12 5l8 6.5"></path>
-          <path d="M7.5 10.5V19h9v-8.5"></path>
+          <path d="M4.5 11.5L12 5l7.5 6.5"></path>
+          <path d="M7 10v8.5h10V10"></path>
         </svg>
       </button>
       <button class="secondary results-icon-btn" onclick="startGame(lastMode)" aria-label="Play again">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 12a8 8 0 1 1-2.34-5.66"></path>
-          <path d="M20 4v4h-4"></path>
+          <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"></path>
+          <path d="M19.5 4.5v4h-4"></path>
         </svg>
       </button>
     </div>
@@ -1550,18 +1605,54 @@
 </div>
 
 <script>
+// --- Analytics guard (no-op stub if analytics.js failed to load) ---
+if (!window.analytics) {
+  var noop = function(){};
+  window.analytics = { sessionStarted:noop, gameStarted:noop, memorizeStarted:noop,
+    pickStarted:noop, pickerAdjusted:noop, roundCompleted:noop, gameCompleted:noop,
+    gameAbandoned:noop, pickerSwitched:noop };
+}
+
+// --- Icon Registry ---
+// 24×24 viewBox · 1.7px stroke · round caps/joins · color-perception themed
+const ICONS = {
+  // Game modes
+  play:     '<path d="M4.5 12c1.5-4 4.2-6 7.5-6s6 2 7.5 6c-1.5 4-4.2 6-7.5 6s-6-2-7.5-6z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
+  match:    '<rect x="4" y="5" width="10" height="14" rx="3"/><rect x="10" y="5" width="10" height="14" rx="3"/>',
+  picture:  '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4.5v5"/><path d="M5.5 15.75l4.33-2.5"/><path d="M18.5 15.75l-4.33-2.5"/>',
+  // Picker tools
+  field:    '<rect x="4" y="4" width="16" height="16" rx="3"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="9" r="1.5" fill="currentColor" stroke="none"/>',
+  sliders:  '<line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/>',
+  // Navigation & actions
+  confirm:  '<path d="M5.5 12.5l4.5 4.5 8.5-9.5"/>',
+  history:  '<path d="M12 7v5l3 2.5"/><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4.5v3.5h-3.5"/>',
+  home:     '<path d="M4.5 11.5L12 5l7.5 6.5"/><path d="M7 10v8.5h10V10"/>',
+  replay:   '<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/>',
+  back:     '<path d="M15 18l-6-6 6-6"/>',
+  forward:  '<path d="M9 6l6 6-6 6"/>',
+};
+
+function icon(name, ariaHidden = true) {
+  const inner = ICONS[name] || '';
+  return `<svg viewBox="0 0 24 24"${ariaHidden ? ' aria-hidden="true"' : ''}>${inner}</svg>`;
+}
+
 // --- Font loading gate ---
 Promise.race([
   document.fonts.ready,
-  new Promise(r => setTimeout(r, 2000))
+  new Promise(r => setTimeout(r, 1200))
 ]).then(() => document.body.classList.add('fonts-ready'));
+// Hard fallback — if nothing fires (e.g. fonts API missing), show after 2s
+setTimeout(() => document.body.classList.add('fonts-ready'), 2000);
 
 // --- State ---
 let targetColors, guesses, currentPick, lastMode, pictureChoices, selectedChoice;
 let roundResults = [];
 let showHistoryMode = 'play';
 let memorizeTimer = null;
-let pickerType = localStorage.getItem('pickerType') || 'field';
+let pickerType;
+try { pickerType = localStorage.getItem('pickerType') || 'field'; }
+catch { pickerType = 'field'; }
 let currentHSB = { h: 180, s: 50, b: 50 };
 let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
 
@@ -1575,13 +1666,16 @@ function showScreen(id) {
   document.body.dataset.screen = id;
 }
 function goMenu() {
+  analytics.gameAbandoned(lastMode, pickerType, guesses ? guesses.length : 0, document.body.dataset.screen);
   if (memorizeTimer) { clearInterval(memorizeTimer); memorizeTimer = null; }
   showScreen('menu');
 }
 
 function setPicker(type) {
+  var oldPicker = pickerType;
   pickerType = type;
-  localStorage.setItem('pickerType', pickerType);
+  if (oldPicker !== type) analytics.pickerSwitched(oldPicker, type, !!targetColors && currentPick < 5);
+  try { localStorage.setItem('pickerType', pickerType); } catch {}
   updatePickerControl();
   if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture') {
     renderPicker();
@@ -1603,13 +1697,8 @@ function modeLabel(mode) {
 
 function modeIconMarkup(mode, className = '') {
   const cls = className ? ` class="${className}"` : '';
-  if (mode === 'match') {
-    return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.5" y="7" width="8.5" height="10" rx="2.2"></rect><rect x="11" y="7" width="8.5" height="10" rx="2.2"></rect></svg></span>`;
-  }
-  if (mode === 'picture') {
-    return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2"></circle><circle cx="12" cy="12" r="2.2"></circle><path d="M12 4.8v5"></path><path d="M18.2 8.4l-4.3 2.5"></path><path d="M18.2 15.6l-4.3-2.5"></path><path d="M12 19.2v-5"></path><path d="M5.8 15.6l4.3-2.5"></path><path d="M5.8 8.4l4.3 2.5"></path></svg></span>`;
-  }
-  return `<span${cls} aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"></rect><circle cx="12" cy="12" r="2.5"></circle></svg></span>`;
+  const name = mode === 'picture' ? 'picture' : mode === 'match' ? 'match' : 'play';
+  return `<span${cls} aria-hidden="true">${icon(name)}</span>`;
 }
 
 function pickerLabel(type) {
@@ -1618,7 +1707,7 @@ function pickerLabel(type) {
 }
 
 function confirmIconMarkup() {
-  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"></path></svg>';
+  return icon('confirm');
 }
 
 function clamp(value, min, max) {
@@ -1804,6 +1893,58 @@ function scoreFromDeltaE(de) {
   return Math.round(10 / (1 + Math.pow(de / 12, 2.5)) * 100) / 100;
 }
 
+function deltaE76(lab1, lab2) {
+  return Math.sqrt((lab1[0]-lab2[0])**2 + (lab1[1]-lab2[1])**2 + (lab1[2]-lab2[2])**2);
+}
+
+// --- Client-side color generation ---
+function generateColors(n = 5) {
+  const colors = [];
+  const labs = [];
+  for (let i = 0; i < 200 && colors.length < n; i++) {
+    const h = Math.random() * 360;
+    const s = 35 + Math.random() * 65;
+    const b = 35 + Math.random() * 65;
+    const lab = hsbToLab(h, s, b);
+    if (labs.some(l => deltaE76(lab, l) < 20)) continue;
+    labs.push(lab);
+    colors.push({ h: +h.toFixed(1), s: +s.toFixed(1), b: +b.toFixed(1) });
+  }
+  while (colors.length < n) {
+    colors.push({ h: +(Math.random()*360).toFixed(1), s: +(35+Math.random()*65).toFixed(1), b: +(35+Math.random()*65).toFixed(1) });
+  }
+  return colors;
+}
+
+function generateDistractors(target, n = 3) {
+  const distractors = [];
+  const dLabs = [];
+  const tLab = hsbToLab(target.h, target.s, target.b);
+  for (let i = 0; i < 200 && distractors.length < n; i++) {
+    const h = Math.random() * 360;
+    const s = 35 + Math.random() * 65;
+    const b = 35 + Math.random() * 65;
+    const lab = hsbToLab(h, s, b);
+    const de = deltaE76(tLab, lab);
+    if (de < 15 || de > 50) continue;
+    if (dLabs.some(l => deltaE76(lab, l) < 15)) continue;
+    dLabs.push(lab);
+    distractors.push({ h: +h.toFixed(1), s: +s.toFixed(1), b: +b.toFixed(1) });
+  }
+  while (distractors.length < n) {
+    distractors.push({ h: +(Math.random()*360).toFixed(1), s: +(35+Math.random()*65).toFixed(1), b: +(35+Math.random()*65).toFixed(1) });
+  }
+  return distractors;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function hueDistance(h1, h2) {
   const d = Math.abs(h1 - h2);
   return d > 180 ? 360 - d : d;
@@ -1847,34 +1988,46 @@ function scoreGuess(target, guess) {
   };
 }
 
-// --- Game Flow ---
-async function startGame(mode) {
-  lastMode = mode;
-  document.querySelectorAll('.mode-row').forEach(b => b.disabled = true);
-  try {
-    const res = await fetch('/api/game/start', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mode, picker_type: pickerType })
-    });
-    if (!res.ok) throw new Error(`Server error ${res.status}`);
-    const data = await res.json();
-    targetColors = data.target_colors;
-    pictureChoices = Array.isArray(data.choices) ? data.choices : [];
-    guesses = [];
-    currentPick = 0;
-    roundResults = [];
+// --- Error toast ---
+let errorToastTimer = null;
+function showError(msg) {
+  const toast = document.getElementById('errorToast');
+  document.getElementById('errorToastMsg').textContent = msg || "Couldn't connect";
+  toast.classList.add('visible');
+  clearTimeout(errorToastTimer);
+  errorToastTimer = setTimeout(() => toast.classList.remove('visible'), 5000);
+}
+function hideError() {
+  document.getElementById('errorToast').classList.remove('visible');
+  clearTimeout(errorToastTimer);
+}
+function retryLastMode() {
+  hideError();
+  if (lastMode) startGame(lastMode);
+}
 
-    if (mode === 'play') {
-      runCountdown();
-    } else {
-      startPicking();
-    }
-  } catch (e) {
-    console.warn('Failed to start game:', e);
-    goMenu();
-  } finally {
-    document.querySelectorAll('.mode-row').forEach(b => b.disabled = false);
+// --- Game Flow ---
+function startGame(mode) {
+  lastMode = mode;
+  hideError();
+  targetColors = generateColors(5);
+  if (mode === 'picture') {
+    pictureChoices = targetColors.map(c => {
+      const options = [c, ...generateDistractors(c, 3)];
+      return shuffle(options);
+    });
+  } else {
+    pictureChoices = [];
+  }
+  guesses = [];
+  currentPick = 0;
+  roundResults = [];
+  analytics.gameStarted(mode, pickerType);
+
+  if (mode === 'play') {
+    runCountdown();
+  } else {
+    startPicking();
   }
 }
 
@@ -1901,6 +2054,7 @@ function runCountdown() {
 }
 
 function startMemorize() {
+  analytics.memorizeStarted();
   showScreen('memorize');
   document.getElementById('memorizeLabel').textContent = `Color ${currentPick + 1} of 5 — memorize!`;
   const grid = document.getElementById('memorizeGrid');
@@ -1932,6 +2086,7 @@ function startMemorize() {
 
 // --- Picking ---
 function startPicking() {
+  analytics.pickStarted();
   showScreen('pick');
   currentHSB = { h: 180, s: 50, b: 50 };
   selectedChoice = -1;
@@ -2022,6 +2177,19 @@ function confirmPick() {
   result.target = target;
   result.guess = guess;
   roundResults.push(result);
+
+  // Analytics: find correct index for picture mode (which option is the target)
+  var correctIdx = null;
+  if (lastMode === 'picture') {
+    var opts = pictureOptionsFor(currentPick);
+    for (var i = 0; i < opts.length; i++) {
+      if (opts[i].h === target.h && opts[i].s === target.s && opts[i].b === target.b) { correctIdx = i; break; }
+    }
+  }
+  result._mode = lastMode;
+  result._pickerType = lastMode === 'picture' ? 'none' : pickerType;
+  analytics.roundCompleted(currentPick, result, lastMode === 'picture' ? selectedChoice : null, correctIdx);
+
   showReveal(result, currentPick);
 }
 
@@ -2105,6 +2273,7 @@ function continueAfterReveal() {
 
 function persistAndShowResults() {
   const total = Math.round(roundResults.reduce((s, r) => s + r.score, 0) * 100) / 100;
+  analytics.gameCompleted(lastMode, pickerType, total, roundResults.map(r => r.score));
   // Fire-and-forget persist to server
   fetch('/api/game/submit', {
     method: 'POST',
@@ -2186,6 +2355,7 @@ function renderSliders(container) {
     currentHSB.b = +document.getElementById('slB').value;
     updateSliderBackgrounds();
     updatePickUI();
+    analytics.pickerAdjusted();
   };
 
   ['slH', 'slS', 'slB'].forEach(id => {
@@ -2255,6 +2425,7 @@ function renderField(container) {
     updateHueThumb();
     drawSB();
     updatePickUI();
+    analytics.pickerAdjusted();
   }
 
   let hueDown = false;
@@ -2271,6 +2442,7 @@ function renderField(container) {
     currentHSB.b = Math.round((1 - y) * 100);
     updateSBThumb();
     updatePickUI();
+    analytics.pickerAdjusted();
   }
 
   let sbDown = false;
@@ -2462,5 +2634,10 @@ function viewHistoryGame(idx, mode) {
 
 updateAdvancedHint();
 </script>
+
+<div class="error-toast" id="errorToast">
+  <span class="error-toast-msg" id="errorToastMsg">Couldn't connect</span>
+  <button onclick="retryLastMode()">Retry</button>
+</div>
 </body>
 </html>

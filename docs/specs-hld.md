@@ -9,14 +9,13 @@ responsibility: Backend architecture and infrastructure decisions
 
 ## Deployment
 
-Vercel serverless. Python function at `api/app.py`, static files from `public/` served by Vercel CDN. Vercel's Python framework detection routes ALL requests to FastAPI (not just `/api/*`), so the function also handles `/` via redirect to the CDN-served `index.html`.
+Vercel serverless. Python function at `api/app.py`, static files from `public/` served by Vercel CDN. Framework detection disabled (`"framework": null` in `vercel.json`) so rewrites take full control.
 
 `vercel.json` rewrites:
+- `/` → `/index.html` (CDN-served, no function invocation)
 - `/api/*` → `api/app.py` (serverless function, FastAPI catch-all)
 
-**Note:** A catch-all SPA rewrite (`/(*)` → `/index.html`) conflicts with Vercel's framework detection and breaks API routing. Don't add one — the FastAPI `@app.get("/")` redirect handles the root URL.
-
-## Game Flow (stateless)
+## Game Flow (client-driven)
 
 ```mermaid
 sequenceDiagram
@@ -24,9 +23,7 @@ sequenceDiagram
     participant S as Server
     participant DB as Database
 
-    C->>S: POST /api/game/start {mode, picker_type}
-    S->>S: generate 5 colors (+choices for picture)
-    S-->>C: {target_colors, [choices]}
+    C->>C: generate 5 colors (+choices for picture)
 
     loop 5 rounds
         C->>C: memorize → pick → reveal (target vs guess + score)
@@ -37,15 +34,9 @@ sequenceDiagram
     S-->>C: {ok: true}
 ```
 
-Server is stateless between start and submit. Client holds target colors in memory.
+Client generates colors and scores locally — no server round-trip to start a game. Server is append-only persistence for analytics.
 
 ## API Contracts
-
-**POST /api/game/start**
-- Request: `{ mode, picker_type }`
-- Response: `{ target_colors: [{h,s,b} x5], choices?: [[{h,s,b} x4] x5] }`
-- `choices` only present for `picture` mode
-- No side effects — pure color generation
 
 **POST /api/game/submit**
 - Request: `{ target_colors: [{h,s,b} x5], guesses: [{h,s,b} x5], scores: [float x5], total_score: float, mode, picker_type }`
@@ -87,6 +78,18 @@ graph LR
 - **Phase 1 (now):** Anonymous solo games
 - **Phase 2 (leaderboards):** Display name (pseudonym) submitted with score. No accounts — name stored in localStorage, freely changeable. Server stores name as a plain field on the game row, not a FK.
 - **Phase 3 (multiplayer):** Shared challenges store target colors server-side, linking multiple game attempts. Display name prompted at join time. Restores server-side truth for competitive scoring while solo play stays stateless.
+
+## Telemetry
+
+Client-side only, via PostHog JS SDK. No server-side analytics.
+
+**Audit surface:** `public/analytics.js` — single file defines every event. Nothing else sends data.
+
+**Privacy config:** `autocapture: false`, `ip: false`, `persistence: 'memory'` (no cookies/localStorage for PostHog), `disable_session_recording: true`. Each page load gets an ephemeral anonymous ID — no cross-session linking.
+
+**Events:** `session_started`, `game_started`, `mode_transition`, `round_completed`, `game_completed`, `game_abandoned`, `picker_switched`. Full schema in `docs/specs-data-dictionary.md`.
+
+**Failure mode:** If PostHog SDK is blocked (ad blocker, network), all calls are silent no-ops. Game functionality is unaffected.
 
 ## Key Behaviors
 

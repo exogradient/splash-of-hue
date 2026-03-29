@@ -9,23 +9,10 @@ responsibility: Prioritized direction — what we might build, ordered by readin
 
 Polish and resilience for the three existing modes (Play/Match/Picture).
 
-**Project:**
-- Rename repo/project from true-to-hue to splash-of-hue
-
-**Performance:**
-- Slow initial load for each of the 3 modes
-- Font load: body starts `opacity: 0`, no fallback timeout if Google Fonts is slow/blocked
-
-**Error handling:**
-- Start-game failure: no error feedback, silently returns to menu. Add retry + user-visible message.
-- No loading indicator while fetching from `/api/game/start`
-- localStorage errors silently swallowed — no feedback if storage full/disabled
-- Submit endpoint: `except Exception: pass` — data loss is invisible
-
-**Bugs:**
-- Picture mode leaks HSB numbers as target label (`formatHSBCompact`) — contradicts visual-over-textual
-- Match mode mobile layout needs tuning
-- `prefers-reduced-motion` only respected on score counters, not screen transitions
+**Analytics:**
+- PostHog telemetry — privacy-safe, no PII, auditable via `public/analytics.js`
+- Events: session, game lifecycle, round deltas, picker interactions, abandonment
+- Schema: `docs/specs-data-dictionary.md`
 
 **Scoring:**
 - Curve calibration across all three modes
@@ -41,8 +28,8 @@ All five modes playable with full visual identity.
 - Animation refinement
 
 **Modes** (after frontend pass):
-- Name It — spec'd in `specs-journey`, disabled placeholder in menu
-- Read It — spec'd in `specs-journey`, disabled placeholder in menu
+- Name It — described in `identity-model`, needs feature spec before implementation
+- Read It — described in `identity-model`, needs feature spec before implementation
 
 ## Planned
 

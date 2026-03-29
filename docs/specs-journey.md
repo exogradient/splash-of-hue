@@ -15,7 +15,7 @@ Menu → Countdown → [ Memorize → Pick → Reveal ] ×5 → Results
 ## Menu
 
 - **Play** / **Match** / **Picture It** buttons (active modes)
-- **Name It** / **Read It** buttons (disabled placeholders)
+- **Name It** / **Read It** — planned modes, not yet in UI
 - **History** button → History screen
 - **Settings** — picker type dropdown: Field (default) or Sliders
 
@@ -36,7 +36,7 @@ Menu → Countdown → [ Memorize → Pick → Reveal ] ×5 → Results
 - HSB values of current guess shown below swatch in all modes
 - **Play:** preview swatch fills available space — no target visible, recreate from memory
 - **Match:** target and guess swatches side-by-side (equal size, labeled "Target" / "Your guess"), converge by eye
-- **Picture It:** target shown as HSB text (e.g. "H210° S80% B60%") — tap matching color from 4 choices to instantly submit (no confirm button, no picker)
+- **Picture It:** target shown as HSB text (e.g. "H210 S80 B60") — tap matching color from 4 choices to instantly submit (no confirm button, no picker)
 - **Judge It:** target swatch on neutral gray background at top. 4 choice swatches on a colored surround below. Pick the match — surround shifts how all choices look. Reveal dissolves backgrounds to neutral, showing true colors.
 - **Play/Match:** Picker (field or sliders, per Menu setting)
 - Confirm button → advances to Reveal
