@@ -1,20 +1,22 @@
-<!-- What: Agent instructions for splash of hue (repo: true-to-hue). Where else: docs/ for vision, user journey. Stability: evolves with stack. Reviewed: 2026-03-28 -->
+<!-- Agent instructions. Reviewed: 2026-03-29 -->
 
 # splash of hue
 
 Color memory game that teaches color perception.
 
-## Tech Stack
-- Python 3.13+, uv, FastAPI, uvicorn
-- SQLite (auto-created at `data/games.db`)
-- Single-file backend (`api/index.py`), single-file frontend (`public/index.html`)
+## Stack & Architecture
+- Runtime: Python 3.13+, uv, FastAPI, uvicorn
+- Storage: SQLite — local: `data/games.db`, Vercel: `/tmp/games.db` (ephemeral)
+- Layout: Single-file backend (`api/app.py`), single-file frontend (`public/index.html`)
+- Deploy: Vercel — serverless Python, `public/` CDN-served, rewrites in `vercel.json`
+- Scoring: CIEDE2000, client-side — HSB user-facing, CIELAB internal
+- Docs: 4-layer frontmatter schema, PIT snapshots, `make check-docs` validation
 
 ## Conventions
-- Inline everything until forced to split
+- Code: Inline everything until forced to split
+- Server is stateless — no in-memory game state between requests
 - Dark theme, mobile-first
-- HSB for user-facing color, CIELAB for scoring
-- Minimal pleasing defaults, advanced config via progressive disclosure
-- Doc structure principles and schema enforced by `make check-docs` — see `docs/meta-doc-system.md`
+- Visual: Minimal pleasing defaults, advanced config via progressive disclosure
 - Cross-doc references: use compact, grepable labels (e.g. `` `dogfooding` ``) not verbose prose. One label, one canonical location.
 
 ## CLI

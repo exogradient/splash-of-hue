@@ -247,7 +247,7 @@ Results are the highest-stakes screen — where learning happens and where share
 **Educational layer (advanced view):**
 - Per-dimension deltas (ΔL', ΔC', ΔH') as a mini visualization, not just signed numbers
 - Color name for both target and guess
-- Feedback message with personality (see `identity-context` for voice direction)
+- Feedback message with personality (see `specs-roadmap` "Feedback messages" for voice direction)
 
 ## Competitive Positioning
 
@@ -255,7 +255,7 @@ Results are the highest-stakes screen — where learning happens and where share
 |-----------|-----------|---------------|
 | Purpose | Entertainment (test) | Education (teach + test) |
 | Scoring | CIE76, hue-weighted sigmoid | CIEDE2000 + hue-recovery, per-dimension breakdown |
-| Modes | Play + Daily + Multiplayer | Play + Match + Dial + Name + Read (skill-targeted) |
+| Modes | Play + Daily + Multiplayer | Play + Match + Picture + Name + Read (skill-targeted) |
 | Picker | 3 vertical strips (abstract) | SB field + hue bar (spatial) |
 | Results | Score + roast text | Score + roast + dimensional analysis |
 | Desktop | Mobile-in-a-card | Full-width, mode-appropriate layouts |

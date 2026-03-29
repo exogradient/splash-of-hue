@@ -5,31 +5,44 @@ stability: volatile
 responsibility: Prioritized direction — what we might build, ordered by readiness
 ---
 
-## Next
+## Alpha
 
-### Custom icon for app
+Polish and resilience for the three existing modes (Play/Match/Picture).
 
-### Custom icons for home menu mode rows
-Replace placeholder icons with custom SVG icons for each game mode. Current mode rows use generic shapes — need distinct, recognizable icons that match the visual identity.
+**Project:**
+- Rename repo/project from true-to-hue to splash-of-hue
 
-### Show intermediate score after each guess
-Display a running score/feedback after each individual guess during a round, not just at the end. Lets the player track how they're doing in real time.
+**Performance:**
+- Slow initial load for each of the 3 modes
+- Font load: body starts `opacity: 0`, no fallback timeout if Google Fonts is slow/blocked
 
-## Critical
+**Error handling:**
+- Start-game failure: no error feedback, silently returns to menu. Add retry + user-visible message.
+- No loading indicator while fetching from `/api/game/start`
+- localStorage errors silently swallowed — no feedback if storage full/disabled
+- Submit endpoint: `except Exception: pass` — data loss is invisible
 
-### Frontend design overhaul (deferred until user journey finalized)
+**Bugs:**
+- Picture mode leaks HSB numbers as target label (`formatHSBCompact`) — contradicts visual-over-textual
+- Match mode mobile layout needs tuning
+- `prefers-reduced-motion` only respected on score counters, not screen transitions
 
-Current UI is functional but has zero personality — basic dark navy CSS, no animations,
-swatches in bordered boxes. The gap vs. dialed.gg is large across every dimension:
-background, memorize screen, results, typography, chrome, animation, picker.
+**Scoring:**
+- Curve calibration across all three modes
 
-**Scope:** Full coverage, top-down. Every screen needs a pass.
+## Beta
 
-**Phasing:**
-- Phase 1: Lock design direction in a spec (human/conversation task)
-- Phase 2: Implementation per-screen, highly parallelizable
+All five modes playable with full visual identity.
 
-Decision: see `design-log` decisions.
+**Frontend:**
+- Design pass on existing mode screens — the v1 foundation (tokens, typography, dark theme, panels) is in place but each screen needs a polish pass before new modes ship on top of it
+- Custom icon for app
+- Custom icons for home menu mode rows — distinct SVGs per mode matching visual identity
+- Animation refinement
+
+**Modes** (after frontend pass):
+- Name It — spec'd in `specs-journey`, disabled placeholder in menu
+- Read It — spec'd in `specs-journey`, disabled placeholder in menu
 
 ## Planned
 
