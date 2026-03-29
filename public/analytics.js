@@ -118,11 +118,11 @@
       _pickerAdjustments++;
     },
 
-    roundCompleted: function (roundIndex, result, selectedChoiceIndex, correctChoiceIndex) {
+    roundCompleted: function (roundIndex, result, mode, pickerType, selectedChoiceIndex, correctChoiceIndex) {
       var now = Date.now();
       capture('round_completed', {
-        mode: result._mode || null,
-        picker_type: result._pickerType || null,
+        mode: mode,
+        picker_type: pickerType,
         round_index: roundIndex,
         score: result.score,
         delta_e: result.delta_e,
