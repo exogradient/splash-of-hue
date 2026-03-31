@@ -1,0 +1,287 @@
+/* ═══════ HOME — Paint-chip card stack ═══════
+   Modes as overlapping colored swatch cards.
+   Play = parchment hero, secondaries fan below (mobile) or right (desktop).
+   Same deck, two orientations.
+   ═══════════════════════════════════════════════ */
+
+/* ── Card stack wrapper — contains cards + toolbar ── */
+.home-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+}
+
+/* ── Cards — the actual overlapping deck ── */
+.home-cards {
+  display: flex;
+  flex-direction: column;
+  height: min(82vh, 720px);
+  min-height: 400px;
+}
+
+/* ── Play card (hero) ── */
+.home-play {
+  background: linear-gradient(150deg, rgb(238, 228, 215), rgb(235, 225, 212));
+  border-radius: var(--radius-lg);
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+  margin-bottom: -24px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  color: inherit;
+  overflow: visible;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+.home-play:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(150deg, rgb(238, 228, 215), rgb(235, 225, 212));
+}
+.home-play:active {
+  transform: scale(0.995);
+  box-shadow: none;
+}
+
+/* Brand mark on card */
+.home-brand {
+  position: absolute;
+  top: clamp(24px, 4vh, 32px);
+  left: clamp(28px, 5vw, 36px);
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: clamp(20px, 4vw, 28px);
+  color: rgba(30, 25, 20, 0.36);
+  pointer-events: none;
+  transform: rotate(-4deg);
+  transform-origin: left center;
+}
+
+/* Play label */
+.home-play-label {
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 9vw, 4.6rem);
+  font-weight: 700;
+  line-height: 0.84;
+  letter-spacing: -0.08em;
+  color: rgba(30, 25, 20, 0.82);
+}
+
+/* ── Secondary mode cards ── */
+.home-mode {
+  border-radius: var(--radius-lg);
+  height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px 18px;
+  margin-bottom: -36px;  /* 80 - 36 = 44px visible — WCAG touch target */
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.10);
+  position: relative;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+.home-mode:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+.home-mode:active {
+  transform: scale(0.995);
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* z-index stacking — higher cards sit on top */
+.home-mode:nth-child(2) { z-index: 4; }
+.home-mode:nth-child(3) { z-index: 3; }
+.home-mode:nth-child(4) { z-index: 2; }
+.home-mode:nth-child(5) { z-index: 1; margin-bottom: 0; }
+
+/* Mode label */
+.home-mode-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+}
+
+/* ── Coming soon — full color, text label differentiates ── */
+.home-mode--soon,
+.home-mode--soon:disabled {
+  cursor: default;
+  pointer-events: none;
+  /* Preserve vibrant color — override browser disabled greying */
+  opacity: 1;
+  -webkit-text-fill-color: inherit;
+  color: inherit;
+  filter: none;
+}
+.home-mode--soon.home-call,
+.home-mode--soon.home-call:disabled {
+  background: linear-gradient(135deg, rgb(80, 210, 180), rgb(120, 230, 200));
+}
+.home-mode--soon.home-split,
+.home-mode--soon.home-split:disabled {
+  background: linear-gradient(135deg, rgb(250, 195, 70), rgb(255, 215, 110));
+}
+.home-mode--soon .home-mode-name {
+  opacity: 0.85;
+}
+.home-mode-soon {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-left: auto;
+  line-height: 1;
+}
+
+/* ── Card colors ── */
+.home-match   { background: linear-gradient(135deg, rgb(240, 100, 135), rgb(245, 135, 150)); }
+.home-picture { background: linear-gradient(135deg, rgb(100, 145, 250), rgb(135, 170, 255)); }
+.home-call    { background: linear-gradient(135deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
+.home-split   { background: linear-gradient(135deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
+
+/* ── Toolbar (picker + history) ── */
+.home-tools {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 4px 0;
+  flex-shrink: 0;
+  z-index: 10;
+  opacity: 0.44;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+.home-tools:hover,
+.home-tools:focus-within {
+  opacity: 1;
+}
+
+/* ── Focus states ── */
+.home-play:focus-visible,
+.home-mode:focus-visible {
+  outline: 2px solid rgba(244, 237, 227, 0.92);
+  outline-offset: 3px;
+}
+
+/* ═══════════════════════════════════════════════
+   DESKTOP ≥768px — same deck, fanned right
+   ═══════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .home-stack {
+    max-width: 900px;
+  }
+
+  .home-cards {
+    flex-direction: row;
+    height: min(64vh, 480px);
+    min-height: 320px;
+  }
+
+  .home-play {
+    margin-bottom: 0;
+    margin-right: -14px;
+  }
+
+  .home-mode {
+    width: clamp(80px, 7vw, 100px);
+    height: auto;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: clamp(14px, 2vh, 20px) 0;
+    margin-bottom: 0;
+    margin-right: -18px;
+    box-shadow: -2px 0 6px rgba(0, 0, 0, 0.10);
+  }
+  .home-mode:hover {
+    transform: translateX(-2px);
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.18);
+  }
+  .home-mode:nth-child(5) { margin-right: 0; }
+
+  /* Vertical labels */
+  .home-mode-name {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 1rem;
+  }
+  .home-mode-soon {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    margin-left: 0;
+    margin-top: 6px;
+    font-size: 0.6rem;
+  }
+
+  /* Vertical gradients for desktop cards */
+  .home-match   { background: linear-gradient(180deg, rgb(240, 100, 135), rgb(245, 135, 150)); }
+  .home-picture { background: linear-gradient(180deg, rgb(100, 145, 250), rgb(135, 170, 255)); }
+  .home-call    { background: linear-gradient(180deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
+  .home-split   { background: linear-gradient(180deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
+
+  /* Coming-soon desktop overrides — force gradient on disabled */
+  .home-mode--soon.home-call:disabled { background: linear-gradient(180deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
+  .home-mode--soon.home-split:disabled { background: linear-gradient(180deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
+}
+
+/* ═══════════════════════════════════════════════
+   SMALL MOBILE ≤540px
+   ═══════════════════════════════════════════════ */
+@media (max-width: 540px) {
+  .home-cards {
+    height: min(78vh, 660px);
+    min-height: 360px;
+  }
+  .home-play {
+    margin-bottom: -20px;
+  }
+  .home-mode {
+    height: 68px;
+    margin-bottom: -24px;  /* 68 - 24 = 44px visible — WCAG touch target */
+    padding: 10px 14px;
+  }
+  .home-mode:nth-child(5) { margin-bottom: 0; }
+  .home-mode-name {
+    font-size: 1rem;
+  }
+  .home-brand {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+  .home-play-label {
+    font-size: clamp(2.8rem, 11vw, 3.6rem);
+  }
+  .home-tools {
+    opacity: 0.52;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .home-play,
+  .home-mode,
+  .home-tools {
+    transition: none;
+  }
+}

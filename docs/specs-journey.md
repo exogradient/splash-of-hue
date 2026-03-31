@@ -14,58 +14,62 @@ Menu → Countdown → [ Memorize → Pick → Reveal ] ×5 → Results
 
 ## Menu
 
-- **Play** / **Match** / **Picture It** buttons (active modes)
-- **Name It** / **Read It** — planned modes, not yet in UI
+- **Play** / **Match It** / **Picture It** buttons (active modes)
+- **Call It** / **Split It** — planned modes, not yet in UI
 - **History** button → History screen
 - **Settings** — picker type dropdown: Field (default) or Sliders
 
 ## Countdown (Play only)
 
-- "Get ready to memorize!" prompt
-- 3, 2, 1 countdown (large centered number)
+- 3, 2, 1 countdown (large centered number, no text prompt)
 
 ## Memorize (Play only)
 
 - Single color fills entire viewport (edge-to-edge)
-- "Color N of 5 — memorize!" label + timer bar overlaid at bottom
-- 5s countdown, auto-advances to Pick when timer expires
+- Timer bar overlaid at bottom — 5s countdown, auto-advances to Pick when timer expires
+- Color label and memorize pill hidden in current alpha
 
 ## Pick
 
 - "Color N of 5" progress label
-- HSB values of current guess shown below swatch in all modes
+- Mode eyebrow visible (e.g. "MEMORY", "MATCH") — identifies the active mode at a glance
+- HSB readout of current guess hidden in current alpha (picker meta hidden)
 - **Play:** preview swatch fills available space — no target visible, recreate from memory
-- **Match:** target and guess swatches side-by-side (equal size, labeled "Target" / "Your guess"), converge by eye
+- **Match It:** target and guess swatches side-by-side (equal size), with visible "TARGET" / "YOUR GUESS" labels above each swatch
 - **Picture It:** target shown as HSB text (e.g. "H210 S80 B60") — tap matching color from 4 choices to instantly submit (no confirm button, no picker)
-- **Judge It:** target swatch on neutral gray background at top. 4 choice swatches on a colored surround below. Pick the match — surround shifts how all choices look. Reveal dissolves backgrounds to neutral, showing true colors.
-- **Play/Match:** Picker (field or sliders, per Menu setting)
-- Confirm button → advances to Reveal
+- **Judge It** (idea — not yet implemented): target swatch on neutral gray background at top. 4 choice swatches on a colored surround below. Pick the match — surround shifts how all choices look. Reveal dissolves backgrounds to neutral, showing true colors.
+- **Play/Match It:** Picker (field or sliders, per Menu setting)
+  - **Field picker:** SB plane + hue bar. Thumb handles ≥26px with glow ring (`box-shadow: 0 0 0 3px rgba(255,255,255,0.25)`). Hue bar 44px tall (Apple HIG touch target).
+  - **Sliders picker:** Three gradient-filled tracks (H/S/B) wrapped in `.slider-track-wrap` containers with inset shadow and rounded corners. 6px white pill thumb, full-track height, glow ring matching field picker. Label column (H/S/B) left-aligned.
+- Confirm button: glass-morphism overlay pill (44×44px) positioned top-right of the guess swatch area inside `.play-stage-row`. `backdrop-filter: blur(12px) saturate(1.4)`, dark semi-transparent background, white border. Hidden in Picture It (CSS `[hidden] { display: none }` override). Advances to Reveal.
 
 ## Reveal
 
+- Round progress visible ("1 / 5") — vertically centered layout
 - Target and guess as two side-by-side color panels (no diagonal split)
 - Score large, colored to match the target color
 - Verdict text (Perfect/Excellent/Great/Good/Okay/Keep practicing)
 - No ΔE or HSB numbers by default — score + verdict + visual comparison tell the story
-- Tap score to toggle HSB slider detail: three gradient bars (H/S/B) with pins for target vs guess
-- Back button (quit to menu) + Continue button
-- Continue → next color's Memorize (play) or Pick (match/picture), or Results after color 5
+- Tap score/verdict area to toggle HSB slider detail: three gradient bars (H/S/B) with pins for target vs guess
+- Navigation: two glass-morphism overlay pills (44×44px) inside `.reveal-card` — home icon (top-left, ghost variant) quits to menu, forward arrow (top-right) continues. Same `backdrop-filter` pattern as confirm button.
+- Continue → next color's Memorize (play) or Pick (match it/picture it), or Results after color 5
 
 ## Results
 
-- Total score /50 (bare number, no box — tappable to toggle details)
-- 5 result cards: target vs guess swatch (diagonal split), per-color score (bare number, no pill)
+- Top-aligned layout, not vertically centered
+- Hero panel: total score with inline "/50" on the same baseline, score tier label (e.g. "SOLID EYE"), mode + picker eyebrow (e.g. "PLAY · FIELD PICKER") — contained in a surface panel with border and elevation. Tappable to toggle advanced details.
+- 5 result cards (fixed 3-column grid via `repeat(3, 1fr)`): target vs guess swatch (diagonal split), per-color score (bare number). Per-card verdict text hidden — progressive disclosure only.
 - **Menu** / **Play Again** buttons
 
-**Default (clean):** swatches + scores only.
+**Default (clean):** swatches + scores + hero metadata. Verdict text reserved for advanced view.
 
-**Advanced** (tap card or `?advanced` URL param): adds HSB slider visualization — three gradient bars (H/S/B) with pins showing target vs guess positions at a glance. Same visualization used on the Reveal screen (tap score to toggle).
+**Advanced** (tap hero or `?advanced` URL param): adds HSB slider visualization — three gradient bars (H/S/B) with pins showing target vs guess positions at a glance. Same visualization used on the Reveal screen (tap score to toggle).
 
 ## History
 
-localStorage-backed. No server dependency.
+localStorage-backed. No server dependency. Top-aligned layout, not vertically centered.
 
-- Tabs per mode (Play / Match / Picture It)
+- Tabs per mode (Play / Match It / Picture It)
 - Top 20 per mode, sorted by highest score
 - Each row: date, total score /50, mini color strip (5 target swatches)
 - Tap row → full Results view for that game (reuses Results layout)
@@ -85,9 +89,13 @@ localStorage-backed. No server dependency.
 
 ## Scoring
 
-**Base curve:** Per-color 0–10 via CIEDE2000 sigmoid `10 / (1 + (ΔE00/12)^2.5)`. Tighter than original k=20 — ΔE 7.5 scores ~7.6 (was 9.2), ΔE 10 scores ~5.3 (was 7.6).
+**Base curve:** Per-color 0–10 via effective-ΔE sigmoid `10 / (1 + (ΔEeff/10)^2.25)`.
 
-**Hue-recovery bonus:** If hue distance ≤ 25°, recover up to 40% of lost points: `score += (10 - score) * 0.4 * (1 - hueDist/25)`. Rewards getting the right color family even when brightness/saturation drifts. Example: ΔE 20 with hue 5° off → base 2.2, final 4.7.
+**Effective-ΔE guard:** `ΔEeff` starts from `ΔE00`, then adds structured penalty before scoring for overgenerous same-hue saturation / brightness misses and moderate-hue generous cases. Current alpha params: same-hue SB guard `0.25`, mid-hue guard `0.30`.
+
+**Hue-recovery bonus:** If hue distance ≤ 33°, recover up to 55% of lost points: `score += (10 - score) * 0.55 * (1 - hueDist/33)`. Rewards getting the right color family even when brightness/saturation drifts.
+
+**Same-hue rescue:** Disabled in the current alpha scorer.
 
 Total /50. Per-dimension deltas (ΔL', ΔC', ΔH') stored and shown in advanced view.
 

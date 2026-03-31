@@ -1,0 +1,42 @@
+[
+  {
+    "id": "perfect_match",
+    "tag": "easy_positive",
+    "target": { "h": 180, "s": 50, "b": 50 },
+    "guess": { "h": 180, "s": 50, "b": 50 },
+    "expected_verdict": "ok",
+    "min_score": 9.9
+  },
+  {
+    "id": "near_perfect_same_family",
+    "tag": "easy_positive",
+    "target": { "h": 24, "s": 74, "b": 82 },
+    "guess": { "h": 26, "s": 71, "b": 80 },
+    "expected_verdict": "ok",
+    "min_score": 9.5
+  },
+  {
+    "id": "close_match_cool",
+    "tag": "same_family_positive",
+    "target": { "h": 214, "s": 62, "b": 58 },
+    "guess": { "h": 219, "s": 58, "b": 61 },
+    "expected_verdict": "ok",
+    "min_score": 9.5
+  },
+  {
+    "id": "wrong_family_obvious",
+    "tag": "easy_negative",
+    "target": { "h": 35, "s": 78, "b": 88 },
+    "guess": { "h": 210, "s": 46, "b": 42 },
+    "expected_verdict": "ok",
+    "max_score": 0.5
+  },
+  {
+    "id": "far_hue_sb_close",
+    "tag": "easy_negative",
+    "target": { "h": 120, "s": 58, "b": 64 },
+    "guess": { "h": 178, "s": 60, "b": 62 },
+    "expected_verdict": "ok",
+    "max_score": 2.0
+  }
+]

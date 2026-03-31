@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>splash of hue</title>
-<meta name="theme-color" content="#0a0a0a">
+<meta name="application-name" content="Splash Hue">
+<meta name="apple-mobile-web-app-title" content="Splash Hue">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="home.css">
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,6 +86,7 @@
     --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.2);
     --shell-max: 1180px;
     --content-max: 560px;
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 
   html { background: var(--bg); }
@@ -86,9 +95,11 @@
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-weight: 400;
     background:
-      radial-gradient(circle at top left, rgba(255, 255, 255, 0.035), transparent 24%),
-      linear-gradient(180deg, #0d0d0d 0%, #090909 58%, #0a0a0a 100%);
+      radial-gradient(circle at 17% 18%, rgba(194, 147, 58, 0.1), transparent 22%),
+      radial-gradient(circle at 72% 14%, rgba(86, 103, 182, 0.12), transparent 28%),
+      linear-gradient(180deg, #181c22 0%, #101216 46%, #0a0b0d 100%);
     color: var(--text);
+    min-height: 100svh;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -112,7 +123,9 @@
     z-index: -1;
   }
   body::before {
-    background: radial-gradient(circle at top center, rgba(255, 255, 255, 0.03), transparent 38%);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.02), transparent 34%);
     opacity: 1;
   }
   body::after { display: none; }
@@ -124,6 +137,7 @@
   .screen {
     display: none;
     width: 100%;
+    min-height: 100svh;
     min-height: 100dvh;
     padding: var(--space-5);
     align-items: center;
@@ -194,6 +208,10 @@
   }
   button:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
   button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  button:focus-visible {
+    outline: 2px solid rgba(244, 237, 227, 0.92);
+    outline-offset: 3px;
+  }
   button.secondary {
     background: rgba(255, 255, 255, 0.04);
     color: var(--text);
@@ -210,6 +228,13 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
   }
+  button.picker-chip:focus-visible,
+  button.secondary.utility-history:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px rgba(244, 237, 227, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
   button.ghost:hover {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.12);
@@ -221,253 +246,130 @@
     justify-content: center;
   }
 
-  #menu {
-    padding-block: clamp(var(--space-6), 6vw, var(--space-9));
+  /* ═══════ MENU ═══════ */
+  #menu.active {
+    padding: 0;
+    min-height: 100dvh;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
   }
   .menu-shell {
-    width: min(100%, 680px);
-    display: grid;
-    gap: clamp(var(--space-5), 4vw, 40px);
-  }
-  .hero-panel {
-    padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-  }
-  .hero-heading {
-    max-width: 36rem;
-  }
-  .hero-heading h1 {
-    font-size: clamp(4rem, 13vw, 7rem);
-    line-height: 0.84;
-    letter-spacing: -0.1em;
-    font-weight: 600;
-  }
-  .hero-heading h1 > span { display: block; }
-  .hero-line {
-    word-spacing: 0.14em;
-    white-space: nowrap;
-  }
-  .menu-main { display: block; }
-  .menu-stage {
-    padding: 0;
-    display: grid;
-    gap: 14px;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-  }
-  .mode-list {
-    display: grid;
-    gap: 10px;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    overflow: visible;
-  }
-  .mode-row {
-    width: 100%;
-    padding: 20px 22px 20px 18px;
-    border-radius: 20px;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.055),
-      rgba(255, 255, 255, 0.025)
-    );
-    color: var(--text);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.09),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-      0 2px 8px rgba(0, 0, 0, 0.2),
-      0 8px 24px rgba(0, 0, 0, 0.16);
-    display: grid;
-    grid-template-columns: 52px 1fr 20px;
-    align-items: center;
-    gap: 18px;
-    text-align: left;
-    transition:
-      background var(--duration-normal) var(--ease-out),
-      border-color var(--duration-normal) var(--ease-out),
-      box-shadow var(--duration-normal) var(--ease-out),
-      transform var(--duration-fast) var(--ease-out);
-  }
-  .mode-row:hover {
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.075),
-      rgba(255, 255, 255, 0.04)
-    );
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 4px 12px rgba(0, 0, 0, 0.25),
-      0 12px 32px rgba(0, 0, 0, 0.2);
-    transform: translateY(-1px);
-  }
-  .mode-row:active {
-    transform: scale(0.985);
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.02)
-    );
-  }
-  .mode-icon {
-    width: 52px;
-    height: 52px;
-    display: grid;
-    place-items: center;
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-  .mode-icon svg,
-  .utility-history svg,
-  .icon-btn svg {
-    width: 24px;
-    height: 24px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .mode-body {
-    display: grid;
-    gap: 2px;
-  }
-  .mode-title {
-    font-size: clamp(1.1rem, 3vw, 1.32rem);
-    letter-spacing: -0.03em;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-  .mode-desc {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.3;
-  }
-  .mode-arrow {
-    color: rgba(255, 255, 255, 0.22);
-    display: grid;
-    place-items: center;
-  }
-  .mode-arrow svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform var(--duration-fast) var(--ease-out), color var(--duration-fast);
-  }
-  .mode-row:hover .mode-arrow {
-    color: rgba(255, 255, 255, 0.5);
-  }
-  .mode-row:hover .mode-arrow svg {
-    transform: translateX(3px);
-  }
-  .menu-tools {
+    width: min(100%, 1320px);
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: clamp(var(--space-4), 3.2vw, var(--space-7));
+    padding-top: calc(env(safe-area-inset-top, 0px) + clamp(var(--space-4), 4vw, var(--space-6)));
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(var(--space-4), 4vw, var(--space-6)));
+    position: relative;
     display: flex;
+    flex-direction: column;
+  }
+  .menu-dock {
+    padding: 0;
+    display: flex;
+    gap: 8px;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 2px;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .menu-dock-copy { display: none; }
+  .menu-dock-title { display: none; }
+  .menu-dock-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: auto;
+    justify-content: flex-end;
   }
   .picker-segment {
     display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    border-radius: 0;
+    gap: 2px;
+    flex: 0 1 auto;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    box-shadow: none;
   }
   button.picker-chip {
-    width: 44px;
-    height: 44px;
-    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    display: grid;
     place-items: center;
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
+    background: transparent;
+    color: rgba(237, 237, 237, 0.58);
+    border: none;
+    border-radius: 999px;
     padding: 0;
-    font-size: 0;
-    line-height: 1;
+    font-size: inherit;
+    line-height: normal;
     transform: none;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 2px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
     transition:
       background var(--duration-fast) var(--ease-out),
-      border-color var(--duration-fast) var(--ease-out),
       color var(--duration-fast),
       box-shadow var(--duration-fast) var(--ease-out);
   }
   button.picker-chip:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 4px 10px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(237, 237, 237, 0.88);
   }
   button.picker-chip.active {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.13);
     color: var(--text);
-    border-color: rgba(255, 255, 255, 0.16);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
+  .picker-chip-icon {
+    width: 18px; height: 18px;
+    display: grid; place-items: center;
+    background: transparent;
+    border: none; box-shadow: none;
+  }
+  button.picker-chip.active .picker-chip-icon {
+    background: transparent;
+    border-color: transparent;
+  }
+  .picker-chip-copy { display: none; }
+  .picker-chip-note { display: none; }
   button.picker-chip svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 18px; height: 18px;
+    display: block;
+    stroke-linecap: round; stroke-linejoin: round;
   }
   button.picker-chip:active {
     transform: none;
     opacity: 1;
   }
   .utility-history {
-    flex: 0 0 auto;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: var(--glow-inner);
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    gap: 0; padding: 0;
+    border-radius: 999px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
   button.secondary.utility-history {
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    background: transparent;
+    color: rgba(237, 237, 237, 0.56);
   }
   button.secondary.utility-history:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(237, 237, 237, 0.88);
   }
   .utility-history svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.9;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 15px; height: 15px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
   }
+  .utility-history-title { display: none; }
 
   #countdown {
     text-align: center;
@@ -578,21 +480,17 @@
     width: 100%;
     padding: clamp(var(--space-4), 4vw, var(--space-6));
     align-items: stretch;
+    justify-content: flex-start;
   }
   .play-shell {
-    width: min(100%, var(--shell-max));
+    width: min(100%, 480px);
     margin: 0 auto;
     display: grid;
     gap: var(--space-4);
     align-content: center;
   }
   .play-header {
-    padding: 0;
-    display: grid;
-    gap: var(--space-2);
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    display: none;
   }
   .pick-progress {
     font-size: clamp(1.8rem, 4.8vw, 2.6rem);
@@ -601,28 +499,27 @@
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
-  .pick-readout-wrap { display: none; }
+  .reveal-progress {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .reveal-progress-dim {
+    color: var(--text-muted);
+  }
+  /* pick-readout-wrap hidden via .play-header { display: none } */
   .pick-hsb {
     font-size: 0.88rem;
     color: var(--text-dim);
     font-variant-numeric: tabular-nums;
   }
   .play-stage-row {
-    display: grid;
-    gap: var(--space-4);
-  }
-  #pick[data-mode="picture"] .play-stage-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  #pick[data-mode="picture"] .picker-panel {
-    display: none;
-  }
-  .stage-panel,
-  .picker-panel {
-    padding: var(--space-5);
-    display: grid;
-    gap: var(--space-4);
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
     background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
@@ -630,23 +527,67 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.03),
       var(--shadow-card);
     border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  #pick[data-mode="picture"] {
+    align-items: center;
+    justify-content: center;
+  }
+  #pick[data-mode="picture"] .play-shell {
+    align-content: center;
+  }
+  /* play-header already hidden globally */
+  #pick[data-mode="picture"] .play-stage-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #pick[data-mode="picture"] .picker-panel {
+    display: none;
   }
   .stage-panel {
-    min-height: 320px;
-    align-content: stretch;
-  }
-  #swatchArea {
-    width: 100%;
-    min-height: 100%;
+    padding: 0;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
-  .stage-frame,
+  .preview-swatch {
+    width: 100%;
+    flex: 1;
+    min-height: clamp(140px, 28svh, 240px);
+    border-radius: 0;
+    border: none;
+  }
+  .picker-panel {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .picker-panel .slider-group {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  /* swatchArea is .stage-panel — styled there */
+  .stage-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
   .picture-stage {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: 0;
     min-height: 100%;
   }
   .stage-head { display: none; }
@@ -660,7 +601,6 @@
     justify-content: space-between;
     gap: var(--space-4);
   }
-  #pickModeEyebrow,
   .picker-meta {
     display: none;
   }
@@ -677,58 +617,82 @@
   }
   #pickerContainer {
     width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   .picker-empty { display: none; }
   .confirm-btn {
-    width: 64px;
-    height: 64px;
-    justify-self: end;
-    align-self: end;
-    margin-top: auto;
+    position: absolute;
+    z-index: 2;
+    top: var(--space-2);
+    right: var(--space-2);
+    width: 44px;
+    height: 44px;
     padding: 0;
     display: inline-grid;
     place-items: center;
     font-size: 0;
     min-height: 0;
     border-radius: 999px;
-    background: var(--gray-12);
-    color: var(--gray-1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition:
-      transform var(--duration-fast) var(--ease-out),
-      box-shadow var(--duration-normal) var(--ease-out);
+      background var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
   }
   .confirm-btn:hover:not(:disabled) {
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.55);
+    transform: scale(1.08);
+  }
+  .confirm-btn:active:not(:disabled) {
+    transform: scale(0.95);
   }
   .confirm-btn svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     stroke: currentColor;
     fill: none;
-    stroke-width: 2.4;
+    stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
   .confirm-btn:disabled {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.28);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .confirm-btn[hidden] {
+    display: none;
   }
   .picture-target {
     font-size: clamp(1.7rem, 7vw, 2.5rem);
     line-height: 1;
     text-align: center;
-    letter-spacing: -0.05em;
+    letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
+    word-spacing: 0.15em;
+    padding: var(--space-4) var(--space-5);
+  }
+  .hsb-label {
+    color: var(--text-muted);
+    font-size: 0.72em;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    margin-right: 0.06em;
   }
   .picture-choices {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
+    gap: 1px;
     width: 100%;
     flex: 1;
+    background: rgba(255, 255, 255, 0.08);
   }
   .picture-stage-actions {
     display: flex;
@@ -736,119 +700,164 @@
     margin-top: auto;
   }
   .picture-choice {
-    border-radius: calc(var(--radius-lg) - 8px);
+    border-radius: 0;
     cursor: pointer;
-    min-height: 120px;
-    border: 2px solid rgba(255, 255, 255, 0.08);
+    aspect-ratio: 1.2;
+    border: none;
     transition:
-      transform var(--duration-fast) var(--ease-out),
-      border-color var(--duration-fast),
+      opacity var(--duration-fast) var(--ease-out),
       box-shadow var(--duration-fast) var(--ease-out);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
   .picture-choice.selected {
-    border-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.24);
-    transform: translateY(-2px);
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.85);
   }
-  .preview-swatch {
-    width: 100%;
-    flex: 1;
-    min-height: 240px;
-    border-radius: calc(var(--radius-lg) - 8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  }
+  /* preview-swatch min-height set above with stage-panel */
   .match-compare {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: 1fr 1px 1fr;
     width: 100%;
-    flex: 1;
+    aspect-ratio: 2;
+  }
+  .match-compare-divider {
+    background: rgba(255, 255, 255, 0.1);
   }
   .match-compare-col {
-    display: grid;
-    gap: 0;
+    position: relative;
   }
   .match-compare-swatch {
-    min-height: 180px;
-    border-radius: calc(var(--radius-lg) - 8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: none;
   }
-  .match-compare-label { display: none; }
+  .match-compare-label {
+    position: absolute;
+    bottom: var(--space-2);
+    left: 0;
+    right: 0;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
 
-  .slider-group { width: 100%; }
+  .slider-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
   .slider-row {
     display: flex;
     align-items: center;
-    gap: 0;
-    margin-bottom: var(--space-4);
+    gap: var(--space-3);
+  }
+  .slider-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    width: 1.2em;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .slider-track-wrap {
+    flex: 1;
+    position: relative;
+    height: clamp(36px, 6svh, 52px);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.25),
+      0 1px 0 rgba(255, 255, 255, 0.05);
   }
   input[type="range"] {
-    flex: 1;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     -webkit-appearance: none;
-    height: 10px;
-    border-radius: 999px;
-    background: var(--gray-5);
+    border-radius: 0;
+    background: transparent;
     outline: none;
     touch-action: none;
+    cursor: pointer;
+    margin: 0;
+  }
+  input[type="range"]:focus-visible {
+    outline: 2px solid rgba(244, 237, 227, 0.9);
+    outline-offset: 3px;
+    border-radius: var(--radius-lg);
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--gray-12);
+    width: 6px;
+    height: clamp(36px, 6svh, 52px);
+    border-radius: 3px;
+    background: white;
     border: none;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.5);
   }
 
-  .field-picker { width: 100%; }
+  .field-picker {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
   .hue-bar {
     width: 100%;
-    height: 34px;
-    border-radius: 999px;
+    height: 44px;
+    border-radius: 0;
     cursor: crosshair;
     position: relative;
     background: linear-gradient(to right,
       hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
       hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));
-    margin-bottom: var(--space-4);
     touch-action: none;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
   .hue-thumb {
     position: absolute;
-    inset: 5px auto 5px 0;
-    width: 10px;
+    inset: 4px auto 4px 0;
+    width: 8px;
     background: white;
     border-radius: 999px;
     pointer-events: none;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-    transform: translateX(-5px);
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.5);
+    transform: translateX(-4px);
   }
   .sb-field {
     width: 100%;
-    aspect-ratio: 1.2;
-    border-radius: calc(var(--radius-lg) - 8px);
+    aspect-ratio: 1.15;
+    border-radius: 0;
     cursor: crosshair;
     position: relative;
     overflow: hidden;
     touch-action: none;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    border: none;
   }
   .sb-field-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
   .sb-thumb {
     position: absolute;
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    border: 2.5px solid white;
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.2),
+      0 4px 14px rgba(0, 0, 0, 0.5);
     pointer-events: none;
-    transform: translate(-11px, -11px);
+    transform: translate(-13px, -13px);
   }
 
   #results {
@@ -861,17 +870,21 @@
   }
   #resultCards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
   }
   .results-hero {
-    padding: 0;
+    padding: var(--space-5);
     display: grid;
     gap: var(--space-2);
     cursor: pointer;
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      var(--glow-inner),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      var(--shadow-card);
+    border-radius: var(--radius-lg);
   }
   .results-hero-head {
     display: flex;
@@ -880,8 +893,9 @@
     gap: var(--space-4);
   }
   .score-cluster {
-    display: grid;
-    gap: var(--space-1);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
   }
   .total-score {
     font-size: clamp(4rem, 14vw, 6.6rem);
@@ -919,49 +933,26 @@
     color: var(--text-muted);
     font-size: 0.82rem;
   }
-  #resultsMeta,
   .analysis-hint,
-  .swatch-labels,
-  .result-names,
-  .total-label,
-  .score-tier,
   .feedback-text,
+  .result-names,
   .result-verdict {
     display: none;
   }
   .result-card {
     width: 100%;
-    padding: 14px;
+    padding: 0;
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 12px;
     align-items: end;
-    background: var(--surface);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glow-inner), var(--shadow-card);
     cursor: pointer;
-    transition:
-      border-color var(--duration-fast) var(--ease-out),
-      box-shadow var(--duration-fast) var(--ease-out);
     animation: card-in var(--duration-slow) var(--ease-out) backwards;
-  }
-  .result-card:hover {
-    border-color: rgba(255, 255, 255, 0.14);
   }
   .result-card > div:first-child {
     grid-column: 1 / -1;
     width: 100%;
   }
-  .result-card.tier-elite {
-    border-color: color-mix(in srgb, var(--tier-elite) 30%, transparent);
-    box-shadow: var(--glow-inner), var(--shadow-card), inset 0 0 0 1px color-mix(in srgb, var(--tier-elite) 8%, transparent);
-  }
-  .result-card.tier-strong {
-    border-color: color-mix(in srgb, var(--tier-strong) 25%, transparent);
-    box-shadow: var(--glow-inner), var(--shadow-card), inset 0 0 0 1px color-mix(in srgb, var(--tier-strong) 6%, transparent);
-  }
-  .result-card.tier-learning { border-color: rgba(255, 255, 255, 0.08); }
   .result-card.tier-rough { opacity: 0.88; }
   .swatch-compare {
     position: relative;
@@ -983,15 +974,6 @@
     position: absolute; inset: 0; pointer-events: none;
     background: linear-gradient(135deg, transparent calc(50% - 0.5px), var(--gray-5) calc(50% - 0.5px), var(--gray-5) calc(50% + 0.5px), transparent calc(50% + 0.5px));
   }
-  .swatch-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    margin-top: 6px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
   .result-info {
     display: grid;
     gap: 0;
@@ -1002,12 +984,6 @@
     align-items: center;
     justify-content: flex-start;
     gap: 0;
-  }
-  .result-num {
-    color: var(--text-muted);
-    font-size: 0.92rem;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
   }
   .result-names {
     color: var(--text-soft);
@@ -1114,6 +1090,55 @@
     display: flex;
     justify-content: flex-start;
   }
+  .reveal-nav-btn {
+    position: absolute;
+    z-index: 2;
+    top: var(--space-2);
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition:
+      background var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+  .reveal-nav-btn:nth-of-type(1) { left: var(--space-2); }
+  .reveal-nav-btn:nth-of-type(2) { right: var(--space-2); }
+  .reveal-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.55);
+    transform: scale(1.08);
+  }
+  .reveal-nav-btn:active {
+    transform: scale(0.95);
+  }
+  .reveal-nav-btn.ghost {
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .reveal-nav-btn.ghost:hover {
+    background: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .reveal-nav-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
   .icon-btn {
     width: 42px;
     height: 42px;
@@ -1141,6 +1166,15 @@
     stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+  .utility-history.icon-btn {
+    width: auto;
+    height: 36px;
+    padding: 0 12px;
+    display: inline-flex;
+    border-radius: 999px;
+    justify-content: center;
+    gap: 8px;
   }
   .history-list {
     width: 100%;
@@ -1227,29 +1261,24 @@
   }
 
   @media (hover: hover) {
-    button:hover:not(.mode-row):not(.picker-chip):not(.confirm-btn):not(.secondary):not(.ghost) {
+    button:hover:not(.menu-mode):not(.picker-chip):not(.confirm-btn):not(.secondary):not(.ghost) {
       opacity: 0.96;
     }
-    .mode-row:hover {
-      transform: translateY(-1px);
-    }
     .picture-choice:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
     }
   }
 
   @media (min-width: 768px) {
-    .play-header {
-      grid-template-columns: 1fr auto;
-      align-items: end;
-    }
-    .play-stage-row {
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    #menu.active {
+      width: 100%;
       align-items: stretch;
+      padding: clamp(20px, 2.6vw, 32px) clamp(26px, 3.6vw, 48px) clamp(24px, 3vw, 36px);
     }
-    .match-compare {
-      grid-template-columns: 1fr 1fr;
+    .menu-shell {
+      width: min(100%, 1320px);
+      min-height: calc(100dvh - clamp(40px, 5vw, 72px));
+      padding: 0;
     }
     #resultCards {
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1257,22 +1286,17 @@
   }
 
   @media (max-width: 540px) {
-    .menu-tools {
-      flex-direction: column;
-      align-items: stretch;
+    .menu-shell {
+      width: min(100%, 640px);
     }
-    .picker-segment {
-      width: 100%;
+    #pick {
+      padding-inline: var(--space-4);
     }
-    .picker-chip {
-      flex: 1 1 0;
+    .play-shell {
+      gap: var(--space-3);
     }
-    .match-compare {
-      grid-template-columns: 1fr 1fr;
-    }
-    .match-compare-swatch {
-      min-height: 100px;
-    }
+    /* stage-panel is transparent — card treatment on .play-stage-row */
+    /* match-compare is always side-by-side */
     .result-card {
       grid-template-columns: 1fr;
     }
@@ -1283,21 +1307,42 @@
       flex-direction: column;
       align-items: start;
     }
+    .menu-dock-actions {
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+    }
     .picker-meta {
       flex-direction: column;
+    }
+    .utility-history {
+      width: 28px;
+      justify-content: center;
+    }
+    .slider-group {
+      gap: var(--space-2);
+      padding: var(--space-3);
     }
   }
 
   #pick, #results, #historyScreen, #reveal {
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(var(--space-4), 4vw, var(--space-6)));
   }
-
+  #results, #historyScreen {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+  #historyScreen {
+    padding-top: clamp(var(--space-5), 6vw, var(--space-8));
+  }
   .reveal-shell {
     width: min(100%, 560px);
     display: grid;
     gap: var(--space-4);
   }
   .reveal-card {
+    position: relative;
     background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
@@ -1401,10 +1446,6 @@
     border-radius: var(--radius-sm);
   }
 
-  /* --- Mode row loading --- */
-  .mode-row.loading .mode-arrow svg {
-    animation: spin 0.7s linear infinite;
-  }
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
@@ -1416,11 +1457,11 @@
     @keyframes digit-out { to { opacity: 0; } }
     @keyframes digit-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes hero-drift { 0%, 100% { background-position: 0% 50%; } }
+    @keyframes title-shimmer { 0%, 100% { background-position: 0% 50%; } }
     body { transition: none; }
     .error-toast { transition: none; }
     button:active { transform: none; }
-    .mode-row:hover,
-    .picture-choice:hover,
     button:hover {
       transform: none;
     }
@@ -1432,90 +1473,27 @@
 </head>
 <body>
 
-<!-- MENU -->
+<!-- MENU — card stack built by home.js, toolbar stays in markup -->
 <div id="menu" class="screen active">
-  <div class="menu-shell">
-    <section class="hero-panel panel">
-      <div class="hero-heading">
-        <h1><span>splash</span><span class="hero-line">of hue</span></h1>
+  <div class="home-tools">
+    <div class="menu-dock">
+      <div class="menu-dock-actions">
+        <div class="picker-segment" role="group" aria-label="Picker">
+          <button type="button" class="picker-chip" id="pickerFieldBtn" onclick="setPicker('field')" aria-label="Field picker">
+            <span class="picker-chip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><use href="/icons.svg#icon-field"></use></svg>
+            </span>
+          </button>
+          <button type="button" class="picker-chip" id="pickerSlidersBtn" onclick="setPicker('sliders')" aria-label="Sliders picker">
+            <span class="picker-chip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><use href="/icons.svg#icon-sliders"></use></svg>
+            </span>
+          </button>
+        </div>
+        <button class="secondary icon-btn utility-history" onclick="showHistory()" aria-label="History">
+          <svg aria-hidden="true"><use href="/icons.svg#icon-history"></use></svg>
+        </button>
       </div>
-    </section>
-
-    <div class="menu-main">
-      <section class="menu-stage panel">
-        <div class="mode-list">
-          <button class="mode-row" onclick="startGame('play')">
-            <span class="mode-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </span>
-            <span class="mode-body">
-              <span class="mode-title">Play</span>
-              <span class="mode-desc">Memorize &amp; recall colors</span>
-            </span>
-            <span class="mode-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
-          </button>
-          <button class="mode-row" onclick="startGame('match')">
-            <span class="mode-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <rect x="4" y="5" width="10" height="14" rx="3"></rect>
-                <rect x="10" y="5" width="10" height="14" rx="3"></rect>
-              </svg>
-            </span>
-            <span class="mode-body">
-              <span class="mode-title">Match</span>
-              <span class="mode-desc">Compare colors side by side</span>
-            </span>
-            <span class="mode-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
-          </button>
-          <button class="mode-row" onclick="startGame('picture')">
-            <span class="mode-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="7.5"></circle>
-                <circle cx="12" cy="12" r="2.5"></circle>
-                <path d="M12 4.5v5"></path>
-                <path d="M5.5 15.75l4.33-2.5"></path>
-                <path d="M18.5 15.75l-4.33-2.5"></path>
-              </svg>
-            </span>
-            <span class="mode-body">
-              <span class="mode-title">Picture It</span>
-              <span class="mode-desc">Pick the right color from options</span>
-            </span>
-            <span class="mode-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
-          </button>
-        </div>
-        <div class="menu-tools">
-          <div class="picker-segment" role="group" aria-label="Picker">
-            <button type="button" class="picker-chip" id="pickerFieldBtn" onclick="setPicker('field')" aria-label="Field picker">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3v18"></path>
-                <path d="M3 12h18"></path>
-                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-              </svg>
-            </button>
-            <button type="button" class="picker-chip" id="pickerSlidersBtn" onclick="setPicker('sliders')" aria-label="Sliders picker">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <line x1="5" y1="7" x2="19" y2="7"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <line x1="5" y1="17" x2="19" y2="17"></line>
-                <circle cx="9" cy="7" r="2"></circle>
-                <circle cx="15" cy="12" r="2"></circle>
-                <circle cx="11" cy="17" r="2"></circle>
-              </svg>
-            </button>
-          </div>
-          <button class="secondary icon-btn utility-history" onclick="showHistory()" aria-label="History">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-              <path d="M3 3v5h5"></path>
-              <path d="M12 7v5l4 2"></path>
-            </svg>
-          </button>
-        </div>
-      </section>
     </div>
   </div>
 </div>
@@ -1560,12 +1538,10 @@
           <p class="picker-note" id="pickerTypeNote">Field</p>
         </div>
         <div id="pickerContainer"></div>
-        <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5"></path>
-          </svg>
-        </button>
       </div>
+      <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
+        <svg aria-hidden="true"><use href="/icons.svg#icon-forward"></use></svg>
+      </button>
     </div>
   </div>
 </div>
@@ -1573,7 +1549,7 @@
 <!-- REVEAL -->
 <div id="reveal" class="screen">
   <div class="reveal-shell">
-    <p class="eyebrow" id="revealProgress" style="text-align:center">1 / 5</p>
+    <p class="reveal-progress" id="revealProgress">1 / 5</p>
     <div class="reveal-card">
       <div class="reveal-swatches">
         <div id="revealTarget"></div>
@@ -1587,12 +1563,12 @@
         <div class="reveal-verdict" id="revealVerdict"></div>
       </div>
       <div class="reveal-hsb" id="revealHSB" style="display:none;padding:0 var(--space-5) var(--space-4);font-size:0.78rem;color:var(--text-muted);font-variant-numeric:tabular-nums"></div>
-    </div>
-    <div class="btn-row" style="justify-content:space-between">
-      <button class="ghost icon-btn" onclick="goMenu()" aria-label="Quit round">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      <button class="reveal-nav-btn ghost" onclick="goMenu()" aria-label="Quit to menu">
+        <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
       </button>
-      <button onclick="continueAfterReveal()">Continue</button>
+      <button class="reveal-nav-btn" onclick="continueAfterReveal()" aria-label="Continue">
+        <svg aria-hidden="true"><use href="/icons.svg#icon-forward"></use></svg>
+      </button>
     </div>
   </div>
 </div>
@@ -1615,18 +1591,10 @@
     <div id="resultCards"></div>
     <div class="btn-row results-actions">
       <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
-          <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        </svg>
+        <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
       </button>
       <button class="secondary results-icon-btn" onclick="startGame(lastMode)" aria-label="Play again">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-          <path d="M21 3v5h-5"></path>
-          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-          <path d="M8 16H3v5"></path>
-        </svg>
+        <svg aria-hidden="true"><use href="/icons.svg#icon-replay"></use></svg>
       </button>
     </div>
   </div>
@@ -1637,9 +1605,7 @@
   <div class="history-shell panel">
     <div class="history-top">
       <button class="icon-btn" onclick="goMenu()" aria-label="Back to menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
+        <svg aria-hidden="true"><use href="/icons.svg#icon-back"></use></svg>
       </button>
     </div>
     <div class="history-list" id="historyList"></div>
@@ -1655,28 +1621,9 @@ if (!window.analytics) {
     gameAbandoned:noop, pickerSwitched:noop };
 }
 
-// --- Icon Registry ---
-// 24×24 viewBox · 1.7px stroke · round caps/joins · color-perception themed
-const ICONS = {
-  // Game modes — Lucide "eye" for Play; Match & Picture need custom Figma design
-  play:     '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
-  match:    '<rect x="4" y="5" width="10" height="14" rx="3"/><rect x="10" y="5" width="10" height="14" rx="3"/>',
-  picture:  '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4.5v5"/><path d="M5.5 15.75l4.33-2.5"/><path d="M18.5 15.75l-4.33-2.5"/>',
-  // Picker tools — Lucide "grid-2x2" for Field; Sliders needs custom Figma design
-  field:    '<path d="M12 3v18"/><path d="M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/>',
-  sliders:  '<line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/>',
-  // Navigation & actions — all Lucide
-  confirm:  '<path d="M20 6 9 17l-5-5"/>',
-  history:  '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
-  home:     '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-  replay:   '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
-  back:     '<path d="m15 18-6-6 6-6"/>',
-  forward:  '<path d="m9 18 6-6-6-6"/>',
-};
-
+// --- Icon helper — references /icons.svg sprite sheet ---
 function icon(name, ariaHidden = true) {
-  const inner = ICONS[name] || '';
-  return `<svg viewBox="0 0 24 24"${ariaHidden ? ' aria-hidden="true"' : ''}>${inner}</svg>`;
+  return `<svg${ariaHidden ? ' aria-hidden="true"' : ''}><use href="/icons.svg#icon-${name}"></use></svg>`;
 }
 
 // --- Font loading gate ---
@@ -1701,6 +1648,7 @@ let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
 document.body.dataset.screen = 'menu';
 updatePickerControl();
 
+
 // --- Navigation ---
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1714,9 +1662,10 @@ function goMenu() {
 }
 
 function setPicker(type) {
+  if (pickerType === type) return;
   var oldPicker = pickerType;
   pickerType = type;
-  if (oldPicker !== type) analytics.pickerSwitched(oldPicker, type, !!targetColors && currentPick < 5);
+  analytics.pickerSwitched(oldPicker, type, !!targetColors && currentPick < 5);
   try { localStorage.setItem('pickerType', pickerType); } catch {}
   updatePickerControl();
   if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture') {
@@ -1733,13 +1682,14 @@ function updatePickerControl() {
 }
 
 function modeLabel(mode) {
-  const labels = { play: 'Play', match: 'Match', picture: 'Picture It' };
+  const labels = { play: 'Play', match: 'Match It', picture: 'Picture It', call: 'Call It', split: 'Split It' };
   return labels[mode] || mode;
 }
 
 function modeIconMarkup(mode, className = '') {
   const cls = className ? ` class="${className}"` : '';
-  const name = mode === 'picture' ? 'picture' : mode === 'match' ? 'match' : 'play';
+  const map = { play: 'play', match: 'match', picture: 'picture', call: 'call', split: 'split' };
+  const name = map[mode] || 'play';
   return `<span${cls} aria-hidden="true">${icon(name)}</span>`;
 }
 
@@ -1749,7 +1699,7 @@ function pickerLabel(type) {
 }
 
 function confirmIconMarkup() {
-  return icon('confirm');
+  return icon('forward');
 }
 
 function clamp(value, min, max) {
@@ -1780,7 +1730,7 @@ function pictureOptionsFor(index) {
 
 function pickEyebrow(mode) {
   const labels = {
-    play: 'Memory',
+    play: 'Play',
     match: 'Match',
     picture: 'Picture',
   };
@@ -1854,10 +1804,19 @@ function hsbToHsl(h, s, b) {
 }
 
 function formatHSBCompact(color) {
-  return `H${Math.round(color.h)} S${Math.round(color.s)} B${Math.round(color.b)}`;
+  return `<span class="hsb-label">H</span>${Math.round(color.h)} <span class="hsb-label">S</span>${Math.round(color.s)} <span class="hsb-label">B</span>${Math.round(color.b)}`;
 }
 
 // --- Color Math (CIEDE2000 scoring, ported from Python) ---
+// --- Shared scorer block: start ---
+const SCORING_PARAMS = {
+  curve: { divisor: 10, exponent: 2.25 },
+  hueRecovery: { thresholdDegrees: 33, lostPointRate: 0.55 },
+  guardPenalty: { sameHueSbPenaltyRate: 0.25, midHuePenaltyRate: 0.30 },
+  sameHueRescue: { lowScoreBoost: 0.0, midScoreBoost: 0.0 },
+  tiers: { elite: 8.5, strong: 5.5, learning: 2.5 },
+};
+
 function hsbToRgb(h, s, b) {
   const sN = s / 100, bN = b / 100;
   const c = bN * sN;
@@ -1881,17 +1840,17 @@ function srgbToLinear(c) {
 function rgbToXyz(r, g, b) {
   r = srgbToLinear(r); g = srgbToLinear(g); b = srgbToLinear(b);
   return [
-    0.4124564 * r + 0.3575761 * g + 0.1804375 * b,
-    0.2126729 * r + 0.7151522 * g + 0.0721750 * b,
-    0.0193339 * r + 0.1191920 * g + 0.9503041 * b,
+    0.4124564*r + 0.3575761*g + 0.1804375*b,
+    0.2126729*r + 0.7151522*g + 0.0721750*b,
+    0.0193339*r + 0.1191920*g + 0.9503041*b,
   ];
 }
 
 function xyzToLab(x, y, z) {
   const xn = 0.95047, yn = 1.0, zn = 1.08883;
-  function f(t) { return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116; }
-  const fx = f(x / xn), fy = f(y / yn), fz = f(z / zn);
-  return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+  function f(t) { return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16/116; }
+  const fx = f(x/xn), fy = f(y/yn), fz = f(z/zn);
+  return [116*fy - 16, 500*(fx - fy), 200*(fy - fz)];
 }
 
 function hsbToLab(h, s, b) {
@@ -1903,60 +1862,136 @@ function hsbToLab(h, s, b) {
 function deltaE2000(lab1, lab2) {
   const [L1, a1, b1] = lab1;
   const [L2, a2, b2] = lab2;
-
-  const C1 = Math.sqrt(a1 * a1 + b1 * b1);
-  const C2 = Math.sqrt(a2 * a2 + b2 * b2);
+  const C1 = Math.sqrt(a1*a1 + b1*b1);
+  const C2 = Math.sqrt(a2*a2 + b2*b2);
   const Cavg = (C1 + C2) / 2;
   const Cavg7 = Math.pow(Cavg, 7);
   const G = 0.5 * (1 - Math.sqrt(Cavg7 / (Cavg7 + Math.pow(25, 7))));
   const a1p = a1 * (1 + G);
   const a2p = a2 * (1 + G);
-  const C1p = Math.sqrt(a1p * a1p + b1 * b1);
-  const C2p = Math.sqrt(a2p * a2p + b2 * b2);
-  const h1p = (Math.atan2(b1, a1p) * 180 / Math.PI + 360) % 360;
-  const h2p = (Math.atan2(b2, a2p) * 180 / Math.PI + 360) % 360;
-
+  const C1p = Math.sqrt(a1p*a1p + b1*b1);
+  const C2p = Math.sqrt(a2p*a2p + b2*b2);
+  const h1p = (Math.atan2(b1, a1p)*180/Math.PI + 360) % 360;
+  const h2p = (Math.atan2(b2, a2p)*180/Math.PI + 360) % 360;
   const dLp = L2 - L1;
   const dCp = C2p - C1p;
   let dhp;
-  if (C1p * C2p === 0) dhp = 0;
+  if (C1p*C2p === 0) dhp = 0;
   else if (Math.abs(h2p - h1p) <= 180) dhp = h2p - h1p;
   else if (h2p - h1p > 180) dhp = h2p - h1p - 360;
   else dhp = h2p - h1p + 360;
-  const dHp = 2 * Math.sqrt(C1p * C2p) * Math.sin(dhp / 2 * Math.PI / 180);
-
+  const dHp = 2 * Math.sqrt(C1p*C2p) * Math.sin(dhp/2 * Math.PI/180);
   const Lpavg = (L1 + L2) / 2;
   const Cpavg = (C1p + C2p) / 2;
   let hpavg;
-  if (C1p * C2p === 0) hpavg = h1p + h2p;
+  if (C1p*C2p === 0) hpavg = h1p + h2p;
   else if (Math.abs(h1p - h2p) <= 180) hpavg = (h1p + h2p) / 2;
   else if (h1p + h2p < 360) hpavg = (h1p + h2p + 360) / 2;
   else hpavg = (h1p + h2p - 360) / 2;
-
   const T = 1
-    - 0.17 * Math.cos((hpavg - 30) * Math.PI / 180)
-    + 0.24 * Math.cos(2 * hpavg * Math.PI / 180)
-    + 0.32 * Math.cos((3 * hpavg + 6) * Math.PI / 180)
-    - 0.20 * Math.cos((4 * hpavg - 63) * Math.PI / 180);
-
+    - 0.17*Math.cos((hpavg - 30)*Math.PI/180)
+    + 0.24*Math.cos(2*hpavg*Math.PI/180)
+    + 0.32*Math.cos((3*hpavg + 6)*Math.PI/180)
+    - 0.20*Math.cos((4*hpavg - 63)*Math.PI/180);
   const SL = 1 + 0.015 * Math.pow(Lpavg - 50, 2) / Math.sqrt(20 + Math.pow(Lpavg - 50, 2));
   const SC = 1 + 0.045 * Cpavg;
   const SH = 1 + 0.015 * Cpavg * T;
-
   const Cpavg7 = Math.pow(Cpavg, 7);
-  const RT = -Math.sin(60 * Math.exp(-Math.pow((hpavg - 275) / 25, 2)) * Math.PI / 180)
+  const RT = -Math.sin(60*Math.exp(-Math.pow((hpavg - 275)/25, 2))*Math.PI/180)
     * 2 * Math.sqrt(Cpavg7 / (Cpavg7 + Math.pow(25, 7)));
-
   const dE = Math.sqrt(
-    Math.pow(dLp / SL, 2) + Math.pow(dCp / SC, 2) + Math.pow(dHp / SH, 2)
-    + RT * (dCp / SC) * (dHp / SH)
+    Math.pow(dLp/SL, 2) + Math.pow(dCp/SC, 2) + Math.pow(dHp/SH, 2)
+    + RT * (dCp/SC) * (dHp/SH)
   );
   return [dE, dLp, dCp, dHp];
 }
 
-function scoreFromDeltaE(de) {
-  return Math.round(10 / (1 + Math.pow(de / 12, 2.5)) * 100) / 100;
+function hueDistance(h1, h2) {
+  const d = Math.abs(h1 - h2);
+  return d > 180 ? 360 - d : d;
 }
+
+function scoreFromDeltaE(de) {
+  return Math.round(
+    10 / (1 + Math.pow(de / SCORING_PARAMS.curve.divisor, SCORING_PARAMS.curve.exponent)) * 100
+  ) / 100;
+}
+
+const HUE_NAMES = [
+  [15,'Red'],[40,'Orange'],[65,'Yellow'],[150,'Green'],
+  [195,'Cyan'],[250,'Blue'],[295,'Purple'],[330,'Pink'],[360,'Red'],
+];
+function hueName(h) {
+  for (const [b, n] of HUE_NAMES) { if (h < b) return n; }
+  return 'Red';
+}
+
+function applySameHueRescue(score, de, dLp, dCp, hueDist) {
+  const lowScoreBoost = SCORING_PARAMS.sameHueRescue?.lowScoreBoost || 0;
+  const midScoreBoost = SCORING_PARAMS.sameHueRescue?.midScoreBoost || 0;
+  const absDeltaL = Math.abs(dLp);
+  const absDeltaC = Math.abs(dCp);
+  const sbExtent = Math.max(absDeltaL, absDeltaC);
+
+  if (lowScoreBoost > 0 && de >= 12 && score <= 5.75 && sbExtent >= 16) {
+    const closeHueWeight = Math.max(0, 1 - hueDist / 12);
+    const sbWindow = Math.min(1, Math.max(0, sbExtent - 16) / 20);
+    const lowScoreWindow = Math.min(1, Math.max(0, 5.75 - score) / 2.75);
+    score += lowScoreBoost * closeHueWeight * Math.max(0.35, sbWindow) * lowScoreWindow;
+  }
+
+  if (midScoreBoost > 0 && de <= 18 && score <= 6.9 && sbExtent >= 14) {
+    const veryCloseHueWeight = Math.max(0, 1 - hueDist / 5);
+    const sbWindow = Math.min(1, Math.max(0, sbExtent - 14) / 12);
+    const midScoreWindow = Math.min(1, Math.max(0, 6.9 - score) / 1.9);
+    score += midScoreBoost * veryCloseHueWeight * sbWindow * midScoreWindow;
+  }
+
+  return score;
+}
+
+function effectiveDeltaE(de, dLp, dCp, hueDist) {
+  const absDeltaL = Math.abs(dLp);
+  const absDeltaC = Math.abs(dCp);
+  const sbExcess = Math.max(0, Math.max(absDeltaL, absDeltaC) - 14);
+  const hueWeight = Math.max(0, 1 - hueDist / Math.max(1, SCORING_PARAMS.hueRecovery.thresholdDegrees));
+  const hueWindow = Math.max(0, 1 - Math.abs(hueDist - 19) / 9);
+  const deltaWindow = Math.max(0, 1 - de / 14);
+  return de
+    + (SCORING_PARAMS.guardPenalty.sameHueSbPenaltyRate || 0) * sbExcess * hueWeight
+    + (SCORING_PARAMS.guardPenalty.midHuePenaltyRate || 0) * 6 * hueWindow * deltaWindow;
+}
+
+function scoreGuess(target, guess) {
+  const labT = hsbToLab(target.h, target.s, target.b);
+  const labG = hsbToLab(guess.h, guess.s, guess.b);
+  const [de, dLp, dCp, dHp] = deltaE2000(labT, labG);
+  const hueDist = hueDistance(target.h, guess.h);
+  const effectiveDe = effectiveDeltaE(de, dLp, dCp, hueDist);
+  let score = scoreFromDeltaE(effectiveDe);
+  if (hueDist <= SCORING_PARAMS.hueRecovery.thresholdDegrees) {
+    const lost = 10 - score;
+    const recovery = SCORING_PARAMS.hueRecovery.lostPointRate
+      * (1 - hueDist / SCORING_PARAMS.hueRecovery.thresholdDegrees);
+    score = Math.round((score + lost * recovery) * 100) / 100;
+  }
+  score = applySameHueRescue(score, de, dLp, dCp, hueDist);
+  score = Math.round(Math.max(0, Math.min(10, score)) * 100) / 100;
+  return {
+    delta_e: Math.round(de * 10) / 10,
+    delta_l: Math.round(dLp * 10) / 10,
+    delta_c: Math.round(dCp * 10) / 10,
+    delta_h: Math.round(dHp * 10) / 10,
+    dLp: Math.round(dLp * 10) / 10,
+    dCp: Math.round(dCp * 10) / 10,
+    dHp: Math.round(dHp * 10) / 10,
+    hueDist: Math.round(hueDist * 10) / 10,
+    score,
+    target_name: hueName(target.h),
+    guess_name: hueName(guess.h),
+  };
+}
+// --- Shared scorer block: end ---
 
 function deltaE76(lab1, lab2) {
   return Math.sqrt((lab1[0]-lab2[0])**2 + (lab1[1]-lab2[1])**2 + (lab1[2]-lab2[2])**2);
@@ -2008,49 +2043,6 @@ function shuffle(arr) {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-}
-
-function hueDistance(h1, h2) {
-  const d = Math.abs(h1 - h2);
-  return d > 180 ? 360 - d : d;
-}
-
-const HUE_NAMES = [
-  [15, 'Red'], [40, 'Orange'], [65, 'Yellow'], [150, 'Green'],
-  [195, 'Cyan'], [250, 'Blue'], [295, 'Purple'], [330, 'Pink'], [360, 'Red'],
-];
-
-function hueName(h) {
-  for (const [boundary, name] of HUE_NAMES) {
-    if (h < boundary) return name;
-  }
-  return 'Red';
-}
-
-function scoreGuess(target, guess) {
-  const labT = hsbToLab(target.h, target.s, target.b);
-  const labG = hsbToLab(guess.h, guess.s, guess.b);
-  const [de, dLp, dCp, dHp] = deltaE2000(labT, labG);
-  let score = scoreFromDeltaE(de);
-
-  // Hue-recovery bonus: if hue is close, recover up to 40% of lost points.
-  // Rewards getting the right color family even when brightness/saturation drifts.
-  const hueDist = hueDistance(target.h, guess.h);
-  if (hueDist <= 25) {
-    const lost = 10 - score;
-    const recovery = 0.4 * (1 - hueDist / 25);
-    score = Math.round((score + lost * recovery) * 100) / 100;
-  }
-
-  return {
-    delta_e: Math.round(de * 10) / 10,
-    delta_l: Math.round(dLp * 10) / 10,
-    delta_c: Math.round(dCp * 10) / 10,
-    delta_h: Math.round(dHp * 10) / 10,
-    score,
-    target_name: hueName(target.h),
-    guess_name: hueName(guess.h),
-  };
 }
 
 // --- Error toast ---
@@ -2131,6 +2123,7 @@ function startMemorize() {
   grid.appendChild(div);
 
   let remaining = 5;
+  let lastCeil = 5;
   const fill = document.getElementById('timerFill');
   const txt = document.getElementById('timerText');
   fill.style.width = '100%';
@@ -2140,7 +2133,8 @@ function startMemorize() {
   memorizeTimer = setInterval(() => {
     remaining -= 0.1;
     fill.style.width = (remaining / 5 * 100) + '%';
-    txt.textContent = Math.ceil(remaining) + 's';
+    var c = Math.ceil(remaining);
+    if (c !== lastCeil) { txt.textContent = c + 's'; lastCeil = c; }
     if (remaining <= 0) {
       clearInterval(memorizeTimer);
       memorizeTimer = null;
@@ -2166,6 +2160,7 @@ function startPicking() {
     renderPicker();
   }
   const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.hidden = lastMode === 'picture';
   confirmBtn.innerHTML = confirmIconMarkup();
   confirmBtn.setAttribute('aria-label', lastMode === 'picture' ? 'Confirm choice' : 'Lock in guess');
   initPickStage();
@@ -2196,7 +2191,6 @@ function initPickStage() {
                 style="background:${hsbToHsl(c.h, c.s, c.b)}"></div>`
         ).join('')}</div>
       </div>`;
-    document.getElementById('confirmBtn').style.display = 'none';
   } else if (lastMode === 'match') {
     const tc = targetColors[currentPick];
     const targetCss = hsbToHsl(tc.h, tc.s, tc.b);
@@ -2207,9 +2201,9 @@ function initPickStage() {
             <div class="match-compare-swatch" id="targetSwatch" style="background:${targetCss}"></div>
             <div class="match-compare-label">Target</div>
           </div>
+          <div class="match-compare-divider"></div>
           <div class="match-compare-col">
             <div class="match-compare-swatch" id="guessSwatch" style="background:${guessCss}"></div>
-            <div class="match-compare-label">Your guess</div>
           </div>
         </div>
       </div>`;
@@ -2271,7 +2265,7 @@ function selectChoice(idx) {
 
 function showReveal(result, roundIndex) {
   showScreen('reveal');
-  document.getElementById('revealProgress').textContent = `${roundIndex + 1} / 5`;
+  document.getElementById('revealProgress').innerHTML = `${roundIndex + 1} <span class="reveal-progress-dim">/ 5</span>`;
   const scoreEl = document.getElementById('revealScore');
   scoreEl.className = 'reveal-score-num';
   scoreEl.style.color = hsbToHsl(result.target.h, result.target.s, result.target.b);
@@ -2379,6 +2373,7 @@ function saveToHistory(game) {
 // --- Picker Rendering ---
 function renderPicker() {
   const container = document.getElementById('pickerContainer');
+  document.getElementById('pick').dataset.picker = pickerType;
   if (pickerType === 'sliders') {
     renderSliders(container);
   } else {
@@ -2391,20 +2386,29 @@ function renderSliders(container) {
   container.innerHTML = `
     <div class="slider-group">
       <div class="slider-row">
-        <input type="range" id="slH" min="0" max="360" step="1" value="${currentHSB.h}" aria-label="Hue">
+        <span class="slider-label">H</span>
+        <div class="slider-track-wrap" id="slHWrap">
+          <input type="range" id="slH" min="0" max="360" step="1" value="${currentHSB.h}" aria-label="Hue">
+        </div>
       </div>
       <div class="slider-row">
-        <input type="range" id="slS" min="0" max="100" step="1" value="${currentHSB.s}" aria-label="Saturation">
+        <span class="slider-label">S</span>
+        <div class="slider-track-wrap" id="slSWrap">
+          <input type="range" id="slS" min="0" max="100" step="1" value="${currentHSB.s}" aria-label="Saturation">
+        </div>
       </div>
       <div class="slider-row">
-        <input type="range" id="slB" min="0" max="100" step="1" value="${currentHSB.b}" aria-label="Brightness">
+        <span class="slider-label">B</span>
+        <div class="slider-track-wrap" id="slBWrap">
+          <input type="range" id="slB" min="0" max="100" step="1" value="${currentHSB.b}" aria-label="Brightness">
+        </div>
       </div>
     </div>`;
 
   function updateSliderBackgrounds() {
-    document.getElementById('slH').style.background = 'linear-gradient(90deg, hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%), hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%))';
-    document.getElementById('slS').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, 0, currentHSB.b)}, ${hsbToHsl(currentHSB.h, 100, currentHSB.b)})`;
-    document.getElementById('slB').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, currentHSB.s, 0)}, ${hsbToHsl(currentHSB.h, currentHSB.s, 100)})`;
+    document.getElementById('slHWrap').style.background = 'linear-gradient(90deg, hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%), hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%))';
+    document.getElementById('slSWrap').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, 0, currentHSB.b)}, ${hsbToHsl(currentHSB.h, 100, currentHSB.b)})`;
+    document.getElementById('slBWrap').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, currentHSB.s, 0)}, ${hsbToHsl(currentHSB.h, currentHSB.s, 100)})`;
   }
 
   const update = () => {
@@ -2561,12 +2565,10 @@ function showResults(data) {
           <div class="swatch-guess" style="background:${gCss}"></div>
           <div class="swatch-divider"></div>
         </div>
-        <div class="swatch-labels"><span>T</span><span>G</span></div>
       </div>
       <div class="result-info">
         <div class="result-head">
           <div>
-            <div class="result-num">${i + 1}</div>
             <div class="result-verdict">${colorFeedbackText(r.score)}</div>
           </div>
           <div class="result-names">${r.target_name} to ${r.guess_name}</div>
@@ -2674,6 +2676,7 @@ function viewHistoryGame(idx, mode) {
 
 updateAdvancedHint();
 </script>
+<script src="home.js"></script>
 
 <div class="error-toast" id="errorToast">
   <span class="error-toast-msg" id="errorToastMsg">Couldn't connect</span>

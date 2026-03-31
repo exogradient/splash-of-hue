@@ -89,10 +89,13 @@ Client-side only, via PostHog JS SDK. No server-side analytics.
 
 **Events:** `session_started`, `game_started`, `mode_transition`, `round_completed`, `game_completed`, `game_abandoned`, `picker_switched`. Full schema in `docs/specs-data-dictionary.md`.
 
+**Dashboard:** Alpha Analytics — 10 insights covering completion funnels, hue difficulty, picker performance, speed/accuracy, abandonment, session depth, positional bias, channel weakness, mode transitions, and viewport distribution. Setup guide in `docs/pit/2026-03-29-posthog-dashboard-setup.md`.
+
 **Failure mode:** If PostHog SDK is blocked (ad blocker, network), all calls are silent no-ops. Game functionality is unaffected.
 
 ## Key Behaviors
 
+- **Local research tooling.** `public/calibration.html` plus the local-only `/__dev/calibration-source` and `/__dev/save-calibration-export` endpoints support scorer / `auto-grader` dogfooding only. They are not public product surfaces or stable runtime contracts.
 - **No lifespan hooks.** Vercel doesn't fire ASGI lifespan events. DB initialization is lazy (on first write).
 - **Refresh resets.** In-progress games exist only in client JS memory. Refresh returns to menu. No orphan state in DB.
 - **Graceful DB failure.** If DB write fails on submit, the game already worked — client scored locally. Only history persistence is lost.

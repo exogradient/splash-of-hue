@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scoring Calibration</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #0a0a0a;
+    }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #0a0a0a;
+    }
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: rgba(244, 237, 227, 0.92);
+    }
+    #root:empty::before {
+      content: "Loading calibration tool…";
+      display: block;
+      padding: 24px 20px;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 0.01em;
+    }
+    #error {
+      display: none;
+      margin: 20px;
+      padding: 16px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      background: rgba(248, 113, 113, 0.08);
+      color: #fecaca;
+      white-space: pre-wrap;
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    #error.visible {
+      display: block;
+    }
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <pre id="error"></pre>
+  <script>
+    async function bootCalibration() {
+      const rootEl = document.getElementById("root");
+      const errorEl = document.getElementById("error");
+      try {
+        const response = await fetch("/__dev/calibration-source", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load calibration source (" + response.status + ")");
+        }
+        let source = await response.text();
+        source = source.replace(
+          /^import\s+\{\s*useState,\s*useMemo,\s*useCallback\s*\}\s+from\s+["']react["'];?\s*$/m,
+          "const { useState, useMemo, useCallback } = React;"
+        );
+        source = source.replace(
+          /export default function CalibrationTool\s*\(/,
+          "function CalibrationTool("
+        );
+        source += "\nReactDOM.createRoot(document.getElementById('root')).render(React.createElement(CalibrationTool));\n";
+        const compiled = Babel.transform(source, {
+          presets: [["react", { runtime: "classic" }]],
+          sourceType: "script",
+        }).code;
+        new Function("React", "ReactDOM", compiled)(window.React, window.ReactDOM);
+      } catch (error) {
+        rootEl.replaceChildren();
+        errorEl.textContent = [
+          "Calibration page failed to load.",
+          "",
+          String(error && error.message ? error.message : error),
+          "",
+          "If this is a network script failure, reload once after the dev server is up."
+        ].join("\n");
+        errorEl.classList.add("visible");
+      }
+    }
+
+    bootCalibration();
+  </script>
+</body>
+</html>

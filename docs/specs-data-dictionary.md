@@ -112,7 +112,7 @@ Fires when picker type changes.
 
 ## Derived Metrics
 
-These are computed in PostHog from the raw events above:
+Computed in PostHog as the Alpha Analytics dashboard (project 361437, dashboard 1410536). Setup guide: `docs/pit/2026-03-29-posthog-dashboard-setup.md`.
 
 | Metric | Formula |
 |---|---|

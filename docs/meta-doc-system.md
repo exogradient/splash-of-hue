@@ -38,8 +38,8 @@ Encoded as filename prefix — maximally colocated, zero metadata overhead, self
 | Layer | Docs | What belongs here |
 |-------|------|-------------------|
 | **identity** | identity-context.md, identity-model.md, identity-visual.md | Why, what, and how it looks. Context is external — vision, philosophy, competitive landscape. Model is internal — skill decomposition, modes, game structure. Design is visual — principles, palette, typography, motion, spatial system |
-| **design** | design-log.md | How the design evolves through use — decisions and dogfooding |
-| **specs** | specs-roadmap.md, specs-features.md, specs-journey.md, specs-hld.md, specs-data-dictionary.md | What to build, what exists today, how it's built |
+| **design** | design-log.md, design-*.md | How the design evolves through use, plus cross-cutting design docs that preserve rationale, architecture, and evolution path while the system is still moving |
+| **specs** | specs-roadmap.md, specs-features.md, specs-journey.md, specs-hld.md | What to build, what exists today, how it's built |
 | **meta** | meta-doc-system.md | About the doc system itself |
 
 `layer` captures the doc's role. `stability` captures current rate of change. These are independent — identity is *meant* to be stable but may not be yet (rate of change is contextual to project stage).
@@ -51,6 +51,19 @@ Specs layer follows a pipeline:
 **roadmap** (prioritized direction) → **features** (committed specs) → **journey** (shipped flow)
 
 Items move forward through the pipeline as they mature. Roadmap captures what we might build. Features captures committed specs with enough detail to implement. Journey captures what the user actually experiences in the shipped product.
+
+## Design Docs vs Specs
+
+`design-log.md` is append-only decisions and dogfooding.
+
+`design-*.md` is for significant feature or workflow design docs that need their own rationale, architecture, stable concepts, and evolution path preserved while the system is still evolving independently.
+
+Boundary:
+
+- **design docs** own rationale, architecture, evolution path, and stable concepts
+- **specs docs** own hardened interfaces and shipped behavior
+
+If a feature is still moving fast enough that a detailed spec would mostly duplicate volatile design thinking, it should live in the design layer first and only later graduate into specs.
 
 ## Frontmatter Schema
 

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Game modes -->
+    <symbol id="icon-play" viewBox="0 0 24 24">
+      <path d="M2.7 12c2.1-4.05 5.2-6.08 9.3-6.08s7.2 2.03 9.3 6.08c-2.1 4.05-5.2 6.08-9.3 6.08S4.8 16.05 2.7 12Z" fill="#E4C257" opacity="0.14" stroke="#F4EDE3" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="12" r="3.95" fill="#E4C257" opacity="0.26" stroke="#F4EDE3" stroke-opacity="0.7" stroke-width="1.2"/>
+      <circle cx="12" cy="12" r="1.6" fill="#F4EDE3"/>
+      <circle cx="14.55" cy="9.45" r="0.9" fill="#F4EDE3" opacity="0.72"/>
+    </symbol>
+    <symbol id="icon-match" viewBox="0 0 24 24">
+      <rect x="4.2" y="6.15" width="7.8" height="11.7" rx="2.8" fill="#E86C9E" opacity="0.4" stroke="#F4EDE3" stroke-opacity="0.82" stroke-width="1.15"/>
+      <rect x="12" y="6.15" width="7.8" height="11.7" rx="2.8" fill="#54C3DC" opacity="0.38" stroke="#F4EDE3" stroke-opacity="0.82" stroke-width="1.15"/>
+      <path d="M10.55 10.35h2.9M10.55 13.65h2.9" fill="none" stroke="#F4EDE3" stroke-width="1.45" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-picture" viewBox="0 0 24 24">
+      <rect x="4.2" y="5.2" width="15.6" height="13.6" rx="3.2" fill="#5E7FE8" opacity="0.08" stroke="#F4EDE3" stroke-width="1.35"/>
+      <circle cx="9" cy="9.05" r="1.45" fill="#E4C257"/>
+      <path d="M6.95 15.7 10.1 12.35l2.4 2.4 3.25-3.25 2.35 2.6" fill="none" stroke="#54C3DC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15.45 7.35h2.95v2.95" fill="none" stroke="#AE63E0" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-call" viewBox="0 0 24 24">
+      <path d="M12 5.6a6.4 6.4 0 0 1 4.53 1.87" fill="none" stroke="#E86C9E" stroke-width="2.15" stroke-linecap="round"/>
+      <path d="M18.4 12a6.4 6.4 0 0 1-1.87 4.53" fill="none" stroke="#54C3DC" stroke-width="2.15" stroke-linecap="round"/>
+      <path d="M12 18.4a6.4 6.4 0 0 1-4.53-1.87" fill="none" stroke="#E4C257" stroke-width="2.15" stroke-linecap="round"/>
+      <path d="M5.6 12a6.4 6.4 0 0 1 1.87-4.53" fill="none" stroke="#AE63E0" stroke-width="2.15" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="2.3" fill="#111" stroke="#F4EDE3" stroke-width="1.05"/>
+      <path d="M12 12 15.65 8.35" fill="none" stroke="#F4EDE3" stroke-width="1.2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-split" viewBox="0 0 24 24">
+      <rect x="4.8" y="6.6" width="2.85" height="10.8" rx="1.18" fill="#D7E5FB" opacity="0.9"/>
+      <rect x="8.55" y="6.6" width="2.85" height="10.8" rx="1.18" fill="#AAC4F1" opacity="0.88"/>
+      <rect x="12.3" y="6.6" width="2.85" height="10.8" rx="1.18" fill="#7FA5EE" opacity="0.86"/>
+      <rect x="16.05" y="6.6" width="2.35" height="10.8" rx="1.02" fill="#5E7FE8" opacity="0.92"/>
+      <path d="M4.8 18.6h13.6" fill="none" stroke="#F4EDE3" stroke-width="1.1" opacity="0.38" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- Picker tools -->
+    <symbol id="icon-field" viewBox="0 0 24 24">
+      <!-- Hue bar — multi-stop color segments to read as spectrum -->
+      <rect x="4" y="4" width="16" height="3" rx="1.4" fill="none" stroke="#F4EDE3" stroke-width="1.0" stroke-opacity="0.7"/>
+      <rect x="5.2" y="4.7" width="3" height="1.6" rx="0.6" fill="#E86C9E" opacity="0.5"/>
+      <rect x="8.6" y="4.7" width="3" height="1.6" rx="0.6" fill="#E4C257" opacity="0.5"/>
+      <rect x="12" y="4.7" width="3" height="1.6" rx="0.6" fill="#54C3DC" opacity="0.5"/>
+      <rect x="15.4" y="4.7" width="3" height="1.6" rx="0.6" fill="#AE63E0" opacity="0.5"/>
+      <!-- SB plane — brighter top-left fading to dark bottom-right -->
+      <rect x="4" y="9" width="16" height="11.5" rx="1.4" fill="#F4EDE3" fill-opacity="0.04" stroke="#F4EDE3" stroke-width="1.0" stroke-opacity="0.7"/>
+      <rect x="4.5" y="9.5" width="9" height="6" rx="1.2" fill="#F4EDE3" opacity="0.1"/>
+      <rect x="4.5" y="9.5" width="5" height="3.5" rx="1.0" fill="#F4EDE3" opacity="0.08"/>
+      <!-- Thumb dot — solid -->
+      <circle cx="14" cy="14" r="1.6" fill="#F4EDE3"/>
+    </symbol>
+    <symbol id="icon-sliders" viewBox="0 0 24 24">
+      <line x1="5" y1="7" x2="19" y2="7" stroke="#F4EDE3" stroke-width="1.1" opacity="0.6"/><line x1="5" y1="12" x2="19" y2="12" stroke="#F4EDE3" stroke-width="1.1" opacity="0.6"/><line x1="5" y1="17" x2="19" y2="17" stroke="#F4EDE3" stroke-width="1.1" opacity="0.6"/>
+      <circle cx="9" cy="7" r="2" fill="none" stroke="#F4EDE3" stroke-width="1.2"/><circle cx="15" cy="12" r="2" fill="none" stroke="#F4EDE3" stroke-width="1.2"/><circle cx="11" cy="17" r="2" fill="none" stroke="#F4EDE3" stroke-width="1.2"/>
+    </symbol>
+
+    <!-- Navigation & actions (Lucide) -->
+    <symbol id="icon-confirm" viewBox="0 0 24 24">
+      <path d="M20 6 9 17l-5-5"/>
+    </symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    </symbol>
+    <symbol id="icon-replay" viewBox="0 0 24 24">
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="m15 18-6-6 6-6"/>
+    </symbol>
+    <symbol id="icon-forward" viewBox="0 0 24 24">
+      <path d="m9 18 6-6-6-6"/>
+    </symbol>
+  </defs>
+</svg>

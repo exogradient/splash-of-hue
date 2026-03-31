@@ -130,7 +130,7 @@ Show score, hide the math. Show result, hide the analysis. dialed.gg and splash-
 
 ### Where dialed.gg can be beaten
 
-1. **Education.** dialed tests but doesn't teach. splash-of-hue's mode decomposition (Play/Match/Dial/Name/Read) targets specific perceptual skills. This is the core differentiator.
+1. **Education.** dialed tests but doesn't teach. splash-of-hue's mode decomposition (Play/Match It/Picture It/Call It/Split It) targets specific perceptual skills. This is the core differentiator.
 2. **Scoring accuracy.** dialed uses CIE76; splash-of-hue already uses CIEDE2000 with per-dimension breakdown. More perceptually accurate and more informative.
 3. **Picker.** The SB field is more spatial and intuitive than three abstract strips. Worth investing in polish rather than replacing.
 4. **Desktop experience.** dialed is mobile-in-a-card on desktop. No keyboard shortcuts, no wider layouts.
@@ -156,4 +156,4 @@ Show score, hide the math. Show result, hide the analysis. dialed.gg and splash-
 - **Font choice:** What typeface fits "teaches color perception" without mimicking dialed's Swiss brutalism? Candidates: a warm geometric (e.g. Satoshi, General Sans), a humanist sans (e.g. Source Sans 3, Instrument Sans), or something with more character (e.g. Space Grotesk, Outfit). Need to test against full-bleed color backgrounds.
 - **Personality voice:** dialed's feedback is brutal/funny. hue-miliation leans harder on snark. What's splash-of-hue's voice? The educational angle suggests something that's honest but constructive — "coach" rather than "roast comic." But the planned `brutal` default suggests otherwise.
 - **Achromatic how far:** Pure black (#000) like dialed, or near-black with subtle warmth/coolness? Pure black maximizes color contrast but can feel sterile. A very subtle warm gray (e.g. #111110) might better fit an educational tone.
-- **Desktop strategy:** Card-in-viewport (like dialed) or full-width with more spatial layouts? The educational modes (Name It, Read It, Dial It In) might benefit from layouts that aren't mobile-constrained.
+- **Desktop strategy:** Card-in-viewport (like dialed) or full-width with more spatial layouts? The educational modes (Call It, Split It, Picture It) might benefit from layouts that aren't mobile-constrained.

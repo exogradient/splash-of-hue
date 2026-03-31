@@ -180,6 +180,30 @@ Achromatic doesn't mean colorless — it means the interface earns the right to 
 
 **Semantic (game state only):** Success/error states for score feedback. These are the *only* chromatic UI elements and they appear only in results context, never during active color perception.
 
+## App Icon
+
+The app icon is the sanctioned brand-color exception. It lives outside active gameplay, so it can carry the full spectrum without violating the achromatic UI rule. Its job is not to explain every variable in the game — it is to say "color perception" instantly, cleanly, and durably.
+
+**Primary form:** A complete hue ring around a neutral core. Closed form reads as spectrum and memory target. Broken form reads as loading/progress UI.
+
+**Hue mapping:** Follow the actual hue wheel. Red sits at `0°` / `12 o'clock`, then orange, yellow, green, cyan, blue, and magenta clockwise. If the ring drifts from hue-wheel truth, the icon loses credibility.
+
+**Center:** Keep the core neutral. Do not encode brightness/value in the center circle — that turns the mark into a color-picker diagram instead of a brand mark.
+
+**Selector:** If present, it should read as "selected hue," not a knob or hardware pointer. Use a small bead sitting on the ring, sampling the hue beneath it, with just enough light outline to stay legible. A slight clockwise offset from dead top gives motion without looking animated.
+
+**Installed-app container:** On PWA/home-screen surfaces, keep the icon self-contained with a restrained field and an almost-invisible frame. The current shipped treatment is a soft light plate with a neutral light core, because it lets the ring feel more like the product and less like hardware. A dark plate is retained only as an alternate source direction, not the active export. The frame should support the icon shape, not announce itself.
+
+**Rendering:** The band should read as one continuous spectral track, not a chain of isolated capsules. Smooth interpolation is more durable than ornamental segmentation.
+
+**Surface split:** The installed app icon and the browser favicon are related marks, not identical exports. Installed surfaces keep a self-contained plate and neutral core. Browser-tab surfaces should drop the outer plate and simplify toward a more self-sufficient spectral ring.
+
+**Favicon rule:** Browser tabs want a transparent outer shape and a prominent ring. Do not force the dark rounded-square container into the tab favicon. The tab already provides a container. The favicon should stay legible on both dark and light tab chrome, which means transparent-center experiments are allowed, but the raster fallbacks must preserve real transparency rather than a white matte.
+
+**Scale behavior:** `512` and `192` can carry the selector bead. Browser `32` and `16` should simplify aggressively — no bead, no extra symbolism, just a durable spectral ring. Small-size survival matters more than fidelity to the large icon.
+
+**Mood:** Precise, calm, premium. Avoid mascots, eye symbols, obvious tool metaphors, or anything that reads as tacky, scary, or over-explained.
+
 ## Typography
 
 **Direction:** Warm geometric or humanist sans-serif. Not Swiss brutalism (dialed's territory) — something with enough character to feel designed but enough neutrality to not compete with color. The font must hold up at both hero scale (score reveals, titles) and detail scale (HSB readouts, deltas).
@@ -190,7 +214,8 @@ Achromatic doesn't mean colorless — it means the interface earns the right to 
 - Character: Space Grotesk, Outfit, Geist Sans
 
 **System:**
-- Single weight (medium/500). One-weight discipline creates visual consistency without decision overhead. dialed.gg does this. It works.
+- Three weights: 400 (body), 500 (UI/buttons), 700 (display/hero). The original single-weight aspiration didn't survive the scale range (hero 8.6rem to detail 0.72rem). 600 excluded — too close to 500 and 700 to justify the font load. Code still loads 600 and uses it in several places; dropping it is a Beta design-pass item in `specs-roadmap`.
+- Instrument Serif (italic) loaded alongside Plus Jakarta Sans — used for home screen title treatment ("splash of hue" on Play card). Paco Coursey pattern: italic means a typeface change to serif, not just slant.
 - Tight tracking on titles (negative letter-spacing). Loose tracking on uppercase labels.
 - Modular type scale: 6 sizes from detail (0.75rem) to hero (clamp-based, viewport-responsive).
 - `font-variant-numeric: tabular-nums` on all numeric readouts (already correct).
@@ -219,7 +244,8 @@ Achromatic doesn't mean colorless — it means the interface earns the right to 
 
 **Layout:**
 - Mobile: full-viewport, edge-to-edge during gameplay. 16px edge padding on chrome (menu, results).
-- Desktop: full-width, not card-in-viewport. Educational modes (Picture It, Name It, Read It) need breathing room that a 476px card can't provide. Single breakpoint at 768px.
+- iPhone Safari gets its own guardrails: use `viewport-fit=cover`, combine `svh`/`dvh` sizing, add safe-area padding to bottom actions, and top-align tall pick/reveal layouts instead of vertically centering them when that could push confirm controls below the fold.
+- Desktop: full-width, not card-in-viewport. Educational modes (Picture It, Call It, Split It) need breathing room that a 476px card can't provide. Single breakpoint at 768px.
 - Content max-width: 480px for text-heavy screens (results, history). Picker and swatches can go wider.
 - `env(safe-area-inset-bottom)` on all bottom-positioned elements.
 
@@ -232,9 +258,25 @@ The SB field + hue bar is a competitive advantage. It maps to the HSB mental mod
 **Polish, don't replace:**
 - Styled circular handle with subtle shadow (not browser-default)
 - Smooth canvas gradients, proper anti-aliasing
-- Hue bar: rounded, gradient-filled, visible channel label
-- Slider variant: gradient-filled tracks replacing browser defaults
-- Consistent handle size across hue bar and SB field
+- Hue bar: rounded, gradient-filled, 44px tall (Apple HIG touch target)
+- SB thumb: 26px with 2.5px white border, glow ring (`box-shadow: 0 0 0 3px rgba(255,255,255,0.2)`)
+- Slider variant: `.slider-track-wrap` containers hold the gradient background; `input[type="range"]` is positioned absolute inside with transparent background. Tracks have inset shadow (`inset 0 1px 3px rgba(0,0,0,0.25)`) and rounded corners. Thumbs are 6px-wide full-height white pills with the shared glow ring pattern. Label column (H/S/B) left-aligned, uppercase, dim text.
+- All interactive handles ≥44px touch target per Apple HIG
+- Glow ring is a shared visual signature across all picker handles: `box-shadow: 0 0 0 3px rgba(255,255,255,0.2–0.25)` outer ring + shadow for depth
+
+## Buttons
+
+**Glass overlay pattern.** Action buttons during gameplay sit inside their parent card as absolute-positioned pills, not in separate nav rows. This keeps them visually integrated and avoids dead-space footer strips.
+
+- 44×44px circle, `border-radius: 999px`
+- `backdrop-filter: blur(12px) saturate(1.4)` + dark semi-transparent background (`rgba(0,0,0,0.4)`)
+- White border (`1px solid rgba(255,255,255,0.18)`) + inset highlight (`inset 0 1px 0 rgba(255,255,255,0.08)`)
+- Hover: darken background, `scale(1.08)`. Active: `scale(0.95)`.
+- Ghost variant for secondary actions: lighter background (`rgba(0,0,0,0.25)`), dimmer text (`rgba(255,255,255,0.7)`)
+- Position on display-only areas (swatches, score panels), never over interactive surfaces (pickers, sliders)
+- Icon-only with `aria-label`, SVG 18×18px, `stroke-width: 2.5`
+
+**Applied to:** confirm button (top-right of guess swatch), reveal navigation (home top-left ghost, forward top-right), and any future in-card actions.
 
 ## Results
 
@@ -242,7 +284,11 @@ Results are the highest-stakes screen — where learning happens and where share
 
 **Score-driven presentation:** A 9.8 and a 2.1 must look and feel different. Not just the number — the visual weight, the reveal timing, the feedback tone. High scores earn a longer, more ceremonial reveal. Low scores resolve quickly (don't rub it in with a slow count on a 1.3).
 
-**Swatch comparison:** Diagonal clip-path split (target triangle vs guess triangle) is the most readable comparison pattern (dialed.gg). Side-by-side rectangles (current) waste space and require eye movement. The diagonal forces the comparison at the boundary line.
+**Hero panel (shipped):** Total score with inline "/50" on the same baseline, score tier label (e.g. "SOLID EYE"), and mode + picker eyebrow (e.g. "PLAY · FIELD PICKER"). Contained in a surface panel with border and card elevation — not floating bare on the background. Tappable to toggle advanced details.
+
+**Swatch comparison:** Diagonal clip-path split (target triangle vs guess triangle) — shipped. Most readable comparison pattern (dialed.gg). The diagonal forces the comparison at the boundary line. Per-card verdict text hidden by default — reserved for advanced/progressive disclosure. Result cards use a fixed 3-column grid (`repeat(3, 1fr)`) — `auto-fit` with `minmax` allowed 4 columns on wider phones.
+
+**Layout:** Top-aligned (`flex-start`), not vertically centered. Sparse results screens (few cards, short content) should anchor to the top so the eye reads downward naturally.
 
 **Educational layer (advanced view):**
 - Per-dimension deltas (ΔL', ΔC', ΔH') as a mini visualization, not just signed numbers
@@ -255,7 +301,7 @@ Results are the highest-stakes screen — where learning happens and where share
 |-----------|-----------|---------------|
 | Purpose | Entertainment (test) | Education (teach + test) |
 | Scoring | CIE76, hue-weighted sigmoid | CIEDE2000 + hue-recovery, per-dimension breakdown |
-| Modes | Play + Daily + Multiplayer | Play + Match + Picture + Name + Read (skill-targeted) |
+| Modes | Play + Daily + Multiplayer | Play + Match It + Picture It + Call It + Split It (skill-targeted) |
 | Picker | 3 vertical strips (abstract) | SB field + hue bar (spatial) |
 | Results | Score + roast text | Score + roast + dimensional analysis |
 | Desktop | Mobile-in-a-card | Full-width, mode-appropriate layouts |
@@ -268,7 +314,9 @@ Results are the highest-stakes screen — where learning happens and where share
 Things to actively avoid:
 
 - **UI color during gameplay.** No accent-colored buttons, no tinted backgrounds, no colored borders while the player is perceiving or recalling color.
-- **Multiple font weights.** One weight. Bold is a crutch — use size and spacing for hierarchy.
+- **Launcher icon as mini-UI.** Don't turn the app icon into a literal picker diagram. No brightness center, no black knob, no progress gap, no extra controls.
+- **One-export-fits-all icon thinking.** Home-screen icons and browser favicons are different surfaces with different needs. Don't force the same container treatment into both.
+- **Unnecessary font weights.** Three weights max (400/500/700). Weight 600 is excluded — too close to its neighbors. Use size and spacing for hierarchy, not weight proliferation.
 - **Decorative animation.** If it doesn't communicate, cut it.
 - **Card-in-viewport desktop.** Don't shrink the experience to a phone-shaped box on a 27" monitor.
 - **Browser-default form elements.** Range inputs, checkboxes, selects — all must be styled or replaced. Defaults break the visual language.

@@ -7,12 +7,15 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # Local dev: serve from public/. Vercel: public/ is CDN-served via vercel.json rewrite.
 _PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
+_TOOLS_DIR = Path(__file__).resolve().parent.parent / "tools"
+_CALIBRATION_EXPORT_DIR = _TOOLS_DIR / ".export"
 
 # --- Database (lazy-init, append-only) ---
 
@@ -62,6 +65,10 @@ class SubmitRequest(BaseModel):
     total_score: float
 
 
+class SaveCalibrationExportRequest(BaseModel):
+    batches: list[dict]
+
+
 # --- App ---
 
 app = FastAPI(title="splash-of-hue")
@@ -84,6 +91,31 @@ async def submit_game(req: SubmitRequest):
         import logging
         logging.warning("Game persist failed: %s", e)
     return {"ok": True}
+
+
+def _require_local_dev():
+    if os.environ.get("VERCEL"):
+        raise HTTPException(status_code=404)
+
+
+@app.get("/__dev/calibration-source", response_class=PlainTextResponse, dependencies=[Depends(_require_local_dev)])
+async def calibration_source():
+    return (_TOOLS_DIR / "calibration.jsx").read_text(encoding="utf-8")
+
+
+@app.post("/__dev/save-calibration-export", dependencies=[Depends(_require_local_dev)])
+async def save_calibration_export(req: SaveCalibrationExportRequest):
+
+    _CALIBRATION_EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    filename = f"scoring-calibration-{timestamp}.json"
+    path = _CALIBRATION_EXPORT_DIR / filename
+    path.write_text(json.dumps(req.batches, indent=2), encoding="utf-8")
+    return {
+        "ok": True,
+        "filename": filename,
+        "path": str(path.relative_to(_TOOLS_DIR.parent)),
+    }
 
 
 # Local dev: serve static files from public/. On Vercel, public/ is CDN-served.

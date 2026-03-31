@@ -1,24 +1,38 @@
 ---
 title: Milestones
 description: Shipped capability inflection points — what became possible, what it proved, what it unblocked.
-summary: "Alpha nearly complete — client-driven architecture, resilience shipped. Scoring calibration and analytics remain before beta."
+summary: "Alpha complete — three modes, calibrated scoring, resilience, analytics. Beta in progress: homepage redesign, frontend polish, new modes."
 ---
 
-## Beta release `planned`
+## Beta release `in-progress`
 
-All five modes playable, polished UX, custom icons. The game is worth sharing broadly.
+All five modes playable, polished UX. The game is worth sharing broadly.
 
 **Will prove:** Full skill coverage — each of the five perceptual skills has a dedicated training mode.
 **Will unblock:** Public launch, broader feedback, progression/tracking features.
-**Scope:** Name It + Read It modes, custom icons, scoring curve finalized.
+**Will ship:** Call It + Split It modes, scoring curve finalized, design pass, share results.
 
-## Alpha release `in-progress`
+**Shipped so far:**
+- PWA icon suite (light installed-app icon, transparent tab favicon, apple-touch, maskable, manifest.json)
+- Mobile viewport hardening (viewport-fit=cover, safe-area insets, svh→dvh, top-aligned flex — iPhone Safari validated)
+- Focus-visible accessibility styles
+- Scoring calibration pipeline (auto-grader, regression fixtures, parity checks, population profiling)
+- Homepage redesign (2-column card grid with spectral-ring hero)
+- Touch target expansion (hue bar 44px, SB thumb 26px)
 
-Client-driven architecture — color generation + CIEDE2000 scoring fully client-side, games start instantly with no server round-trip. Three modes playable (Play/Match/Picture). Per-color reveal with HSB slider visualization, hue-recovery bonus. Resilience shipped: error handling, localStorage hardening, reduced-motion, font fallback, mobile layout fixes.
+**Remaining:**
+- Design pass — results reveal order, picker toggle, adaptive overlay, directional transitions, confirm button layout, low-score empathy, history empty state
+- Call It mode (XKCD color naming dataset, CIEDE2000 nearest-match)
+- Split It mode (needs feature spec)
+- Text-only share (navigator.share / clipboard + toast)
+- Social og image
 
-**Proving:** The core loop is fun and teaches color perception without jargon.
-**Will unblock:** Broader playtesting, feedback collection, remaining mode implementation.
-**Remaining:** Scoring curve calibration (playtesting), PostHog analytics.
+## 2026-03-30 — Alpha release `completed`
+
+Client-driven architecture — color generation + CIEDE2000 scoring fully client-side, games start instantly with no server round-trip. Three modes playable (Play/Match It/Picture It). Per-color reveal with HSB slider visualization, hue-recovery bonus. Resilience shipped: error handling, localStorage hardening, reduced-motion, font fallback, mobile layout fixes. PostHog analytics live with 10-insight Alpha Analytics dashboard. Scoring calibration pipeline shipped — auto-grader, regression fixtures, parity checks, population profiling — and first tuning cycle produced the release-gated `effective_delta_guard` scorer.
+
+**Proved:** The core loop is fun and teaches color perception without jargon.
+**Unblocked:** Broader playtesting, feedback collection, remaining mode implementation.
 
 ## 2026-03-29 — v1 live on Vercel `completed`
 

@@ -69,7 +69,7 @@ Create a new dashboard in PostHog (Dashboards > New), then add these insights.
 - **Series A:** `round_completed`, average `delta_l` (lightness error)
 - **Series B:** `round_completed`, average `delta_c` (chroma error)
 - **Series C:** `round_completed`, average `delta_h` (hue error)
-- **Reads:** Which perceptual channel drifts most? Validates whether Match/Name It/Read It target the right skills.
+- **Reads:** Which perceptual channel drifts most? Validates whether Match It/Call It/Split It target the right skills.
 
 ### 9. Mode Transitions
 
