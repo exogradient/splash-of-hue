@@ -45,7 +45,7 @@
     cards.appendChild(play);
 
     /* Secondary mode cards */
-    var COMING_SOON = { call: true, split: true };
+    var COMING_SOON = {};
     MODES.forEach(function (m) {
       var card = document.createElement('button');
       var soon = COMING_SOON[m.id];

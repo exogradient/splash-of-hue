@@ -11,7 +11,7 @@ All five modes playable with full visual identity.
 
 **Frontend:**
 - Menu cold start — tagline below brand mark on Play card (e.g. "How well do you really see color?") + one-line descriptor per mode card (~40 chars). Replace descriptors with personal best after 3+ games
-- Disabled mode cards — Call It / Split It need "Coming soon" treatment: dimmed, no interaction, no chroma animation
+- ~~Disabled mode card~~ — all modes now playable, no more "Coming soon" cards
 - Achromatic gameplay background — tinted body gradient (gold/blue radials at 10-12% opacity) persists during gameplay, affecting color perception. Scope to home screen only; gameplay uses pure `var(--bg)`
 - Touch targets — hue bar hit area 34px, below 44px minimum (Apple HIG). Expand via padding. SB field thumb (22px visual) similarly needs 44px hit area
 - Mobile scroll overlap — confirm button (position:fixed) overlaps picker on short viewports (iPhone SE). Add `padding-bottom: calc(80px + env(safe-area-inset-bottom))`
@@ -32,9 +32,8 @@ All five modes playable with full visual identity.
   - History empty state: "No games yet. Play one?" with ghost Play button
 
 **Modes** (after frontend pass):
-- Call It — described in `identity-model`, needs feature spec before implementation
-  - Color naming via XKCD color survey dataset (~950 human-sourced names, public domain). Nearest-match lookup using CIEDE2000 (already client-side). Inline as JSON. Fallback needed for sparse regions. Performance-critical: precompute CIELAB values for the dataset at build/load time, avoid per-query RGB→Lab conversion. Consider spatial index (k-d tree in LAB space) for O(log n) lookup instead of brute-force O(n) scan.
-- Split It — described in `identity-model`, needs feature spec before implementation
+- ~~Call It~~ — shipped. XKCD color survey (949 names), CIEDE2000 nearest-match, lazy LAB cache, partial sort for distractor selection.
+- ~~Split It~~ — shipped. Neutral sliders (no color preview, no gradient hints), hue color dots + intensity dots for orientation, value readouts track thumb position, reveal shows HSB comparison bars by default. CIEDE2000 scoring. Future: difficulty levels (coarse→narrow buckets) for all modes or adaptive scaling.
 
 ## Planned
 

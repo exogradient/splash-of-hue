@@ -54,9 +54,9 @@
     --glow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --glow-inner-strong: inset 0 1px 0 rgba(255, 255, 255, 0.09);
 
-    --tier-elite: #c4965a;
-    --tier-strong: #5a9ca4;
-    --tier-solid: #8a8578;
+    --tier-elite: #d4a86a;
+    --tier-strong: #7abbc3;
+    --tier-solid: #ada598;
     --tier-learning: #7a7a7a;
 
     --space-1: 4px;
@@ -711,6 +711,206 @@
   .picture-choice.selected {
     box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.85);
   }
+
+  /* ═══════ SPLIT IT ═══════ */
+  #pick[data-mode="split"] {
+    align-items: center;
+    justify-content: center;
+  }
+  #pick[data-mode="split"] .play-shell {
+    width: min(100%, 560px);
+    align-content: center;
+  }
+  #pick[data-mode="split"] .play-stage-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #pick[data-mode="split"] .picker-panel {
+    display: none;
+  }
+  .split-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .split-swatch {
+    width: 100%;
+    aspect-ratio: 1.5;
+  }
+  .split-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  .split-slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .split-slider-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0 2px;
+  }
+  .split-slider-dim {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .split-slider-endpoints {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .split-slider-track {
+    position: relative;
+    height: clamp(36px, 6svh, 48px);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.25),
+      0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .split-track-neutral {
+    background: var(--surface-raised);
+  }
+  .split-readout {
+    position: absolute;
+    top: -22px;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .split-slider-track input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .split-hue-ticks {
+    position: relative;
+    height: 10px;
+    pointer-events: none;
+    margin-top: 2px;
+  }
+  .split-hue-dot, .split-intensity-dot {
+    position: absolute;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+  }
+  .split-hue-dot {
+    opacity: 0.7;
+  }
+  .split-intensity-dots {
+    position: relative;
+    height: 10px;
+    pointer-events: none;
+    margin-top: 2px;
+  }
+  .split-intensity-dot {
+    background: white;
+  }
+
+  /* ═══════ CALL IT ═══════ */
+  #pick[data-mode="call"] {
+    align-items: center;
+    justify-content: center;
+  }
+  #pick[data-mode="call"] .play-shell {
+    align-content: center;
+  }
+  #pick[data-mode="call"] .play-stage-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #pick[data-mode="call"] .picker-panel {
+    display: none;
+  }
+  .call-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 100%;
+  }
+  .call-swatch {
+    width: 100%;
+    min-height: clamp(120px, 22svh, 200px);
+    flex-shrink: 0;
+  }
+  .call-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    width: 100%;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .call-choice {
+    border-radius: 0;
+    background: var(--surface);
+    color: var(--text);
+    border: none;
+    padding: var(--space-4) var(--space-3);
+    font-size: clamp(1rem, 3.5vw, 1.15rem);
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    line-height: 1.25;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    box-shadow: none;
+    transition:
+      background var(--duration-fast) var(--ease-out),
+      color var(--duration-fast);
+  }
+  .call-choice:active {
+    background: var(--surface-elevated);
+    transform: none;
+  }
+
+  /* Reveal — call mode name bar */
+  .reveal-call-names {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-3);
+    align-items: baseline;
+    padding: 0 var(--space-5) var(--space-4);
+    font-size: 0.84rem;
+  }
+  .reveal-call-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .reveal-call-name {
+    font-weight: 500;
+    color: var(--text);
+  }
+  .reveal-call-name.call-correct { color: var(--tier-strong); }
+  .reveal-call-name.call-wrong { color: var(--text-dim); }
+
+  .xkcd-link {
+    color: inherit;
+    text-decoration-color: rgba(255, 255, 255, 0.2);
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color var(--duration-fast);
+  }
+  .xkcd-link:hover {
+    text-decoration-color: rgba(255, 255, 255, 0.5);
+  }
   /* preview-swatch min-height set above with stage-panel */
   .match-compare {
     display: grid;
@@ -872,6 +1072,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
+    align-items: start;
   }
   .results-hero {
     padding: var(--space-5);
@@ -988,6 +1189,35 @@
   .result-names {
     color: var(--text-soft);
     font-size: 0.84rem;
+  }
+  .result-card.call-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    text-align: center;
+  }
+  .result-card.call-card .result-info,
+  .result-card.call-card .result-score {
+    grid-column: 1 / -1;
+  }
+  .result-card.call-card .result-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .result-card.call-card .result-score {
+    display: none;
+  }
+  .call-result-name {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .call-result-yours {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.25;
   }
   .result-verdict {
     color: var(--text);
@@ -1261,11 +1491,14 @@
   }
 
   @media (hover: hover) {
-    button:hover:not(.menu-mode):not(.picker-chip):not(.confirm-btn):not(.secondary):not(.ghost) {
+    button:hover:not(.menu-mode):not(.picker-chip):not(.confirm-btn):not(.secondary):not(.ghost):not(.call-choice) {
       opacity: 0.96;
     }
     .picture-choice:hover {
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+    }
+    .call-choice:hover {
+      background: var(--surface-raised);
     }
   }
 
@@ -1470,6 +1703,7 @@
 </style>
 <script src="https://us-assets.i.posthog.com/static/array.js" async></script>
 <script src="analytics.js"></script>
+<script src="xkcd-colors.js"></script>
 </head>
 <body>
 
@@ -1562,6 +1796,12 @@
         </div>
         <div class="reveal-verdict" id="revealVerdict"></div>
       </div>
+      <div class="reveal-call-names" id="revealCallNames" style="display:none">
+        <span class="reveal-call-label">Correct</span>
+        <span class="reveal-call-name" id="revealCorrectName"></span>
+        <span class="reveal-call-label">You said</span>
+        <span class="reveal-call-name" id="revealChosenName"></span>
+      </div>
       <div class="reveal-hsb" id="revealHSB" style="display:none;padding:0 var(--space-5) var(--space-4);font-size:0.78rem;color:var(--text-muted);font-variant-numeric:tabular-nums"></div>
       <button class="reveal-nav-btn ghost" onclick="goMenu()" aria-label="Quit to menu">
         <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
@@ -1635,7 +1875,7 @@ Promise.race([
 setTimeout(() => document.body.classList.add('fonts-ready'), 2000);
 
 // --- State ---
-let targetColors, guesses, currentPick, lastMode, pictureChoices, selectedChoice;
+let targetColors, guesses, currentPick, lastMode, pictureChoices, callChoices, selectedChoice;
 let roundResults = [];
 let showHistoryMode = 'play';
 let memorizeTimer = null;
@@ -1668,7 +1908,7 @@ function setPicker(type) {
   analytics.pickerSwitched(oldPicker, type, !!targetColors && currentPick < 5);
   try { localStorage.setItem('pickerType', pickerType); } catch {}
   updatePickerControl();
-  if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture') {
+  if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture' && lastMode !== 'call' && lastMode !== 'split') {
     renderPicker();
     initPickStage();
   }
@@ -1728,11 +1968,18 @@ function pictureOptionsFor(index) {
   return target ? buildPictureFallbackChoices(target, index) : [];
 }
 
+function xkcdLink(name, label) {
+  var text = encodeURIComponent(name);
+  return `<a href="https://xkcd.com/color/rgb/#:~:text=${text}" target="_blank" rel="noopener" class="xkcd-link">${label || name}</a>`;
+}
+
 function pickEyebrow(mode) {
   const labels = {
     play: 'Play',
     match: 'Match',
     picture: 'Picture',
+    call: 'Call It',
+    split: 'Split',
   };
   return labels[mode] || 'Color training';
 }
@@ -1997,6 +2244,65 @@ function deltaE76(lab1, lab2) {
   return Math.sqrt((lab1[0]-lab2[0])**2 + (lab1[1]-lab2[1])**2 + (lab1[2]-lab2[2])**2);
 }
 
+// --- XKCD color naming engine ---
+// Lazy-init: precomputes LAB + HSB for all 949 entries once (~1ms), cached globally.
+// Per-round: O(n) CIEDE2000 scan over cached LABs (~0.5ms per round).
+
+var _xkcdCache = null;
+
+function _ensureXkcdCache() {
+  if (_xkcdCache) return _xkcdCache;
+  var colors = window.XKCD_COLORS || [];
+  _xkcdCache = colors.map(function (c) {
+    var r = parseInt(c.hex.slice(1, 3), 16) / 255;
+    var g = parseInt(c.hex.slice(3, 5), 16) / 255;
+    var b = parseInt(c.hex.slice(5, 7), 16) / 255;
+    // rgbToXyz linearizes internally via srgbToLinear — pass raw sRGB [0,1]
+    var xyz = rgbToXyz(r, g, b);
+    var lab = xyzToLab(xyz[0], xyz[1], xyz[2]);
+    return { name: c.name, hex: c.hex, h: c.h, s: c.s, b: c.b, lab: lab };
+  });
+  return _xkcdCache;
+}
+
+function buildCallChoices(targetHSB) {
+  var cache = _ensureXkcdCache();
+  var targetLab = hsbToLab(targetHSB.h, targetHSB.s, targetHSB.b);
+  // O(n) pass: compute CIEDE2000 distance for each cached entry
+  var ranked = cache.map(function (c, i) {
+    return { idx: i, dist: deltaE2000(targetLab, c.lab)[0] };
+  });
+  // Partial sort: find top 100 by distance (avoids full O(n log n) sort)
+  var topK = 100;
+  for (var k = 0; k < topK && k < ranked.length; k++) {
+    var minIdx = k;
+    for (var j = k + 1; j < ranked.length; j++) {
+      if (ranked[j].dist < ranked[minIdx].dist) minIdx = j;
+    }
+    if (minIdx !== k) {
+      var tmp = ranked[k]; ranked[k] = ranked[minIdx]; ranked[minIdx] = tmp;
+    }
+  }
+  // Distractor spread: mix of difficulties so wrong picks cost real points
+  // Correct answer: nearest name (rank 0)
+  // Hard: 2 from ranks 1-4 (similar names — tests precision)
+  // Medium: 2 from ranks 8-20 (same color region — tests vocabulary)
+  // Far: 3 from ranks 40-99 (different color family — punishes wild guesses)
+  var correct = cache[ranked[0].idx];
+  var hard = shuffle(ranked.slice(1, 5).map(function (r) { return cache[r.idx]; })).slice(0, 2);
+  var medium = shuffle(ranked.slice(8, 21).map(function (r) { return cache[r.idx]; })).slice(0, 2);
+  var far = shuffle(ranked.slice(40, topK).map(function (r) { return cache[r.idx]; })).slice(0, 3);
+  var all = shuffle([correct].concat(hard, medium, far));
+  var correctIdx = -1;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i] === correct) { correctIdx = i; break; }
+  }
+  return {
+    choices: all.map(function (c) { return { name: c.name, hex: c.hex, h: c.h, s: c.s, b: c.b }; }),
+    correctIdx: correctIdx,
+  };
+}
+
 // --- Client-side color generation ---
 function generateColors(n = 5) {
   const colors = [];
@@ -2073,8 +2379,13 @@ function startGame(mode) {
       const options = [c, ...generateDistractors(c, 3)];
       return shuffle(options);
     });
+    callChoices = [];
+  } else if (mode === 'call') {
+    callChoices = targetColors.map(c => buildCallChoices(c));
+    pictureChoices = [];
   } else {
     pictureChoices = [];
+    callChoices = [];
   }
   guesses = [];
   currentPick = 0;
@@ -2152,7 +2463,8 @@ function startPicking() {
   document.getElementById('pick').dataset.mode = lastMode;
   document.getElementById('swatchArea').innerHTML = '';
   const pickerEl = document.getElementById('pickerContainer');
-  if (lastMode === 'picture') {
+  var noPicker = lastMode === 'picture' || lastMode === 'call' || lastMode === 'split';
+  if (noPicker) {
     pickerEl.style.display = 'none';
     pickerEl.innerHTML = '';
   } else {
@@ -2160,9 +2472,9 @@ function startPicking() {
     renderPicker();
   }
   const confirmBtn = document.getElementById('confirmBtn');
-  confirmBtn.hidden = lastMode === 'picture';
+  confirmBtn.hidden = lastMode === 'picture' || lastMode === 'call';
   confirmBtn.innerHTML = confirmIconMarkup();
-  confirmBtn.setAttribute('aria-label', lastMode === 'picture' ? 'Confirm choice' : 'Lock in guess');
+  confirmBtn.setAttribute('aria-label', lastMode === 'split' ? 'Lock in estimate' : noPicker ? 'Confirm choice' : 'Lock in guess');
   initPickStage();
 }
 
@@ -2171,15 +2483,25 @@ function initPickStage() {
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
   document.getElementById('pickProgress').textContent = `${currentPick + 1}/5`;
   document.getElementById('pickModeEyebrow').textContent = pickEyebrow(lastMode);
-  document.getElementById('pickerTypeNote').textContent = lastMode === 'picture' ? 'No picker' : pickerLabel(pickerType);
-  document.getElementById('pickerTitle').textContent = lastMode === 'picture'
-    ? 'Multiple choice'
+  var noPickerMode = lastMode === 'picture' || lastMode === 'call' || lastMode === 'split';
+  document.getElementById('pickerTypeNote').textContent = noPickerMode ? (lastMode === 'split' ? 'Estimate' : 'No picker') : pickerLabel(pickerType);
+  document.getElementById('pickerTitle').textContent = noPickerMode
+    ? (lastMode === 'split' ? 'Estimate each channel' : 'Multiple choice')
     : pickerType === 'field'
       ? 'Hue plus saturation and brightness'
       : 'Channel-by-channel matching';
   document.getElementById('pickReadout').textContent = '';
 
-  if (lastMode === 'picture') {
+  if (lastMode === 'split') {
+    const tc = targetColors[currentPick];
+    area.innerHTML = `
+      <div class="split-stage">
+        <div class="split-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)}"></div>
+        <div class="split-sliders" id="splitSliders"></div>
+      </div>`;
+    renderSplitSliders();
+    document.getElementById('confirmBtn').disabled = false;
+  } else if (lastMode === 'picture') {
     const tc = targetColors[currentPick];
     const choices = pictureOptionsFor(currentPick);
     area.innerHTML = `
@@ -2189,6 +2511,16 @@ function initPickStage() {
           `<div class="picture-choice"
                 onclick="selectChoice(${i})"
                 style="background:${hsbToHsl(c.h, c.s, c.b)}"></div>`
+        ).join('')}</div>
+      </div>`;
+  } else if (lastMode === 'call') {
+    const tc = targetColors[currentPick];
+    const { choices } = callChoices[currentPick];
+    area.innerHTML = `
+      <div class="call-stage">
+        <div class="call-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)}"></div>
+        <div class="call-choices">${choices.map((c, i) =>
+          `<button class="call-choice" onclick="selectChoice(${i})">${c.name}</button>`
         ).join('')}</div>
       </div>`;
   } else if (lastMode === 'match') {
@@ -2218,11 +2550,12 @@ function initPickStage() {
 }
 
 function updatePickUI() {
+  if (lastMode === 'split' || lastMode === 'picture' || lastMode === 'call') return;
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
   if (lastMode === 'match') {
     const el = document.getElementById('guessSwatch');
     if (el) { el.style.background = guessCss; return; }
-  } else if (lastMode !== 'picture') {
+  } else {
     const el = document.getElementById('previewSwatch');
     if (el) { el.style.background = guessCss; return; }
   }
@@ -2231,10 +2564,18 @@ function updatePickUI() {
 
 function confirmPick() {
   let guess;
+  let callMeta = null;
   if (lastMode === 'picture') {
     if (selectedChoice < 0) return;
     const chosen = pictureOptionsFor(currentPick)[selectedChoice];
     guess = { h: chosen.h, s: chosen.s, b: chosen.b };
+  } else if (lastMode === 'call') {
+    if (selectedChoice < 0) return;
+    const round = callChoices[currentPick];
+    const chosen = round.choices[selectedChoice];
+    const correct = round.choices[round.correctIdx];
+    guess = { h: chosen.h, s: chosen.s, b: chosen.b };
+    callMeta = { chosenName: chosen.name, correctName: correct.name };
   } else {
     guess = { ...currentHSB };
   }
@@ -2243,17 +2584,32 @@ function confirmPick() {
   const result = scoreGuess(target, guess);
   result.target = target;
   result.guess = guess;
+  if (callMeta) {
+    result.call_chosen_name = callMeta.chosenName;
+    result.call_correct_name = callMeta.correctName;
+    // Correct name pick = perfect score
+    if (callMeta.chosenName === callMeta.correctName) result.score = 10;
+  }
   roundResults.push(result);
 
-  // Analytics: find correct index for picture mode (which option is the target)
+  // Analytics: find correct index for choice-based modes
   var correctIdx = null;
+  var callChosenName = null, callCorrectName = null;
   if (lastMode === 'picture') {
     var opts = pictureOptionsFor(currentPick);
     for (var i = 0; i < opts.length; i++) {
       if (opts[i].h === target.h && opts[i].s === target.s && opts[i].b === target.b) { correctIdx = i; break; }
     }
+  } else if (lastMode === 'call') {
+    correctIdx = callChoices[currentPick].correctIdx;
+    callChosenName = callMeta.chosenName;
+    callCorrectName = callMeta.correctName;
   }
-  analytics.roundCompleted(currentPick, result, lastMode, lastMode === 'picture' ? 'none' : pickerType, lastMode === 'picture' ? selectedChoice : null, correctIdx);
+  var choiceMode = lastMode === 'picture' || lastMode === 'call';
+  analytics.roundCompleted(currentPick, result, lastMode,
+    lastMode === 'split' ? 'split' : choiceMode ? 'none' : pickerType,
+    choiceMode ? selectedChoice : null, correctIdx,
+    callChosenName, callCorrectName);
 
   showReveal(result, currentPick);
 }
@@ -2275,8 +2631,22 @@ function showReveal(result, roundIndex) {
   document.getElementById('revealGuess').style.background =
     hsbToHsl(result.guess.h, result.guess.s, result.guess.b);
   document.getElementById('revealVerdict').textContent = colorFeedbackText(result.score);
+
+  // Call It: show correct name vs chosen name
+  const callNamesEl = document.getElementById('revealCallNames');
+  if (lastMode === 'call' && result.call_correct_name) {
+    callNamesEl.style.display = '';
+    document.getElementById('revealCorrectName').innerHTML = xkcdLink(result.call_correct_name);
+    const chosenEl = document.getElementById('revealChosenName');
+    chosenEl.innerHTML = xkcdLink(result.call_chosen_name);
+    var wasCorrect = result.call_chosen_name === result.call_correct_name;
+    chosenEl.className = 'reveal-call-name ' + (wasCorrect ? 'call-correct' : 'call-wrong');
+  } else {
+    callNamesEl.style.display = 'none';
+  }
+
   const hsbEl = document.getElementById('revealHSB');
-  hsbEl.style.display = 'none';
+  hsbEl.style.display = lastMode === 'split' ? '' : 'none';
   hsbEl.innerHTML = revealSliders(result.target, result.guess);
   scoreEl.focus();
 }
@@ -2368,6 +2738,80 @@ function saveToHistory(game) {
     }
     localStorage.setItem('gameHistory', JSON.stringify(kept));
   } catch (e) {}
+}
+
+// --- Split It sliders (blind estimation — no preview) ---
+function renderSplitSliders() {
+  const container = document.getElementById('splitSliders');
+  if (!container) return;
+  const hueTicks = [
+    { pos: 0, label: 'Red' }, { pos: 30, label: 'Org' }, { pos: 60, label: 'Ylw' },
+    { pos: 120, label: 'Grn' }, { pos: 180, label: 'Cyn' }, { pos: 240, label: 'Blu' },
+    { pos: 300, label: 'Prp' }, { pos: 330, label: 'Pnk' },
+  ];
+  container.innerHTML = `
+    <div class="split-slider-row">
+      <div class="split-slider-head">
+        <span class="split-slider-dim">Hue</span>
+      </div>
+      <div class="split-slider-track split-track-neutral">
+        <input type="range" id="splitH" min="0" max="360" step="1" value="${currentHSB.h}" aria-label="Hue estimate">
+        <div class="split-readout" id="splitHVal">${Math.round(currentHSB.h)}°</div>
+      </div>
+      <div class="split-hue-ticks">${hueTicks.map(t =>
+        `<div class="split-hue-dot" style="left:${(t.pos / 360 * 100).toFixed(1)}%;background:hsl(${t.pos} 100% 50%)"></div>`
+      ).join('')}</div>
+    </div>
+    <div class="split-slider-row">
+      <div class="split-slider-head">
+        <span class="split-slider-dim">Saturation</span>
+      </div>
+      <div class="split-slider-track split-track-neutral">
+        <input type="range" id="splitS" min="0" max="100" step="1" value="${currentHSB.s}" aria-label="Saturation estimate">
+        <div class="split-readout" id="splitSVal">${Math.round(currentHSB.s)}</div>
+      </div>
+      <div class="split-intensity-dots">${[0,20,40,60,80,100].map(p =>
+        `<div class="split-intensity-dot" style="left:${p}%;opacity:${0.15 + p/100 * 0.7}"></div>`
+      ).join('')}</div>
+    </div>
+    <div class="split-slider-row">
+      <div class="split-slider-head">
+        <span class="split-slider-dim">Brightness</span>
+      </div>
+      <div class="split-slider-track split-track-neutral">
+        <input type="range" id="splitB" min="0" max="100" step="1" value="${currentHSB.b}" aria-label="Brightness estimate">
+        <div class="split-readout" id="splitBVal">${Math.round(currentHSB.b)}</div>
+      </div>
+      <div class="split-intensity-dots">${[0,20,40,60,80,100].map(p =>
+        `<div class="split-intensity-dot" style="left:${p}%;background:rgb(${Math.round(p*2.55)},${Math.round(p*2.55)},${Math.round(p*2.55)})"></div>`
+      ).join('')}</div>
+    </div>`;
+
+  function updateSplitReadouts() {
+    var h = currentHSB.h, s = currentHSB.s, b = currentHSB.b;
+    var hEl = document.getElementById('splitHVal');
+    var sEl = document.getElementById('splitSVal');
+    var bEl = document.getElementById('splitBVal');
+    hEl.textContent = Math.round(h) + '°';
+    sEl.textContent = Math.round(s);
+    bEl.textContent = Math.round(b);
+    hEl.style.left = (h / 360 * 100) + '%';
+    sEl.style.left = (s / 100 * 100) + '%';
+    bEl.style.left = (b / 100 * 100) + '%';
+  }
+
+  const update = () => {
+    currentHSB.h = +document.getElementById('splitH').value;
+    currentHSB.s = +document.getElementById('splitS').value;
+    currentHSB.b = +document.getElementById('splitB').value;
+    updateSplitReadouts();
+    analytics.pickerAdjusted();
+  };
+
+  ['splitH', 'splitS', 'splitB'].forEach(id => {
+    document.getElementById(id).addEventListener('input', update);
+  });
+  updateSplitReadouts();
 }
 
 // --- Picker Rendering ---
@@ -2520,9 +2964,11 @@ function renderField(container) {
 // --- Results ---
 function showResults(data) {
   showScreen('results');
-  document.getElementById('resultsMeta').textContent = lastMode === 'picture'
-    ? `${modeLabel(lastMode)} · no picker`
-    : `${modeLabel(lastMode)} · ${pickerLabel(pickerType)} picker`;
+  var metaDetail = lastMode === 'call' ? 'name matching'
+    : lastMode === 'picture' ? 'multiple choice'
+    : lastMode === 'split' ? 'slider estimation'
+    : `${pickerLabel(pickerType)} picker`;
+  document.getElementById('resultsMeta').textContent = `${modeLabel(lastMode)} · ${metaDetail}`;
   const tier = totalTierClass(data.total_score);
   const tierEl = document.getElementById('scoreTier');
   tierEl.textContent = scoreTierText(data.total_score);
@@ -2542,7 +2988,8 @@ function showResults(data) {
   const detailClass = showAdvanced ? 'result-detail-wrap visible' : 'result-detail-wrap';
   data.results.forEach((r, i) => {
     const card = document.createElement('div');
-    card.className = `result-card ${resultTierClass(r.score)}`;
+    var isCall = lastMode === 'call' || !!r.call_correct_name;
+    card.className = `result-card ${resultTierClass(r.score)}${isCall ? ' call-card' : ''}`;
     card.style.animationDelay = `${100 * (i + 1)}ms`;
     const tCss = hsbToHsl(r.target.h, r.target.s, r.target.b);
     const gCss = hsbToHsl(r.guess.h, r.guess.s, r.guess.b);
@@ -2558,6 +3005,14 @@ function showResults(data) {
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
     });
+    var callNameHtml = '';
+    if (isCall) {
+      var wasRight = r.call_chosen_name === r.call_correct_name;
+      callNameHtml = wasRight
+        ? `<div class="call-result-name">${xkcdLink(r.call_correct_name)}</div>`
+        : `<div class="call-result-name">${xkcdLink(r.call_correct_name)}</div>
+           <div class="call-result-yours">you said ${xkcdLink(r.call_chosen_name)}</div>`;
+    }
     card.innerHTML = `
       <div>
         <div class="swatch-compare">
@@ -2568,10 +3023,8 @@ function showResults(data) {
       </div>
       <div class="result-info">
         <div class="result-head">
-          <div>
-            <div class="result-verdict">${colorFeedbackText(r.score)}</div>
-          </div>
-          <div class="result-names">${r.target_name} to ${r.guess_name}</div>
+          ${isCall ? callNameHtml : `<div><div class="result-verdict">${colorFeedbackText(r.score)}</div></div>
+          <div class="result-names">${r.target_name} to ${r.guess_name}</div>`}
         </div>
         <div class="${detailClass}">
           ${revealSliders(r.target, r.guess)}
@@ -2618,7 +3071,7 @@ function showHistory() {
   try { all = JSON.parse(localStorage.getItem('gameHistory') || '[]'); }
   catch (e) { all = []; }
 
-  const modes = ['play', 'match', 'picture'];
+  const modes = ['play', 'match', 'picture', 'call', 'split'];
   const activeMode = showHistoryMode;
   const filtered = all
     .filter(g => g.mode === activeMode)

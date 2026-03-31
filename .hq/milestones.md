@@ -10,7 +10,7 @@ All five modes playable, polished UX. The game is worth sharing broadly.
 
 **Will prove:** Full skill coverage — each of the five perceptual skills has a dedicated training mode.
 **Will unblock:** Public launch, broader feedback, progression/tracking features.
-**Will ship:** Call It + Split It modes, scoring curve finalized, design pass, share results.
+**Will ship:** Scoring curve finalized, design pass, share results.
 
 **Shipped so far:**
 - PWA icon suite (light installed-app icon, transparent tab favicon, apple-touch, maskable, manifest.json)
@@ -19,11 +19,12 @@ All five modes playable, polished UX. The game is worth sharing broadly.
 - Scoring calibration pipeline (auto-grader, regression fixtures, parity checks, population profiling)
 - Homepage redesign (2-column card grid with spectral-ring hero)
 - Touch target expansion (hue bar 44px, SB thumb 26px)
+- Call It mode (XKCD color survey 949 names, CIEDE2000 nearest-match, distance-based scoring, lazy LAB cache, 8 choices per round)
+- Split It mode (neutral sliders — no color preview/gradient hints, hue color dots, intensity dots, live value readouts, HSB reveal bars shown by default, CIEDE2000 scoring)
+- All five modes now playable — no more "Coming soon" cards
 
 **Remaining:**
 - Design pass — results reveal order, picker toggle, adaptive overlay, directional transitions, confirm button layout, low-score empathy, history empty state
-- Call It mode (XKCD color naming dataset, CIEDE2000 nearest-match)
-- Split It mode (needs feature spec)
 - Text-only share (navigator.share / clipboard + toast)
 - Social og image
 

@@ -66,7 +66,8 @@
   // mode_transition     : player switched modes between games
   // memorize_started    : memorize phase begins (play mode only) — timing anchor
   // pick_started        : pick phase begins — timing anchor
-  // round_completed     : one color scored — deltas, timing, interactions
+  // round_completed     : one color scored — deltas, timing, interactions,
+  //                       call_chosen_name/call_correct_name (call mode only)
   // game_completed      : all 5 rounds done — aggregate score, duration
   // game_abandoned      : left mid-game — how far they got
   // picker_switched     : changed picker type — during game or from menu
@@ -96,7 +97,7 @@
 
       capture('game_started', {
         mode: mode,
-        picker_type: mode === 'picture' ? 'none' : pickerType,
+        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         viewport_bucket: viewportBucket(),
         session_game_index: _sessionGameCount,
       });
@@ -118,7 +119,7 @@
       _pickerAdjustments++;
     },
 
-    roundCompleted: function (roundIndex, result, mode, pickerType, selectedChoiceIndex, correctChoiceIndex) {
+    roundCompleted: function (roundIndex, result, mode, pickerType, selectedChoiceIndex, correctChoiceIndex, callChosenName, callCorrectName) {
       var now = Date.now();
       capture('round_completed', {
         mode: mode,
@@ -138,6 +139,8 @@
         picker_adjustment_count: _pickerAdjustments,
         picture_choice_index: selectedChoiceIndex != null ? selectedChoiceIndex : null,
         picture_correct_index: correctChoiceIndex != null ? correctChoiceIndex : null,
+        call_chosen_name: callChosenName || null,
+        call_correct_name: callCorrectName || null,
       });
 
       // Reset per-round state
@@ -150,7 +153,7 @@
       _inProgress = false;
       capture('game_completed', {
         mode: mode,
-        picker_type: mode === 'picture' ? 'none' : pickerType,
+        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         total_score: totalScore,
         round_scores: roundScores,
         total_duration_ms: _gameStartedAt ? Date.now() - _gameStartedAt : null,
@@ -163,7 +166,7 @@
       _inProgress = false;
       capture('game_abandoned', {
         mode: mode,
-        picker_type: mode === 'picture' ? 'none' : pickerType,
+        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         rounds_completed: roundsCompleted,
         abandoned_at_screen: currentScreen,
         elapsed_ms: _gameStartedAt ? Date.now() - _gameStartedAt : null,

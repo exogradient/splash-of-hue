@@ -1,6 +1,6 @@
 ---
 updated: 2026-03-30
-summary: "Alpha complete — three modes, calibrated scoring, resilience, analytics. Beta in progress: homepage redesign, frontend polish, new modes."
+summary: "Alpha complete — four modes (Play, Match It, Picture It, Call It), calibrated scoring, resilience, analytics. Beta in progress: homepage redesign, frontend polish, Split It mode."
 ---
 
 ## Direction
@@ -16,15 +16,15 @@ Hue accuracy matters more than brightness/saturation drift — the game rewards 
 - **CIEDE2000 over CIE76**: per-dimension breakdown, built-in hue weighting (2026-03-28)
 
 ## Current State
-Three modes playable (Play, Match It, Picture It). Client-side color generation + CIEDE2000 scoring — games start instantly with no server round-trip. Per-color reveal screen. localStorage history with mode tabs. Deployed on Vercel serverless. Single-file frontend, single-file backend (submit endpoint only). Alpha resilience and bugs shipped. PostHog analytics and spectral-ring PWA icon system live. Scoring calibration pipeline shipped — alpha scorer release-gated. 5 frontend blockers remain for alpha.
+Four modes playable (Play, Match It, Picture It, Call It). Client-side color generation + CIEDE2000 scoring — games start instantly with no server round-trip. Per-color reveal screen. localStorage history with mode tabs. Deployed on Vercel serverless. Single-file frontend, single-file backend (submit endpoint only). Alpha resilience and bugs shipped. PostHog analytics and spectral-ring PWA icon system live. Scoring calibration pipeline shipped — alpha scorer release-gated.
 
 ## Open Threads
 - Homepage redesign WIP — paint-chip card stack, mode card content
 - Frontend polish blockers (beta scope): touch targets, achromatic gameplay bg, mobile scroll overlap, menu cold start, disabled mode cards
 - File splitting — unit tests for scoring would be the forcing function
-- Remaining modes (Call It, Split It) — beta scope
+- Remaining mode (Split It) — beta scope
 
 ## Next Steps
 - Continue homepage iteration
 - Beta frontend polish pass
-- Call It + Split It mode implementation
+- Split It mode implementation

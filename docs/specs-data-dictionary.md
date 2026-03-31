@@ -38,7 +38,7 @@ Fires when a new game begins (colors generated, round state reset).
 | Property | Type | Example | Purpose |
 |---|---|---|---|
 | `mode` | string | `play` | Which game mode |
-| `picker_type` | string | `field` | Which picker (or `none` for picture) |
+| `picker_type` | string | `field` | Which picker (or `none` for picture/call) |
 | `viewport_bucket` | string | `tablet` | Device class at game start |
 | `session_game_index` | int | `2` | How many games this page load (engagement depth) |
 
@@ -72,8 +72,10 @@ Fires after each of 5 color rounds is scored.
 | `memorize_duration_ms` | int/null | `5000` | Time in memorize phase (play mode only) |
 | `pick_duration_ms` | int/null | `3200` | Time from pick screen to confirm |
 | `picker_adjustment_count` | int | `14` | Pointer interactions before confirming |
-| `picture_choice_index` | int/null | `2` | Which option tapped (picture mode only) |
+| `picture_choice_index` | int/null | `2` | Which option tapped (picture/call mode) |
 | `picture_correct_index` | int/null | `0` | Position of correct answer — detects positional bias |
+| `call_chosen_name` | string/null | `dusty blue` | Name the player chose (call mode only) |
+| `call_correct_name` | string/null | `cornflower` | Nearest XKCD name to target (call mode only) |
 
 ### `game_completed`
 
