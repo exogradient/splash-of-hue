@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   margin: auto;
 }
 
@@ -23,7 +23,9 @@
 
 /* ── Play card (hero) ── */
 .home-play {
-  background: linear-gradient(150deg, rgb(238, 228, 215), rgb(235, 225, 212));
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.55), transparent 32%),
+    linear-gradient(150deg, rgb(241, 232, 220), rgb(232, 221, 207));
   border-radius: var(--radius-lg);
   flex: 1;
   min-height: 0;
@@ -35,10 +37,10 @@
   margin-bottom: -24px;
   cursor: pointer;
   border: none;
-  padding: 0;
+  padding: 0 clamp(28px, 7vw, 54px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   color: inherit;
-  overflow: visible;
+  overflow: hidden;
   transition:
     transform var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);
@@ -46,7 +48,9 @@
 .home-play:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(150deg, rgb(238, 228, 215), rgb(235, 225, 212));
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.62), transparent 32%),
+    linear-gradient(150deg, rgb(241, 232, 220), rgb(232, 221, 207));
 }
 .home-play:active {
   transform: scale(0.995);
@@ -61,7 +65,7 @@
   font-family: 'Instrument Serif', serif;
   font-style: italic;
   font-size: clamp(20px, 4vw, 28px);
-  color: rgba(30, 25, 20, 0.36);
+  color: rgba(30, 25, 20, 0.43);
   pointer-events: none;
   transform: rotate(-4deg);
   transform-origin: left center;
@@ -74,7 +78,7 @@
   font-weight: 700;
   line-height: 0.84;
   letter-spacing: -0.08em;
-  color: rgba(30, 25, 20, 0.82);
+  color: rgba(30, 25, 20, 0.86);
 }
 
 /* ── Secondary mode cards ── */
@@ -82,8 +86,10 @@
   border-radius: var(--radius-lg);
   height: 80px;
   flex-shrink: 0;
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: 12px;
   padding: 12px 18px;
   margin-bottom: -36px;  /* 80 - 36 = 44px visible — WCAG touch target */
   cursor: pointer;
@@ -115,9 +121,72 @@
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.95);
+  color: currentColor;
   line-height: 1;
 }
+
+.home-mode-head {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  color: currentColor;
+  opacity: 0.62;
+}
+
+.home-mode-copy {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-cue-pair,
+.home-cue-hsb,
+.home-cue-word,
+.home-cue-bars {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.home-cue-pair i {
+  width: 13px;
+  height: 13px;
+  display: block;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.home-cue-pair i + i { margin-left: -5px; background: rgba(255, 255, 255, 0.2); }
+.home-cue-hsb { gap: 2px; }
+.home-cue-hsb i {
+  width: 13px;
+  height: 13px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 0.42rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.home-cue-word {
+  height: 15px;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 0.58rem;
+  font-style: italic;
+}
+.home-cue-bars { flex-direction: column; gap: 2px; align-items: flex-start; }
+.home-cue-bars i { height: 1px; background: currentColor; }
+.home-cue-bars i:nth-child(1) { width: 16px; }
+.home-cue-bars i:nth-child(2) { width: 11px; }
+.home-cue-bars i:nth-child(3) { width: 7px; }
 
 /* ── Coming soon — full color, text label differentiates ── */
 .home-mode--soon,
@@ -153,20 +222,28 @@
 }
 
 /* ── Card colors ── */
-.home-match   { background: linear-gradient(135deg, rgb(240, 100, 135), rgb(245, 135, 150)); }
-.home-picture { background: linear-gradient(135deg, rgb(100, 145, 250), rgb(135, 170, 255)); }
-.home-call    { background: linear-gradient(135deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
-.home-split   { background: linear-gradient(135deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
+.home-match   { color: rgba(255, 255, 255, 0.96); background: linear-gradient(135deg, rgb(238, 92, 132), rgb(245, 135, 150)); }
+.home-picture { color: rgba(255, 255, 255, 0.96); background: linear-gradient(135deg, rgb(91, 137, 244), rgb(135, 170, 255)); }
+.home-call    { color: rgba(14, 70, 63, 0.92); background: linear-gradient(135deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
+.home-split   { color: rgba(83, 57, 6, 0.88); background: linear-gradient(135deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
 
 /* ── Toolbar (picker + history) ── */
 .home-tools {
   display: flex;
+  align-items: center;
+  gap: 8px;
   justify-content: flex-end;
-  padding: 12px 4px 0;
+  padding: 14px 4px 0;
   flex-shrink: 0;
   z-index: 10;
-  opacity: 0.44;
+  opacity: 0.68;
   transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+#menu .utility-history {
+  width: 30px;
+  height: 30px;
+  padding: 0;
 }
 .home-tools:hover,
 .home-tools:focus-within {
@@ -185,7 +262,7 @@
    ═══════════════════════════════════════════════ */
 @media (min-width: 768px) {
   .home-stack {
-    max-width: 900px;
+    max-width: 960px;
   }
 
   .home-cards {
@@ -200,20 +277,21 @@
   }
 
   .home-mode {
-    width: clamp(80px, 7vw, 100px);
+    display: flex;
+    width: clamp(100px, 8vw, 116px);
     height: auto;
     flex-shrink: 0;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding: clamp(14px, 2vh, 20px) 0;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: clamp(18px, 2.5vh, 24px) 16px;
     margin-bottom: 0;
-    margin-right: -18px;
+    margin-right: -16px;
     box-shadow: -2px 0 6px rgba(0, 0, 0, 0.10);
   }
   .home-mode:hover {
-    transform: translateX(-2px);
-    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.18);
+    transform: translateX(-5px);
+    box-shadow: -6px 0 18px rgba(0, 0, 0, 0.2);
   }
   .home-mode:nth-child(5) { margin-right: 0; }
 
@@ -222,8 +300,30 @@
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
-    font-size: 1rem;
+    font-size: 1.06rem;
   }
+  .home-mode-head {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    opacity: 0.72;
+  }
+  .home-mode-copy {
+    align-self: center;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .home-cue-pair i { width: 20px; height: 20px; }
+  .home-cue-pair i + i { margin-left: -8px; }
+  .home-cue-hsb { gap: 3px; }
+  .home-cue-hsb i { width: 17px; height: 17px; font-size: 0.48rem; }
+  .home-cue-word { height: 20px; padding: 0 7px; font-size: 0.68rem; }
+  .home-cue-bars { gap: 4px; }
+  .home-cue-bars i:nth-child(1) { width: 28px; }
+  .home-cue-bars i:nth-child(2) { width: 20px; }
+  .home-cue-bars i:nth-child(3) { width: 12px; }
   .home-mode-soon {
     writing-mode: vertical-rl;
     text-orientation: mixed;
@@ -234,8 +334,8 @@
   }
 
   /* Vertical gradients for desktop cards */
-  .home-match   { background: linear-gradient(180deg, rgb(240, 100, 135), rgb(245, 135, 150)); }
-  .home-picture { background: linear-gradient(180deg, rgb(100, 145, 250), rgb(135, 170, 255)); }
+  .home-match   { background: linear-gradient(180deg, rgb(238, 92, 132), rgb(245, 135, 150)); }
+  .home-picture { background: linear-gradient(180deg, rgb(91, 137, 244), rgb(135, 170, 255)); }
   .home-call    { background: linear-gradient(180deg, rgb(80, 210, 180), rgb(120, 230, 200)); }
   .home-split   { background: linear-gradient(180deg, rgb(250, 195, 70), rgb(255, 215, 110)); }
 
@@ -256,9 +356,9 @@
     margin-bottom: -20px;
   }
   .home-mode {
-    height: 68px;
-    margin-bottom: -24px;  /* 68 - 24 = 44px visible — WCAG touch target */
-    padding: 10px 14px;
+    height: 72px;
+    margin-bottom: -24px;  /* 72 - 24 = 48px visible */
+    padding: 12px 14px;
   }
   .home-mode:nth-child(5) { margin-bottom: 0; }
   .home-mode-name {
@@ -271,8 +371,15 @@
     font-size: clamp(2.8rem, 11vw, 3.6rem);
   }
   .home-tools {
-    opacity: 0.52;
+    opacity: 0.72;
+    padding-top: 12px;
   }
+}
+
+@media (max-width: 380px) {
+  .home-mode-head { display: none; }
+  .home-mode { grid-template-columns: 1fr; }
+  #menu .utility-history { width: 30px; padding: 0; justify-content: center; }
 }
 
 /* ═══════════════════════════════════════════════

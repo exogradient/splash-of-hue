@@ -15,6 +15,8 @@
 (function () {
   'use strict';
 
+  var isEmbedPlay = new URLSearchParams(window.location.search).get('embed') === 'play';
+
   // --- PostHog init (privacy-safe) ---
   // API key is a write-only client token — can ingest events, cannot read data.
   var PH_KEY = 'phc_knK62rpB1yFgSOJgWUVjDslP3PIfwqea5LnzK72gaBQ';
@@ -54,6 +56,7 @@
   }
 
   function capture(eventName, props) {
+    if (isEmbedPlay) return;
     if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
       try { posthog.capture(eventName, props); } catch (e) { /* silent */ }
     }
@@ -70,7 +73,6 @@
   //                       call_chosen_name/call_correct_name (call mode only)
   // game_completed      : all 5 rounds done — aggregate score, duration
   // game_abandoned      : left mid-game — how far they got
-  // picker_switched     : changed picker type — during game or from menu
 
   // --- Public API ---
 
@@ -97,7 +99,7 @@
 
       capture('game_started', {
         mode: mode,
-        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
+        picker_type: mode === 'split' ? 'split' : (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         viewport_bucket: viewportBucket(),
         session_game_index: _sessionGameCount,
       });
@@ -153,7 +155,7 @@
       _inProgress = false;
       capture('game_completed', {
         mode: mode,
-        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
+        picker_type: mode === 'split' ? 'split' : (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         total_score: totalScore,
         round_scores: roundScores,
         total_duration_ms: _gameStartedAt ? Date.now() - _gameStartedAt : null,
@@ -166,18 +168,10 @@
       _inProgress = false;
       capture('game_abandoned', {
         mode: mode,
-        picker_type: (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
+        picker_type: mode === 'split' ? 'split' : (mode === 'picture' || mode === 'call') ? 'none' : pickerType,
         rounds_completed: roundsCompleted,
         abandoned_at_screen: currentScreen,
         elapsed_ms: _gameStartedAt ? Date.now() - _gameStartedAt : null,
-      });
-    },
-
-    pickerSwitched: function (fromPicker, toPicker, duringGame) {
-      capture('picker_switched', {
-        from_picker: fromPicker,
-        to_picker: toPicker,
-        during_game: duringGame,
       });
     },
   };

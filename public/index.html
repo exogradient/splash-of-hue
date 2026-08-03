@@ -722,16 +722,25 @@
     margin-top: auto;
   }
   .picture-choice {
+    min-width: 0;
+    padding: 0;
     border-radius: 0;
     cursor: pointer;
     aspect-ratio: 1.2;
     border: none;
+    appearance: none;
+    -webkit-appearance: none;
     transition:
       opacity var(--duration-fast) var(--ease-out),
       box-shadow var(--duration-fast) var(--ease-out);
   }
   .picture-choice.selected {
     box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.85);
+  }
+  .picture-choice:focus-visible {
+    z-index: 1;
+    outline: 3px solid rgba(255, 255, 255, 0.94);
+    outline-offset: -5px;
   }
 
   /* ═══════ SPLIT IT ═══════ */
@@ -922,6 +931,56 @@
   }
   .reveal-call-name.call-correct { color: var(--tier-strong); }
   .reveal-call-name.call-wrong { color: var(--text-dim); }
+  body[data-embed="play"] .reveal-nav-btn.ghost,
+  body[data-embed="play"] .reveal-progress,
+  body[data-embed="play"] .reveal-hsb { display: none !important; }
+
+  body[data-embed="play"] #reveal {
+    align-items: stretch;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+  }
+  body[data-embed="play"] #pick {
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+  }
+  body[data-embed="play"] .play-shell {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    gap: 0;
+    align-content: stretch;
+  }
+  body[data-embed="play"] .play-stage-row {
+    height: 100%;
+    border-radius: 0;
+  }
+  body[data-embed="play"] .reveal-shell {
+    align-self: stretch;
+    flex: 1;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+  }
+  body[data-embed="play"] .reveal-card {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    border-radius: 0;
+  }
+  body[data-embed="play"] .reveal-swatches {
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+  body[data-embed="play"] .play-stage-row,
+  body[data-embed="play"] .reveal-card {
+    border: 0;
+    box-shadow: none;
+  }
 
   .xkcd-link {
     color: inherit;
@@ -939,6 +998,11 @@
     grid-template-columns: 1fr 1px 1fr;
     width: 100%;
     aspect-ratio: 2;
+    cursor: pointer;
+  }
+  .match-compare:focus-visible {
+    outline: 2px solid rgba(244, 237, 227, 0.94);
+    outline-offset: -4px;
   }
   .match-compare-divider {
     background: rgba(255, 255, 255, 0.1);
@@ -958,12 +1022,50 @@
     left: 0;
     right: 0;
     font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.84);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     text-align: center;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     pointer-events: none;
+  }
+  .match-compare-label.on-light {
+    color: rgba(10, 12, 15, 0.84);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.28);
+  }
+  .match-compare-label.is-hsb {
+    letter-spacing: 0.045em;
+    text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .match-reveal-values {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .match-reveal-value {
+    display: grid;
+    gap: 3px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.035);
+    text-align: center;
+  }
+  .match-reveal-value span {
+    color: var(--text-muted);
+    font-size: 0.56rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .match-reveal-value strong {
+    color: var(--text-soft);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    font-variant-numeric: tabular-nums;
   }
 
   .slider-group {
@@ -1029,57 +1131,85 @@
       0 2px 8px rgba(0, 0, 0, 0.5);
   }
 
-  .field-picker {
+  .wheel-picker {
     width: 100%;
     flex: 1;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    place-items: center;
+    padding: clamp(14px, 3vmin, 24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+    background: rgba(3, 4, 6, 0.18);
   }
-  .hue-bar {
-    width: 100%;
-    height: 44px;
-    border-radius: 0;
-    cursor: crosshair;
+  .spectrum-control {
+    width: min(100%, 420px, 48svh);
+    aspect-ratio: 1;
     position: relative;
-    background: linear-gradient(to right,
-      hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
-      hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));
-    touch-action: none;
+    flex: none;
   }
-  .hue-thumb {
+  .spectrum-value {
     position: absolute;
-    inset: 4px auto 4px 0;
-    width: 8px;
-    background: white;
-    border-radius: 999px;
-    pointer-events: none;
-    box-shadow:
-      0 0 0 3px rgba(255, 255, 255, 0.25),
-      0 2px 8px rgba(0, 0, 0, 0.5);
-    transform: translateX(-4px);
-  }
-  .sb-field {
-    width: 100%;
-    aspect-ratio: 1.15;
-    border-radius: 0;
-    cursor: crosshair;
-    position: relative;
-    overflow: hidden;
-    touch-action: none;
-    border: none;
-  }
-  .sb-field-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-  .sb-thumb {
-    position: absolute;
-    width: 26px;
-    height: 26px;
+    inset: 0;
     border-radius: 50%;
-    border: 2.5px solid white;
-    box-shadow:
-      0 0 0 3px rgba(255, 255, 255, 0.2),
-      0 4px 14px rgba(0, 0, 0, 0.5);
+    background: conic-gradient(
+      from 180deg,
+      #000 0deg,
+      var(--selected-color, hsl(180 100% 25%)) var(--value-stop, 180deg),
+      var(--value-color, hsl(180 100% 50%)) 360deg
+    );
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .spectrum-value:focus-visible,
+  .spectrum-disc:focus-visible {
+    outline: 2px solid rgba(244, 237, 227, 0.94);
+    outline-offset: 5px;
+  }
+  .spectrum-value-handle,
+  .spectrum-disc-handle {
+    position: absolute;
+    z-index: 4;
+    width: 22px;
+    height: 22px;
+    border: 3px solid white;
+    border-radius: 50%;
     pointer-events: none;
-    transform: translate(-13px, -13px);
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 0 2px rgba(0, 0, 0, 0.38),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  .spectrum-disc {
+    position: absolute;
+    z-index: 2;
+    inset: 9.5%;
+    border-radius: 50%;
+    background: conic-gradient(
+      hsl(0 100% 50%),
+      hsl(60 100% 50%),
+      hsl(120 100% 50%),
+      hsl(180 100% 50%),
+      hsl(240 100% 50%),
+      hsl(300 100% 50%),
+      hsl(360 100% 50%)
+    );
+    cursor: crosshair;
+    touch-action: none;
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.42),
+      0 0 0 2px rgba(10, 12, 16, 0.9),
+      0 0 0 3px rgba(255, 255, 255, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  .spectrum-disc-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .spectrum-disc-handle {
+    z-index: 3;
   }
 
   #results {
@@ -1618,6 +1748,7 @@
     align-items: center;
     justify-content: space-between;
   }
+  .reveal-meta.has-detail { cursor: pointer; }
   .reveal-score-cluster {
     display: flex;
     align-items: baseline;
@@ -1946,20 +2077,8 @@
   <div class="home-tools">
     <div class="menu-dock">
       <div class="menu-dock-actions">
-        <div class="picker-segment" role="group" aria-label="Picker">
-          <button type="button" class="picker-chip" id="pickerFieldBtn" onclick="setPicker('field')" aria-label="Field picker">
-            <span class="picker-chip-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><use href="/icons.svg#icon-field"></use></svg>
-            </span>
-          </button>
-          <button type="button" class="picker-chip" id="pickerSlidersBtn" onclick="setPicker('sliders')" aria-label="Sliders picker">
-            <span class="picker-chip-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><use href="/icons.svg#icon-sliders"></use></svg>
-            </span>
-          </button>
-        </div>
         <button class="secondary icon-btn utility-history" onclick="showHistory()" aria-label="History">
-          <svg aria-hidden="true"><use href="/icons.svg#icon-history"></use></svg>
+          <svg aria-hidden="true"><use href="icons.svg#icon-history"></use></svg>
         </button>
       </div>
     </div>
@@ -2003,12 +2122,12 @@
             <p class="eyebrow">Picker</p>
             <p class="picker-title" id="pickerTitle">Hue, saturation, and brightness</p>
           </div>
-          <p class="picker-note" id="pickerTypeNote">Field</p>
+          <p class="picker-note" id="pickerTypeNote">Wheel</p>
         </div>
         <div id="pickerContainer"></div>
       </div>
       <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-forward"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
       </button>
     </div>
   </div>
@@ -2023,7 +2142,7 @@
         <div id="revealTarget"></div>
         <div id="revealGuess"></div>
       </div>
-      <div class="reveal-meta" onclick="toggleRevealDetail()" style="cursor:pointer">
+      <div class="reveal-meta" id="revealMeta">
         <div class="reveal-score-cluster">
           <div class="reveal-score-num" id="revealScore" tabindex="-1"></div>
           <div class="reveal-score-max">/ 10</div>
@@ -2038,10 +2157,10 @@
       </div>
       <div class="reveal-hsb" id="revealHSB" style="display:none;padding:0 var(--space-5) var(--space-4);font-size:0.78rem;color:var(--text-muted);font-variant-numeric:tabular-nums"></div>
       <button class="reveal-nav-btn ghost" onclick="goMenu()" aria-label="Quit to menu">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
       </button>
       <button class="reveal-nav-btn" onclick="continueAfterReveal()" aria-label="Continue">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-forward"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
       </button>
     </div>
   </div>
@@ -2065,13 +2184,13 @@
     <div id="resultCards"></div>
     <div class="btn-row results-actions">
       <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
       </button>
       <button class="secondary results-icon-btn" onclick="startGame(lastMode)" aria-label="Play again">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-replay"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-replay"></use></svg>
       </button>
       <button class="secondary results-icon-btn" onclick="shareGame()" aria-label="Share">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-share"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-share"></use></svg>
       </button>
     </div>
   </div>
@@ -2082,7 +2201,7 @@
   <div class="history-shell panel">
     <div class="history-top">
       <button class="icon-btn" onclick="goMenu()" aria-label="Back to menu">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-back"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-back"></use></svg>
       </button>
     </div>
     <div class="history-list" id="historyList"></div>
@@ -2095,7 +2214,7 @@
     <div class="challenge-code-row">
       <span class="challenge-code" id="challengeCodeText"></span>
       <button class="secondary challenge-copy-btn" onclick="copyCode()" aria-label="Copy code">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-copy"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-copy"></use></svg>
       </button>
     </div>
     <div class="challenge-meta">
@@ -2105,19 +2224,19 @@
     <div class="challenge-leaderboard" id="challengeLeaderboard"></div>
     <div class="btn-row results-actions">
       <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-home"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
       </button>
       <button class="secondary results-icon-btn" onclick="copyCode()" aria-label="Copy code">
-        <svg aria-hidden="true"><use href="/icons.svg#icon-copy"></use></svg>
+        <svg aria-hidden="true"><use href="icons.svg#icon-copy"></use></svg>
       </button>
     </div>
   </div>
 </div>
 
 <!-- Name entry sheet -->
-<div class="name-sheet" id="nameSheet">
+<div class="name-sheet" id="nameSheet" role="dialog" aria-modal="true" aria-labelledby="nameSheetTitle" aria-hidden="true" inert>
   <div class="name-sheet-panel">
-    <p class="name-sheet-title">Enter your name</p>
+    <p class="name-sheet-title" id="nameSheetTitle">Enter your name</p>
     <input type="text" class="name-input" id="nameInput" placeholder="Display name" maxlength="20" autocomplete="off" spellcheck="false">
     <p class="name-error" id="nameError"></p>
     <button id="nameSubmitBtn" onclick="submitName()">Share</button>
@@ -2125,7 +2244,7 @@
 </div>
 
 <!-- Success toast -->
-<div class="success-toast" id="successToast">
+<div class="success-toast" id="successToast" role="status" aria-live="polite" aria-hidden="true">
   <span class="success-toast-msg" id="successToastMsg">Copied!</span>
 </div>
 
@@ -2135,12 +2254,12 @@ if (!window.analytics) {
   var noop = function(){};
   window.analytics = { sessionStarted:noop, gameStarted:noop, memorizeStarted:noop,
     pickStarted:noop, pickerAdjusted:noop, roundCompleted:noop, gameCompleted:noop,
-    gameAbandoned:noop, pickerSwitched:noop };
+    gameAbandoned:noop };
 }
 
-// --- Icon helper — references /icons.svg sprite sheet ---
+// --- Icon helper — references the product-owned sprite beside this document ---
 function icon(name, ariaHidden = true) {
-  return `<svg${ariaHidden ? ' aria-hidden="true"' : ''}><use href="/icons.svg#icon-${name}"></use></svg>`;
+  return `<svg${ariaHidden ? ' aria-hidden="true"' : ''}><use href="icons.svg#icon-${name}"></use></svg>`;
 }
 
 // --- Font loading gate ---
@@ -2156,17 +2275,18 @@ let targetColors, guesses, currentPick, lastMode, pictureChoices, callChoices, s
 let roundResults = [];
 let showHistoryMode = 'play';
 let memorizeTimer = null;
-let pickerType;
-try { pickerType = localStorage.getItem('pickerType') || 'field'; }
-catch { pickerType = 'field'; }
+let pickerType = 'wheel';
 let currentHSB = { h: 180, s: 50, b: 50 };
+let matchHSBVisible = false;
+const spectrumImageCache = new Map();
 let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
+const isEmbedPlay = new URLSearchParams(window.location.search).get('embed') === 'play';
 let challengeCode = null;
 let challengePlayerName = null;
 let _nameCallback = null;
 
 document.body.dataset.screen = 'menu';
-updatePickerControl();
+if (isEmbedPlay) document.body.dataset.embed = 'play';
 
 
 // --- Navigation ---
@@ -2183,26 +2303,6 @@ function goMenu() {
   showScreen('menu');
 }
 
-function setPicker(type) {
-  if (pickerType === type) return;
-  var oldPicker = pickerType;
-  pickerType = type;
-  analytics.pickerSwitched(oldPicker, type, !!targetColors && currentPick < 5);
-  try { localStorage.setItem('pickerType', pickerType); } catch {}
-  updatePickerControl();
-  if (document.body.dataset.screen === 'pick' && lastMode && lastMode !== 'picture' && lastMode !== 'call' && lastMode !== 'split') {
-    renderPicker();
-    initPickStage();
-  }
-}
-
-function updatePickerControl() {
-  document.getElementById('pickerFieldBtn').classList.toggle('active', pickerType === 'field');
-  document.getElementById('pickerSlidersBtn').classList.toggle('active', pickerType === 'sliders');
-  document.getElementById('pickerFieldBtn').setAttribute('aria-pressed', String(pickerType === 'field'));
-  document.getElementById('pickerSlidersBtn').setAttribute('aria-pressed', String(pickerType === 'sliders'));
-}
-
 function modeLabel(mode) {
   const labels = { play: 'Play', match: 'Match It', picture: 'Picture It', call: 'Call It', split: 'Split It' };
   return labels[mode] || mode;
@@ -2216,8 +2316,7 @@ function modeIconMarkup(mode, className = '') {
 }
 
 function pickerLabel(type) {
-  const labels = { field: 'Field', sliders: 'Sliders' };
-  return labels[type] || type;
+  return type === 'wheel' ? 'Wheel' : type;
 }
 
 function confirmIconMarkup() {
@@ -2522,6 +2621,12 @@ function scoreGuess(target, guess) {
 }
 // --- Shared scorer block: end ---
 
+function swatchNeedsDarkInk(color) {
+  const [r, g, b] = hsbToRgb(color.h, color.s, color.b);
+  const luminance = 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
+  return luminance > 0.2;
+}
+
 function deltaE76(lab1, lab2) {
   return Math.sqrt((lab1[0]-lab2[0])**2 + (lab1[1]-lab2[1])**2 + (lab1[2]-lab2[2])**2);
 }
@@ -2638,12 +2743,17 @@ let errorToastTimer = null;
 function showError(msg) {
   const toast = document.getElementById('errorToast');
   document.getElementById('errorToastMsg').textContent = msg || "Couldn't connect";
+  toast.removeAttribute('inert');
+  toast.setAttribute('aria-hidden', 'false');
   toast.classList.add('visible');
   clearTimeout(errorToastTimer);
-  errorToastTimer = setTimeout(() => toast.classList.remove('visible'), 5000);
+  errorToastTimer = setTimeout(hideError, 5000);
 }
 function hideError() {
-  document.getElementById('errorToast').classList.remove('visible');
+  const toast = document.getElementById('errorToast');
+  toast.classList.remove('visible');
+  toast.setAttribute('aria-hidden', 'true');
+  toast.setAttribute('inert', '');
   clearTimeout(errorToastTimer);
 }
 function retryLastMode() {
@@ -2656,8 +2766,9 @@ function startGame(mode) {
   challengeCode = null;
   challengePlayerName = null;
   lastMode = mode;
+  if (mode === 'play' || mode === 'match') pickerType = 'wheel';
   hideError();
-  targetColors = generateColors(5);
+  targetColors = generateColors(isEmbedPlay && mode === 'play' ? 1 : 5);
   if (mode === 'picture') {
     pictureChoices = targetColors.map(c => {
       const options = [c, ...generateDistractors(c, 3)];
@@ -2711,7 +2822,9 @@ function startMemorize() {
   const grid = document.getElementById('memorizeGrid');
   grid.innerHTML = '';
   const c = targetColors[currentPick];
-  document.getElementById('memorizeLabel').textContent = `Color ${currentPick + 1} of 5 — memorize!`;
+  document.getElementById('memorizeLabel').textContent = isEmbedPlay
+    ? 'Memorize'
+    : `Color ${currentPick + 1} of ${targetColors.length} — memorize!`;
   // Adaptive overlay: lighten pill on dark targets so text stays readable
   const overlay = document.getElementById('memorize').querySelector('.memorize-overlay');
   overlay.classList.toggle('on-dark', c.b < 40 || (c.b < 55 && c.s < 30));
@@ -2746,6 +2859,7 @@ function startPicking() {
   analytics.pickStarted();
   showScreen('pick');
   currentHSB = { h: 180, s: 50, b: 50 };
+  matchHSBVisible = false;
   selectedChoice = -1;
   document.getElementById('pick').dataset.mode = lastMode;
   document.getElementById('swatchArea').innerHTML = '';
@@ -2768,15 +2882,13 @@ function startPicking() {
 function initPickStage() {
   const area = document.getElementById('swatchArea');
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
-  document.getElementById('pickProgress').textContent = `${currentPick + 1}/5`;
+  document.getElementById('pickProgress').textContent = `${currentPick + 1}/${targetColors.length}`;
   document.getElementById('pickModeEyebrow').textContent = pickEyebrow(lastMode);
   var noPickerMode = lastMode === 'picture' || lastMode === 'call' || lastMode === 'split';
   document.getElementById('pickerTypeNote').textContent = noPickerMode ? (lastMode === 'split' ? 'Estimate' : 'No picker') : pickerLabel(pickerType);
   document.getElementById('pickerTitle').textContent = noPickerMode
     ? (lastMode === 'split' ? 'Estimate each channel' : 'Multiple choice')
-    : pickerType === 'field'
-      ? 'Hue plus saturation and brightness'
-      : 'Channel-by-channel matching';
+    : 'Hue ring and saturation/brightness field';
   document.getElementById('pickReadout').textContent = '';
 
   if (lastMode === 'split') {
@@ -2795,9 +2907,9 @@ function initPickStage() {
       <div class="picture-stage">
         <div class="picture-target">${formatHSBCompact(tc)}</div>
         <div class="picture-choices">${choices.map((c, i) =>
-          `<div class="picture-choice"
+          `<button class="picture-choice" type="button" aria-label="Color option ${i + 1}"
                 onclick="selectChoice(${i})"
-                style="background:${hsbToHsl(c.h, c.s, c.b)}"></div>`
+                style="background:${hsbToHsl(c.h, c.s, c.b)}"></button>`
         ).join('')}</div>
       </div>`;
   } else if (lastMode === 'call') {
@@ -2815,17 +2927,21 @@ function initPickStage() {
     const targetCss = hsbToHsl(tc.h, tc.s, tc.b);
     area.innerHTML = `
       <div class="stage-frame">
-        <div class="match-compare">
+        <div class="match-compare" id="matchCompare" role="button" tabindex="0"
+             aria-pressed="false" aria-label="Show HSB values" title="Show HSB values"
+             onclick="toggleMatchHSB(event)" onkeydown="handleMatchHSBKey(event)">
           <div class="match-compare-col">
             <div class="match-compare-swatch" id="targetSwatch" style="background:${targetCss}"></div>
-            <div class="match-compare-label">Target</div>
+            <div class="match-compare-label${swatchNeedsDarkInk(tc) ? ' on-light' : ''}" id="targetLabel">Target</div>
           </div>
           <div class="match-compare-divider"></div>
           <div class="match-compare-col">
             <div class="match-compare-swatch" id="guessSwatch" style="background:${guessCss}"></div>
+            <div class="match-compare-label${swatchNeedsDarkInk(currentHSB) ? ' on-light' : ''}" id="guessLabel">Guess</div>
           </div>
         </div>
       </div>`;
+    updateMatchHSBDisclosure();
     document.getElementById('confirmBtn').disabled = false;
   } else {
     area.innerHTML = `
@@ -2841,12 +2957,49 @@ function updatePickUI() {
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
   if (lastMode === 'match') {
     const el = document.getElementById('guessSwatch');
-    if (el) { el.style.background = guessCss; return; }
+    if (el) {
+      el.style.background = guessCss;
+      const label = document.getElementById('guessLabel');
+      if (label) label.classList.toggle('on-light', swatchNeedsDarkInk(currentHSB));
+      updateMatchHSBDisclosure();
+      return;
+    }
   } else {
     const el = document.getElementById('previewSwatch');
     if (el) { el.style.background = guessCss; return; }
   }
   initPickStage();
+}
+
+function formatHSBInline(color) {
+  return `H ${Math.round(color.h)} · S ${Math.round(color.s)} · B ${Math.round(color.b)}`;
+}
+
+function updateMatchHSBDisclosure() {
+  if (lastMode !== 'match') return;
+  const surface = document.getElementById('matchCompare');
+  const guessLabel = document.getElementById('guessLabel');
+  if (surface) {
+    surface.setAttribute('aria-pressed', String(matchHSBVisible));
+    surface.setAttribute('aria-label', matchHSBVisible ? 'Hide HSB values' : 'Show HSB values');
+    surface.title = matchHSBVisible ? 'Hide HSB values' : 'Show HSB values';
+  }
+  if (guessLabel) {
+    guessLabel.textContent = matchHSBVisible ? formatHSBInline(currentHSB) : 'Guess';
+    guessLabel.classList.toggle('is-hsb', matchHSBVisible);
+  }
+}
+
+function toggleMatchHSB(event) {
+  if (event) event.stopPropagation();
+  matchHSBVisible = !matchHSBVisible;
+  updateMatchHSBDisclosure();
+}
+
+function handleMatchHSBKey(event) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  toggleMatchHSB(event);
 }
 
 function confirmPick() {
@@ -2908,7 +3061,7 @@ function selectChoice(idx) {
 
 function showReveal(result, roundIndex) {
   showScreen('reveal');
-  document.getElementById('revealProgress').innerHTML = `${roundIndex + 1} <span class="reveal-progress-dim">/ 5</span>`;
+  document.getElementById('revealProgress').innerHTML = `${roundIndex + 1} <span class="reveal-progress-dim">/ ${targetColors.length}</span>`;
   const scoreEl = document.getElementById('revealScore');
   scoreEl.className = 'reveal-score-num';
   scoreEl.style.color = hsbToHsl(result.target.h, result.target.s, result.target.b);
@@ -2933,9 +3086,34 @@ function showReveal(result, roundIndex) {
   }
 
   const hsbEl = document.getElementById('revealHSB');
-  hsbEl.style.display = lastMode === 'split' ? '' : 'none';
-  hsbEl.innerHTML = revealSliders(result.target, result.guess);
-  scoreEl.focus();
+  if (lastMode === 'split') {
+    hsbEl.style.display = '';
+    hsbEl.innerHTML = revealSliders(result.target, result.guess);
+  } else if (lastMode === 'match' && matchHSBVisible) {
+    hsbEl.style.display = '';
+    hsbEl.innerHTML = `<div class="match-reveal-values">
+      <div class="match-reveal-value"><span>Target</span><strong>${formatHSBInline(result.target)}</strong></div>
+      <div class="match-reveal-value"><span>Guess</span><strong>${formatHSBInline(result.guess)}</strong></div>
+    </div>`;
+  } else {
+    hsbEl.style.display = 'none';
+    hsbEl.innerHTML = '';
+  }
+  const revealMeta = document.getElementById('revealMeta');
+  const detailAvailable = !isEmbedPlay && Boolean(hsbEl.innerHTML.trim());
+  revealMeta.classList.toggle('has-detail', detailAvailable);
+  revealMeta.onclick = detailAvailable ? toggleRevealDetail : null;
+  revealMeta.onkeydown = detailAvailable ? handleRevealDetailKey : null;
+  if (detailAvailable) {
+    revealMeta.setAttribute('role', 'button');
+    revealMeta.setAttribute('tabindex', '0');
+    revealMeta.setAttribute('aria-expanded', String(hsbEl.style.display !== 'none'));
+  } else {
+    revealMeta.removeAttribute('role');
+    revealMeta.removeAttribute('tabindex');
+    revealMeta.removeAttribute('aria-expanded');
+  }
+  if (!isEmbedPlay) scoreEl.focus({ preventScroll: true });
 }
 
 function revealSliders(target, guess) {
@@ -2966,12 +3144,24 @@ function revealSliders(target, guess) {
 
 function toggleRevealDetail() {
   const el = document.getElementById('revealHSB');
+  if (isEmbedPlay || !el.innerHTML.trim()) return;
   el.style.display = el.style.display === 'none' ? '' : 'none';
+  document.getElementById('revealMeta').setAttribute('aria-expanded', String(el.style.display !== 'none'));
+}
+
+function handleRevealDetailKey(event) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  toggleRevealDetail();
 }
 
 function continueAfterReveal() {
+  if (isEmbedPlay) {
+    startGame('play');
+    return;
+  }
   currentPick++;
-  if (currentPick >= 5) {
+  if (currentPick >= targetColors.length) {
     persistAndShowResults();
   } else if (lastMode === 'play') {
     startMemorize();
@@ -3115,148 +3305,208 @@ function renderSplitSliders() {
 // --- Picker Rendering ---
 function renderPicker() {
   const container = document.getElementById('pickerContainer');
-  document.getElementById('pick').dataset.picker = pickerType;
-  if (pickerType === 'sliders') {
-    renderSliders(container);
-  } else {
-    renderField(container);
-  }
+  pickerType = 'wheel';
+  document.getElementById('pick').dataset.picker = 'wheel';
+  renderWheelPicker(container);
 }
 
-// Sliders
-function renderSliders(container) {
+function renderWheelPicker(container) {
+  if (container._pickerResizeObserver) container._pickerResizeObserver.disconnect();
   container.innerHTML = `
-    <div class="slider-group">
-      <div class="slider-row">
-        <span class="slider-label">H</span>
-        <div class="slider-track-wrap" id="slHWrap">
-          <input type="range" id="slH" min="0" max="360" step="1" value="${currentHSB.h}" aria-label="Hue">
+    <div class="wheel-picker">
+      <div class="spectrum-control">
+        <div class="spectrum-value" id="spectrumValue" role="slider" tabindex="0"
+             aria-label="Brightness" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(currentHSB.b)}">
+          <div class="spectrum-value-handle" id="spectrumValueHandle" aria-hidden="true"></div>
         </div>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">S</span>
-        <div class="slider-track-wrap" id="slSWrap">
-          <input type="range" id="slS" min="0" max="100" step="1" value="${currentHSB.s}" aria-label="Saturation">
-        </div>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">B</span>
-        <div class="slider-track-wrap" id="slBWrap">
-          <input type="range" id="slB" min="0" max="100" step="1" value="${currentHSB.b}" aria-label="Brightness">
+        <div class="spectrum-disc" id="spectrumDisc" role="slider" tabindex="0"
+             aria-label="Hue and saturation" aria-valuemin="0" aria-valuemax="360"
+             aria-valuenow="${Math.round(currentHSB.h)}">
+          <canvas class="spectrum-disc-canvas" id="spectrumDiscCanvas" aria-hidden="true"></canvas>
+          <div class="spectrum-disc-handle" id="spectrumDiscHandle" aria-hidden="true"></div>
         </div>
       </div>
     </div>`;
 
-  function updateSliderBackgrounds() {
-    document.getElementById('slHWrap').style.background = 'linear-gradient(90deg, hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%), hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%))';
-    document.getElementById('slSWrap').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, 0, currentHSB.b)}, ${hsbToHsl(currentHSB.h, 100, currentHSB.b)})`;
-    document.getElementById('slBWrap').style.background = `linear-gradient(90deg, ${hsbToHsl(currentHSB.h, currentHSB.s, 0)}, ${hsbToHsl(currentHSB.h, currentHSB.s, 100)})`;
+  const valueRing = document.getElementById('spectrumValue');
+  const valueHandle = document.getElementById('spectrumValueHandle');
+  const spectrum = document.getElementById('spectrumDisc');
+  const spectrumCanvas = document.getElementById('spectrumDiscCanvas');
+  const spectrumHandle = document.getElementById('spectrumDiscHandle');
+  // A complete circular ramp: minimum and maximum meet at the bottom seam.
+  const VALUE_START = 180;
+  const VALUE_SWEEP = 360;
+
+  function updateAccessibility() {
+    valueRing.setAttribute('aria-valuenow', Math.round(currentHSB.b));
+    valueRing.setAttribute('aria-valuetext', Math.round(currentHSB.b) + ' percent brightness');
+    spectrum.setAttribute('aria-valuenow', Math.round(currentHSB.h));
+    spectrum.setAttribute('aria-valuetext', Math.round(currentHSB.h) + ' degrees hue, ' + Math.round(currentHSB.s) + ' percent saturation');
   }
 
-  const update = () => {
-    currentHSB.h = +document.getElementById('slH').value;
-    currentHSB.s = +document.getElementById('slS').value;
-    currentHSB.b = +document.getElementById('slB').value;
-    updateSliderBackgrounds();
+  function updateVisuals() {
+    const ringSize = valueRing.clientWidth;
+    const spectrumSize = spectrum.clientWidth;
+    if (!ringSize || !spectrumSize) return;
+
+    const selectedColor = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
+    const fullBrightnessColor = hsbToHsl(currentHSB.h, currentHSB.s, 100);
+    valueRing.style.setProperty('--selected-color', selectedColor);
+    valueRing.style.setProperty('--value-stop', (currentHSB.b / 100 * VALUE_SWEEP) + 'deg');
+    valueRing.style.setProperty('--value-color', fullBrightnessColor);
+
+    const valueAngle = (VALUE_START + currentHSB.b / 100 * VALUE_SWEEP) * Math.PI / 180;
+    const valueRadius = ringSize * 0.455;
+    valueHandle.style.left = (ringSize / 2 + Math.sin(valueAngle) * valueRadius) + 'px';
+    valueHandle.style.top = (ringSize / 2 - Math.cos(valueAngle) * valueRadius) + 'px';
+    valueHandle.style.background = selectedColor;
+
+    const hueAngle = currentHSB.h * Math.PI / 180;
+    const spectrumRadius = (spectrumSize / 2 - 11) * currentHSB.s / 100;
+    spectrumHandle.style.left = (spectrumSize / 2 + Math.sin(hueAngle) * spectrumRadius) + 'px';
+    spectrumHandle.style.top = (spectrumSize / 2 - Math.cos(hueAngle) * spectrumRadius) + 'px';
+    spectrumHandle.style.background = selectedColor;
+  }
+
+  let spectrumCanvasSize = 0;
+  function drawSpectrum() {
+    const cssSize = Math.round(spectrum.clientWidth);
+    if (!cssSize) return;
+    const scale = Math.min(window.devicePixelRatio || 1, 2);
+    const size = Math.max(1, Math.round(cssSize * scale));
+    if (size === spectrumCanvasSize) return;
+    spectrumCanvasSize = size;
+    spectrumCanvas.width = size;
+    spectrumCanvas.height = size;
+
+    const ctx = spectrumCanvas.getContext('2d');
+    const cachedSpectrum = spectrumImageCache.get(size);
+    if (cachedSpectrum) {
+      ctx.putImageData(cachedSpectrum, 0, 0);
+      return;
+    }
+    const image = ctx.createImageData(size, size);
+    const pixels = image.data;
+    const center = (size - 1) / 2;
+    const radius = size / 2;
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const dx = (x - center) / radius;
+        const dy = (y - center) / radius;
+        const saturation = Math.min(Math.hypot(dx, dy), 1);
+        let hue = Math.atan2(dx, -dy) * 180 / Math.PI;
+        if (hue < 0) hue += 360;
+
+        const chroma = saturation;
+        const segment = hue / 60;
+        const secondary = chroma * (1 - Math.abs(segment % 2 - 1));
+        let red = 0, green = 0, blue = 0;
+        if (segment < 1) { red = chroma; green = secondary; }
+        else if (segment < 2) { red = secondary; green = chroma; }
+        else if (segment < 3) { green = chroma; blue = secondary; }
+        else if (segment < 4) { green = secondary; blue = chroma; }
+        else if (segment < 5) { red = secondary; blue = chroma; }
+        else { red = chroma; blue = secondary; }
+
+        const white = 1 - chroma;
+        const index = (y * size + x) * 4;
+        pixels[index] = Math.round((red + white) * 255);
+        pixels[index + 1] = Math.round((green + white) * 255);
+        pixels[index + 2] = Math.round((blue + white) * 255);
+        pixels[index + 3] = 255;
+      }
+    }
+    ctx.putImageData(image, 0, 0);
+    spectrumImageCache.set(size, image);
+    if (spectrumImageCache.size > 4) {
+      spectrumImageCache.delete(spectrumImageCache.keys().next().value);
+    }
+  }
+
+  function commitUpdate() {
+    updateVisuals();
+    updateAccessibility();
     updatePickUI();
     analytics.pickerAdjusted();
-  };
+  }
 
-  ['slH', 'slS', 'slB'].forEach(id => {
-    document.getElementById(id).addEventListener('input', update);
+  function handleSpectrumPointer(e) {
+    const rect = spectrum.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    let degrees = Math.atan2(dx, -dy) * 180 / Math.PI;
+    if (degrees < 0) degrees += 360;
+    currentHSB.h = Math.round(degrees);
+    currentHSB.s = Math.round(clamp(Math.hypot(dx, dy) / (rect.width / 2 - 11), 0, 1) * 100);
+    commitUpdate();
+  }
+
+  function handleValuePointer(e) {
+    const rect = valueRing.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    let degrees = Math.atan2(dx, -dy) * 180 / Math.PI;
+    if (degrees < 0) degrees += 360;
+    const delta = (degrees - VALUE_START + 360) % 360;
+    const progress = delta / VALUE_SWEEP;
+    currentHSB.b = Math.round(progress * 100);
+    commitUpdate();
+  }
+
+  let valueDown = false;
+  valueRing.addEventListener('pointerdown', e => {
+    valueDown = true;
+    valueRing.setPointerCapture(e.pointerId);
+    handleValuePointer(e);
   });
-  updateSliderBackgrounds();
-}
+  valueRing.addEventListener('pointermove', e => { if (valueDown) handleValuePointer(e); });
+  valueRing.addEventListener('pointerup', () => { valueDown = false; });
+  valueRing.addEventListener('pointercancel', () => { valueDown = false; });
+  valueRing.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 10 : 2;
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+    const direction = e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 1;
+    currentHSB.b = clamp(currentHSB.b + direction * step, 0, 100);
+    commitUpdate();
+  });
 
-// Field (hue bar + SB plane)
-function renderField(container) {
-  container.innerHTML = `
-    <div class="field-picker">
-      <div class="hue-bar" id="hueBar"><div class="hue-thumb" id="hueThumb"></div></div>
-      <div class="sb-field" id="sbField">
-        <canvas class="sb-field-bg" id="sbCanvas"></canvas>
-        <div class="sb-thumb" id="sbThumb"></div>
-      </div>
-    </div>`;
+  let spectrumDown = false;
+  spectrum.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    spectrumDown = true;
+    spectrum.setPointerCapture(e.pointerId);
+    handleSpectrumPointer(e);
+  });
+  spectrum.addEventListener('pointermove', e => { if (spectrumDown) handleSpectrumPointer(e); });
+  spectrum.addEventListener('pointerup', () => { spectrumDown = false; });
+  spectrum.addEventListener('pointercancel', () => { spectrumDown = false; });
+  spectrum.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 10 : 2;
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === 'ArrowLeft') currentHSB.h = (currentHSB.h - step + 360) % 360;
+    if (e.key === 'ArrowRight') currentHSB.h = (currentHSB.h + step) % 360;
+    if (e.key === 'ArrowUp') currentHSB.s = clamp(currentHSB.s + step, 0, 100);
+    if (e.key === 'ArrowDown') currentHSB.s = clamp(currentHSB.s - step, 0, 100);
+    commitUpdate();
+  });
 
-  const hueBar = document.getElementById('hueBar');
-  const hueThumb = document.getElementById('hueThumb');
-  const sbField = document.getElementById('sbField');
-  const sbCanvas = document.getElementById('sbCanvas');
-  const sbThumb = document.getElementById('sbThumb');
+  const resizeObserver = new ResizeObserver(() => {
+    drawSpectrum();
+    updateVisuals();
+  });
+  resizeObserver.observe(valueRing);
+  resizeObserver.observe(spectrum);
+  container._pickerResizeObserver = resizeObserver;
 
-  function updateHueThumb() {
-    const pct = currentHSB.h / 360;
-    hueThumb.style.left = (pct * 100) + '%';
-  }
-
-  let _sbW = 0, _sbH = 0;
-  function drawSB() {
-    const rect = sbField.getBoundingClientRect();
-    const w = Math.round(rect.width);
-    const h = Math.round(rect.height);
-    if (w !== _sbW || h !== _sbH) { sbCanvas.width = w; sbCanvas.height = h; _sbW = w; _sbH = h; }
-    const ctx = sbCanvas.getContext('2d');
-
-    // HSB SB field using gradient overlays (much faster than pixel-by-pixel)
-    // Layer 1: horizontal gradient from white to pure hue
-    const hGrad = ctx.createLinearGradient(0, 0, w, 0);
-    hGrad.addColorStop(0, '#fff');
-    hGrad.addColorStop(1, `hsl(${currentHSB.h}, 100%, 50%)`);
-    ctx.fillStyle = hGrad;
-    ctx.fillRect(0, 0, w, h);
-
-    // Layer 2: vertical gradient from transparent to black
-    const vGrad = ctx.createLinearGradient(0, 0, 0, h);
-    vGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    vGrad.addColorStop(1, '#000');
-    ctx.fillStyle = vGrad;
-    ctx.fillRect(0, 0, w, h);
-  }
-
-  function updateSBThumb() {
-    const pctX = currentHSB.s / 100;
-    const pctY = 1 - currentHSB.b / 100;
-    sbThumb.style.left = (pctX * 100) + '%';
-    sbThumb.style.top = (pctY * 100) + '%';
-  }
-
-  // Hue bar interaction
-  function handleHue(e) {
-    const rect = hueBar.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    currentHSB.h = Math.round(x * 360);
-    updateHueThumb();
-    drawSB();
-    updatePickUI();
-    analytics.pickerAdjusted();
-  }
-
-  let hueDown = false;
-  hueBar.addEventListener('pointerdown', e => { hueDown = true; hueBar.setPointerCapture(e.pointerId); handleHue(e); });
-  hueBar.addEventListener('pointermove', e => { if (hueDown) handleHue(e); });
-  hueBar.addEventListener('pointerup', () => { hueDown = false; });
-
-  // SB field interaction
-  function handleSB(e) {
-    const rect = sbField.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    currentHSB.s = Math.round(x * 100);
-    currentHSB.b = Math.round((1 - y) * 100);
-    updateSBThumb();
-    updatePickUI();
-    analytics.pickerAdjusted();
-  }
-
-  let sbDown = false;
-  sbField.addEventListener('pointerdown', e => { sbDown = true; sbField.setPointerCapture(e.pointerId); handleSB(e); });
-  sbField.addEventListener('pointermove', e => { if (sbDown) handleSB(e); });
-  sbField.addEventListener('pointerup', () => { sbDown = false; });
-
-  // Initial draw
-  updateHueThumb();
-  requestAnimationFrame(() => { drawSB(); updateSBThumb(); });
+  requestAnimationFrame(() => {
+    drawSpectrum();
+    updateVisuals();
+    updateAccessibility();
+  });
 }
 
 // --- Results ---
@@ -3469,7 +3719,10 @@ function showNameEntry(callback, label) {
   try { savedName = localStorage.getItem('challengeName') || ''; } catch {}
   input.value = savedName;
   document.getElementById('nameError').textContent = '';
-  document.getElementById('nameSheet').classList.add('visible');
+  var sheet = document.getElementById('nameSheet');
+  sheet.removeAttribute('inert');
+  sheet.setAttribute('aria-hidden', 'false');
+  sheet.classList.add('visible');
   document.getElementById('nameSubmitBtn').textContent = label || 'Share';
   document.getElementById('nameSubmitBtn').disabled = false;
   input.focus();
@@ -3477,7 +3730,10 @@ function showNameEntry(callback, label) {
 }
 
 function hideNameEntry() {
-  document.getElementById('nameSheet').classList.remove('visible');
+  var sheet = document.getElementById('nameSheet');
+  sheet.classList.remove('visible');
+  sheet.setAttribute('aria-hidden', 'true');
+  sheet.setAttribute('inert', '');
   _nameCallback = null;
 }
 
@@ -3559,6 +3815,7 @@ function joinChallenge(code) {
 
 function startChallengeGame(data) {
   lastMode = data.mode;
+  if (data.mode === 'play' || data.mode === 'match') pickerType = 'wheel';
   hideError();
   targetColors = data.target_colors;
 
@@ -3664,9 +3921,13 @@ var toastTimer = null;
 function showToast(msg) {
   var toast = document.getElementById('successToast');
   document.getElementById('successToastMsg').textContent = msg;
+  toast.setAttribute('aria-hidden', 'false');
   toast.classList.add('visible');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { toast.classList.remove('visible'); }, 2000);
+  toastTimer = setTimeout(function() {
+    toast.classList.remove('visible');
+    toast.setAttribute('aria-hidden', 'true');
+  }, 2000);
 }
 
 // Name sheet: dismiss on backdrop click or Escape
@@ -3677,12 +3938,20 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && document.getElementById('nameSheet').classList.contains('visible')) {
     hideNameEntry();
   }
+  if (e.key === 'Escape' && matchHSBVisible && document.body.dataset.screen === 'pick' && lastMode === 'match') {
+    matchHSBVisible = false;
+    updateMatchHSBDisclosure();
+  }
 });
 document.getElementById('nameInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); submitName(); }
 });
 
 updateAdvancedHint();
+
+if (isEmbedPlay) {
+  window.addEventListener('load', function() { startGame('play'); }, { once: true });
+}
 
 // --- Deep link: ?challenge=CODE → auto-join challenge ---
 (function() {
@@ -3698,7 +3967,7 @@ updateAdvancedHint();
 </script>
 <script src="home.js"></script>
 
-<div class="error-toast" id="errorToast">
+<div class="error-toast" id="errorToast" role="alert" aria-live="assertive" aria-hidden="true" inert>
   <span class="error-toast-msg" id="errorToastMsg">Couldn't connect</span>
   <button onclick="retryLastMode()">Retry</button>
 </div>

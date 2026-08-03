@@ -1,44 +1,39 @@
 ---
 title: Product Model
-description: Internal structure — skill decomposition, modes, and game mechanics
+description: The skills and modes that define the product
 stability: stable
-responsibility: What the product is structurally — skills, modes, and why each exists
+responsibility: Product structure, perceptual skills, and mode purpose
 ---
 
 # Product Model
 
 ## Skills
 
-Color matching decomposes into separable skills:
+| Skill | Practice |
+| --- | --- |
+| **Perception** | Notice small differences in hue, saturation, and brightness. |
+| **Encoding** | Translate an appearance into HSB or a useful color name. |
+| **Decoding** | Imagine the appearance described by HSB values. |
+| **Retention** | Hold a color in memory without collapsing it into a category. |
+| **Context** | Notice how surrounding colors change perceived appearance. |
 
-| Skill | Scientific basis | What it is |
-|-------|-----------------|-----------|
-| **Perception** | Chromatic discrimination | Detecting small color differences across hue, saturation, and lightness. Non-uniform across color space — threshold varies by region. Training is hue-specific: improving discrimination in blue-green does not transfer to red-orange |
-| **Encoding** | Color appearance scaling | Consciously decomposing a perceived color into HSB parameters. Research shows untrained observers perceive color holistically — dimensional decomposition is a genuinely difficult learned skill |
-| **Decoding** | Color visualization | HSB parameters → predicting the color. Encoding's inverse — mentally simulating what a parametric description looks like |
-| **Retention** | Delayed reproduction | Holding a perceived color in working memory across a delay. The full pipeline is encode → maintain → retrieve; the maintenance phase is the bottleneck. During the delay, color memories drift toward category prototypes ("blue", "green") — parametric encoding counteracts this drift |
-| **Context** | Simultaneous contrast awareness | Recognizing when surrounding colors shift perceived appearance. Core of Albers' *Interaction of Color* curriculum |
-
-### Adjacent skills
-
-Not targeted by the game but relevant to the landscape:
-
-| Skill | Scientific basis | Relation |
-|-------|-----------------|----------|
-| **Categorization** | Categorical color perception | Parallel to Encoding — coarser (discrete labels vs continuous parameters) but faster. Vocabulary expansion literally shifts discrimination at category boundaries (Sapir-Whorf). Call It mode trains this. Labels also anchor Retention — they resist decay where metric details fade |
-| **Color mixing** | Subtractive/additive synthesis | Predicting results of combining colors. Requires Encoding + Decoding + material knowledge. Different domain — empirical, not parametric |
-| **Color harmony** | Color combination aesthetics | Evaluative, not perceptual. Empirical evidence for traditional rules (complementary, triadic) is weaker than assumed. Engagement feature, not a training target |
+The skills overlap. Each mode removes enough confounds to emphasize one.
 
 ## Modes
 
-Each mode **emphasizes** a skill — not pure isolation (that gets clinical), but the design minimizes confounds for the skill you're training.
+| Mode | Primary practice | Mechanic |
+| --- | --- | --- |
+| **Match It** | Perception | Tune a guess beside the target. This is the main learning loop. |
+| **Play** | Retention + integration | Memorize a color, then recreate it without the target. |
+| **Picture It** | Decoding | Read HSB values and choose the described color. |
+| **Call It** | Encoding through vocabulary | See a color and choose its closest everyday name. |
+| **Split It** | Parametric encoding | Estimate H, S, and B independently without a color preview. |
 
-| Mode | Status | Primary skill | What's minimized | How |
-|------|--------|--------------|-----------------|-----|
-| **Play** | Shipped | Integrated (all) | Nothing — full chain | Memorize 5s → hidden → recreate. Retention is the differentiating constraint vs Match It, not the primary skill |
-| **Match It** | Shipped | Perception | Retention, encoding (both visible) | Target and guess shown side-by-side, converge by eye |
-| **Call It** | Shipped | Encoding (vocabulary) | Picker, visual feedback (commit before seeing answer) | See color → pick its name from 8 choices (XKCD color survey, ~949 names) → reveal correct name + HSB values. Correct pick = 10; wrong picks scored by CIEDE2000 distance. Builds color vocabulary |
-| **Split It** | Shipped | Encoding (parametric) | Picker, visual feedback (commit before seeing answer) | See color → estimate H, S, B on neutral sliders (no color preview, no gradient hints) → reveal shows HSB comparison bars by default. Hue dots, intensity dots for orientation. CIEDE2000 scoring. Future: difficulty scales from coarse buckets to narrow ranges |
-| **Picture It** | Shipped | Decoding | Perception, picker (multiple choice) | Given HSB values → pick the matching color from choices → reveal answer. Encoding's inverse |
-| **Judge It** | Idea | Context | Perception (confound is surround, not delta-E) | Target on neutral background → pick the match from 4 swatches on a colored surround → reveal strips backgrounds to show true colors. Difficulty scales from strong surrounds + spread choices to subtle surrounds + close choices to no neutral reference |
-| **Explore** | Idea | None (engagement) | Everything (not scored) | Color + topic → image search |
+## Learning model
+
+- Color is the primary feedback.
+- HSB appears when it is the task or the learner asks for it.
+- Results compare target and guess before explaining the error.
+- Scoring rewards perceptual closeness; practice develops the mental model.
+
+Context remains a valid future skill area, but it has no committed mode.

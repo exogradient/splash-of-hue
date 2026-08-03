@@ -1,323 +1,116 @@
 ---
 title: Visual Identity
-description: Visual language — principles, palette, typography, motion, spatial system
-stability: evolving
-responsibility: How the product looks and feels — the design constraints that guide every screen
+description: Design principles and interaction standards for splash of hue
+stability: stable
+responsibility: Visual language, interaction principles, and quality bar
 ---
 
 # Visual Identity
 
-## Influences
+## North star
 
-Three design engineers whose shipped work defines the quality bar. Their profiles are detailed enough to resolve ambiguity — when a design question has no clear answer, ask "what would they do?" and the framework below should answer.
+**The game is the interface.** Color should feel immediate, physical, and worth studying. Everything around it should become quiet.
 
-All three share an ethos: design in the browser, ship working code, iterate on feel through prototyping — not mockups. splash-of-hue follows this approach.
+The quality bar comes from the restraint of Rauno Freiberg, the interaction precision of Emil Kowalski, and the editorial clarity of Paco Coursey. Their work is a standard, not a style kit.
 
-### Rauno Freiberg (Vercel, prev. Arc)
-
-Staff Design Engineer. Built `cmdk`, `inspx`, Vesper theme. Created "Devouring Details" ($249 course, 23 chapters). Maintains the `interfaces` repo (1.9k stars) — a behavioral specification for web interfaces.
-
-**Core framework — the 90/10 novelty rule.** Software should be 90% familiar, 10% novel. The novel 10% creates emotional resonance only because the other 90% is predictable. "Novelty is the equivalent of an exclamation mark. You don't want too much of it." Arc failed to calibrate this — the "novelty tax" overwhelmed users. Lesson: make most things familiar, do something unexpected.
-
-**Frequency determines treatment.** High-frequency interactions (command menus, keyboard nav) get zero animation — cmdk appears instantly. Low-frequency interactions earn novelty. He built animated list add/remove into bmrks.com, then removed it after days of use because it felt sluggish despite being fast. Keyboard interactions tolerate animation even less than touch.
-
-**Invisible details compound.** His seminal essay argues great interaction design operates through details users never consciously notice but intuitively feel. "Tiniest margins so that when they work, no one has to think about them." He built inspx (pixel inspection tool) because spatial precision is that important to him.
-
-**Motion rules:**
-- Animation duration max 200ms for interactions to feel immediate
-- Scale animations proportional to trigger: dialogs from 0.8, buttons to 0.96
-- Skip animation entirely for frequent low-novelty actions
-- Looping animations must pause when off-screen
-- Reduced motion: `animation-play-state: paused`, don't remove animations
-- Stagger elements (like birds in a flock), don't synchronize
-- Elements should launch from their origin, not appear from nowhere
-
-**Signature easing:** `cubic-bezier(.2, .8, .2, 1)` — fast-in, gentle-out. Named `--transitions-snappy`.
-
-**Dark theme pattern:** Pure achromatic gray scale in HSL. 12 stops from `hsl(0 0% 8.5%)` to `hsl(0 0% 93%)` plus alpha variants. Warm/cool accent pairing (Vesper: peppermint + orange on black). Theme switching must NOT trigger element transitions.
-
-**Spacing:** 8px base unit, linear scale (`--space-1` through `--space-11`, increments of 8).
-
-**Accessibility as requirement, not feature:**
-- `box-shadow` for focus rings, not `outline`
-- Icon-only elements must have `aria-label`
-- Images always use `<img>` (screen readers, context menus)
-- Disabled buttons should not have tooltips
-- Dead zones between list items eliminated (use padding, not margin)
-
-**Touch/gesture:**
-- Hide hover states on touch: `@media (hover: hover)`
-- `-webkit-tap-highlight-color: rgba(0,0,0,0)` to kill iOS highlight
-- Lightweight actions trigger during gesture; destructive actions only on gesture end
-- Slider dragging stays active when finger moves away from track
-
-**Performance is aesthetic.** A slow beautiful site is ugly. Render without JS first. Code-split heavy visuals. Detect hardware capabilities. Vercel's hero uses 6 stacked layers — low-powered devices skip heavy ones.
-
-**Decision test:** (1) How often will this happen? (2) Does the novel element earn its place against 90% familiarity? (3) Is the detail invisible when working, noticeable when absent? (4) Does it launch from its origin?
-
-### Emil Kowalski (Linear)
-
-Design engineer, web team. Created Sonner (toast, 24M+ weekly npm), Vaul (drawer). "Animations on the Web" course at animations.dev. "I like to build things for designers and developers, think deeply about the user interface, how it looks, feels, behaves."
-
-**Core framework — purpose-first animation.** Before writing any animation code, answer three questions: (1) Can you name the purpose? (2) How often will users see it? (3) Is it keyboard-initiated? If any answer fails, don't animate. "The goal is not to animate for animation's sake, it's to build great user interfaces."
-
-**Five valid purposes for animation:**
-1. Spatial consistency — toast enters/exits same direction, making swipe-to-dismiss intuitive
-2. State communication — something changed (loading, success, error)
-3. Responsiveness feedback — button scale-down confirms the UI "listens"
-4. Explain functionality — the Linear AI animation explains the feature; a static image cannot
-5. Delight — only for rarely-seen interactions. "Used multiple times a day, this component would quickly become irritating."
-
-**Timing rules (concrete numbers):**
-- UI animations: under 300ms (universal rule)
-- Toasts: 400ms with `ease` (deliberately slower — elegant pace matches Sonner's personality)
-- Drawers: 500ms with `cubic-bezier(0.32, 0.72, 0, 1)` (iOS sheet feel, from Ionic Framework)
-- Dismiss/exit: 200ms with `ease-out`
-- Button press: 160ms with `ease-out`, `scale(0.97)` on `:active`
-- Hover state changes: 100-200ms
-- Tooltip: initial delay yes; subsequent tooltips while one is open: zero delay, zero animation
-
-**Easing rules:**
-- `ease-out` for entering/exiting elements (starts fast = responsive, decelerates = smooth landing)
-- `ease-in-out` for elements already on screen that are moving
-- Never `ease-in` for UI (starts slow, feels sluggish)
-- Built-in CSS curves are "usually not strong enough" — custom curves feel more energetic
-- His Vaul curve `cubic-bezier(0.32, 0.72, 0, 1)` is the gold standard for sheet/drawer animations
-
-**Performance rules:**
-- Only animate `transform` and `opacity` (composite-only, hardware-accelerated)
-- Never animate `padding`, `margin`, `height`, `width` (trigger layout + paint)
-- `translateY(100%)` over pixel values — works for any element height
-- CSS transitions over keyframes — transitions are interruptible, keyframes are not
-- CSS variables on parents cause style recalculation for all children — set `transform` directly on the element
-
-**Animation craft:**
-- Never animate from `scale(0)` — "nothing in the world around us can disappear and reappear in such a way." Start at 0.9+ (he uses 0.93 for dropdowns).
-- Set `transform-origin` to match trigger position, never leave at center for popovers
-- Momentum-based dismissal: check velocity (`distance / elapsed_time`), if > 0.11 dismiss regardless of distance
-- Logarithmic damping for over-scroll: `8 * (Math.log(v + 1) - 2)`
-- When easing and duration still feel off, add `filter: blur(2px)` during transition — "tricks the eye into seeing a smooth transition"
-- `clip-path: inset()` for reveals — hardware-accelerated, no layout shift
-
-**Cohesion principle:** Animation values must match product personality. Sonner is elegant (slower, `ease`). A crisp product uses snappy curves. "The animation should feel like it belongs to the product, not bolted on."
-
-**On beauty:** "People simply like beautiful things. Beauty is generally underutilized in software so you can use it as leverage to stand out." "Simply shipping a product that works is no longer enough, everyone can do that, especially now with AI."
-
-**Accessibility:** `@media (prefers-reduced-motion: reduce)` — replace movement with opacity-only transitions, don't remove animation entirely.
-
-**Decision test:** (1) Name the purpose or don't animate. (2) Under 300ms unless the animation IS the point. (3) `ease-out` for enter, never `ease-in`. (4) Only `transform` + `opacity`. (5) Does the timing match the product's personality?
-
-### Paco Coursey (Linear, prev. Vercel)
-
-Design engineer, "Webmaster" at Linear. Previously developed Vercel's design system, website, and dashboard. Created `next-themes`, `cmdk` (with Rauno). "All I want to do is build websites. Typography, motion design, copywriting, performance — the web is an endless medium."
-
-**Core framework — restraint as methodology.** His 2021 redesign essay rejects novelty: "Instead of adding as many animations, features, and case studies as possible, this iteration reflects my values of performance, simplicity, and craft." He describes the pull toward infinite canvas, OS metaphors, weather systems — and consciously rejects it. His site is "a simple collection of documents and links." The craft is in what's removed.
-
-**Typography as complete system:**
-- Three typefaces, each with a strict role: Inter (body), Sohne (headings), Newsreader (italics only). The signature move: italic means a typeface change to serif, not just slant — emphasis feels literary, not just typographic.
-- Headings differentiated by weight (500), not size. H2s are the same 16px as body text. Only h1 gets a size bump (20px). Hierarchy through weight and font, not scale.
-- `letter-spacing: 0` everywhere. Trust the typeface. The one exception: ordered list counters get `-0.05em` for tight number alignment.
-- OpenType features on: `"kern", "calt", "case"` for headings, `"kern", "frac", "ss02"` for body. These are free polish.
-- Body: 16px with 28px line-height (1.75 — generous for readability). Heading line-heights compress.
-- `font-display: block` (not swap) — he waits for the font. FOUT is a bug, not a tradeoff.
-
-**Monochrome color system (the actual values):**
-
-12-step neutral gray scale. Dark mode:
-
-| Step | Hex | Role |
-|------|-----|------|
-| 1 | `#1a1a1a` | Page background |
-| 2 | `#1c1c1c` | Subtle surfaces, theme-color meta |
-| 3 | `#232323` | Code blocks, cards |
-| 5 | `#2e2e2e` | Borders (used everywhere) |
-| 7 | `#3e3e3e` | Hover states |
-| 9 | `#707070` | Low-contrast text, sidenotes |
-| 11 | `#a0a0a0` | Dim text (descriptions, dates, meta) |
-| 12 | `#ededed` | Primary text |
-
-Three-tier text hierarchy through color alone: `gray12` (primary) > `gray11` (dim) > `gray9` (low-contrast). No size change needed. The only non-gray: `--indigo: #5856d6` — and it barely appears.
-
-`theme-color` meta tag matches body background so browser chrome blends seamlessly.
-
-**Spacing:** 8px base, strict multiples (4, 8, 16, 24, 32, 48, 64, 128). Content width: 640px.
-
-**Copywriting as design material.** His homepage bio is two sentences of carefully edited prose with italics for emphasis. Footer: "Pray at the altar of hard work" — a values statement as design element, not a sitemap. He studies sentence construction and hook as design tools (his "Good Writers" post contrasts Aaron Swartz's opening with the boring version).
-
-**The restraint hierarchy:** If you can solve it with typography alone, don't add color. If you can solve it with color alone, don't add iconography. If you can solve it with weight, don't add size. If you can solve it with whitespace, don't add borders. Remove first, add last.
-
-**Open source philosophy:** `next-themes` solves exactly one problem (theme switching) and does it perfectly. Zero feature creep. Synchronizes across tabs. Zero flash on load. The README is a list of checkmarks — not marketing copy, just capability assertions. `cmdk` ships completely unstyled — design is the user's responsibility.
-
-**Decision test:** (1) Can I remove something instead of adding? (2) Does the hierarchy survive in pure grayscale? (3) Am I using weight or color for hierarchy, not size? (4) Does every word of copy earn its place? (5) Am I building for reading or for impression?
-
-## Core Constraint
-
-The interface must be achromatic. Game colors are the only chromatic element on screen. Every polished color game converges on this — dialed.gg, hued, palettle — because UI color competes with the thing you're trying to perceive. Navy backgrounds cast blue. Coral accents pull attention. The current `--bg: #1a1a2e` and `--accent: #e94560` violate this.
-
-Achromatic doesn't mean colorless — it means the interface earns the right to use color only when communicating game state (score tiers, error states) and even then with restraint.
+The shipped game is the comparison control. A proposed change must name a demonstrated problem and outperform the current interaction directly.
 
 ## Principles
 
-**1. Type is the brand.** With no UI color, typography carries all identity. One distinctive typeface, one weight, tight tracking. This is the single highest-leverage design decision. dialed.gg uses Suisse Intl S Alt (Swiss brutalism, $50/weight). splash-of-hue needs something warmer — we're teaching, not intimidating — but equally opinionated.
+### 1. Color is content
 
-**2. Motion is meaning.** Every animation serves a purpose: confirming an action, revealing information, building tension, rewarding performance. No decorative motion. No motion is worse than bad motion — zero animation reads as unfinished. But gratuitous animation reads as insecure. The test: can you explain what this animation *communicates*? If not, cut it.
+Gameplay chrome is achromatic. Saturated color belongs to targets, guesses, choices, and the home deck—not generic controls or decoration.
 
-**3. Disclosure is reward.** Progressive disclosure isn't a toggle — it's a sequence. Score climbs before feedback appears. Cards reveal one-by-one. Details emerge on demand. The reveal itself is the micro-reward that keeps attention. dialed.gg does this with score climb → feedback fade-in → swatch fold-reveal. The pattern: withhold, then deliver with ceremony.
+### 2. Teach through interaction
 
-**4. The game is the interface.** During gameplay, the UI disappears. Memorize is already full-bleed edge-to-edge color — this is the strongest design moment and the pattern to extend. Pick should feel immersive, not like a form. Results should feel like a reveal, not a report.
+The picker should explain HSB through movement. Feedback should begin with a visual comparison. Labels and values appear only when they improve learning.
 
-**5. Density serves education.** Unlike dialed.gg (entertainment-only), splash-of-hue teaches. Per-dimension deltas (ΔL', ΔC', ΔH'), HSB breakdowns, color names — these are educational tools, not clutter. The design must make dense information feel earned and readable, not overwhelming. Progressive disclosure handles this: clean by default, rich on demand.
+### 3. Progressive disclosure must feel native
 
-## Palette
+Advanced detail lives on the surface it explains. In Match It, pressing the comparison swatch reveals live HSB values; it does not add a permanent pill, panel, or settings row.
 
-**Base:** Near-black `#0a0a0a`, not pure `#000`. One step off-black avoids OLED pixel-off harshness and the "terminal" feel. Linear and Vercel both landed here.
+### 4. Restraint is a feature
 
-**Gray ramp:** 12-step achromatic scale (à la Radix Gray). Covers text hierarchy (primary → secondary → tertiary → disabled), surface elevation (background → card → raised), borders, and dividers. All neutral — no blue/warm tint in the grays.
+Every visible element must help the player choose, compare, commit, or continue. Remove numbering, helper copy, labels, and containers that do not change an action.
 
-**Text:** Primary `#e8e8e8` (not pure white — reduces contrast fatigue on dark backgrounds). Secondary and tertiary steps down the gray ramp.
+### 5. Precision compounds
 
-**Accent:** Reserved for interactive affordances only (focus rings, active states). Not for decoration. Single hue, used sparingly enough that it doesn't compete with game colors. Candidate: a muted cool-neutral that disappears next to saturated game colors.
+Alignment, hit targets, focus, contrast, motion timing, and color truth are product behavior. A picker handle must show the same color as the guess. A ring must complete its full circumference.
 
-**Semantic (game state only):** Success/error states for score feedback. These are the *only* chromatic UI elements and they appear only in results context, never during active color perception.
+### 6. One system across sizes
 
-## App Icon
+Mobile and desktop use the same hierarchy, reflowed—not separate designs. Mobile is the stricter contract: safe areas, short viewports, touch targets, and no horizontal overflow.
 
-The app icon is the sanctioned brand-color exception. It lives outside active gameplay, so it can carry the full spectrum without violating the achromatic UI rule. Its job is not to explain every variable in the game — it is to say "color perception" instantly, cleanly, and durably.
+## Home
 
-**Primary form:** A complete hue ring around a neutral core. Closed form reads as spectrum and memory target. Broken form reads as loading/progress UI.
+The home screen is a paint-chip deck:
 
-**Hue mapping:** Follow the actual hue wheel. Red sits at `0°` / `12 o'clock`, then orange, yellow, green, cyan, blue, and magenta clockwise. If the ring drifts from hue-wheel truth, the icon loses credibility.
+- **Play** is the large parchment cover and brand surface.
+- **Match It**, **Picture It**, **Call It**, and **Split It** are chromatic tabs.
+- Mobile stacks tabs below the cover; desktop fans them to the right.
+- Mode icons are cues, not illustrations. Labels align to one optical system.
+- Sequence numbers and explanatory subtitles are omitted.
 
-**Center:** Keep the core neutral. Do not encode brightness/value in the center circle — that turns the mark into a color-picker diagram instead of a brand mark.
-
-**Selector:** If present, it should read as "selected hue," not a knob or hardware pointer. Use a small bead sitting on the ring, sampling the hue beneath it, with just enough light outline to stay legible. A slight clockwise offset from dead top gives motion without looking animated.
-
-**Installed-app container:** On PWA/home-screen surfaces, keep the icon self-contained with a restrained field and an almost-invisible frame. The current shipped treatment is a soft light plate with a neutral light core, because it lets the ring feel more like the product and less like hardware. A dark plate is retained only as an alternate source direction, not the active export. The frame should support the icon shape, not announce itself.
-
-**Rendering:** The band should read as one continuous spectral track, not a chain of isolated capsules. Smooth interpolation is more durable than ornamental segmentation.
-
-**Surface split:** The installed app icon and the browser favicon are related marks, not identical exports. Installed surfaces keep a self-contained plate and neutral core. Browser-tab surfaces should drop the outer plate and simplify toward a more self-sufficient spectral ring.
-
-**Favicon rule:** Browser tabs want a transparent outer shape and a prominent ring. Do not force the dark rounded-square container into the tab favicon. The tab already provides a container. The favicon should stay legible on both dark and light tab chrome, which means transparent-center experiments are allowed, but the raster fallbacks must preserve real transparency rather than a white matte.
-
-**Scale behavior:** `512` and `192` can carry the selector bead. Browser `32` and `16` should simplify aggressively — no bead, no extra symbolism, just a durable spectral ring. Small-size survival matters more than fidelity to the large icon.
-
-**Mood:** Precise, calm, premium. Avoid mascots, eye symbols, obvious tool metaphors, or anything that reads as tacky, scary, or over-explained.
-
-## Typography
-
-**Direction:** Warm geometric or humanist sans-serif. Not Swiss brutalism (dialed's territory) — something with enough character to feel designed but enough neutrality to not compete with color. The font must hold up at both hero scale (score reveals, titles) and detail scale (HSB readouts, deltas).
-
-**Candidates to test in-browser against full-bleed color backgrounds:**
-- Warm geometric: Satoshi, General Sans, Plus Jakarta Sans
-- Humanist: Instrument Sans, Source Sans 3
-- Character: Space Grotesk, Outfit, Geist Sans
-
-**System:**
-- Three weights: 400 (body), 500 (UI/buttons), 700 (display/hero). The original single-weight aspiration didn't survive the scale range (hero 8.6rem to detail 0.72rem). 600 excluded — too close to 500 and 700 to justify the font load. Code still loads 600 and uses it in several places; dropping it is a Beta design-pass item in `specs-roadmap`.
-- Instrument Serif (italic) loaded alongside Plus Jakarta Sans — used for home screen title treatment ("splash of hue" on Play card). Paco Coursey pattern: italic means a typeface change to serif, not just slant.
-- Tight tracking on titles (negative letter-spacing). Loose tracking on uppercase labels.
-- Modular type scale: 6 sizes from detail (0.75rem) to hero (clamp-based, viewport-responsive).
-- `font-variant-numeric: tabular-nums` on all numeric readouts (already correct).
-- Font loading gate: body starts `opacity: 0`, reveals on `document.fonts.ready` with 2s safety timeout. Prevents FOUT flash.
-
-## Motion
-
-**Timing:** Under 300ms for transitions that aren't the point (screen changes, state updates). Longer for transitions that *are* the point (score reveal, swatch comparison). If the user is waiting for the animation to finish, it's too long. If they don't notice it happened, it's doing its job. (See Emil's timing rules in Influences for concrete numbers per element type.)
-
-**Easing:** `ease-out` for entrances (starts fast, decelerates). Custom curves over built-in — built-in are "not strong enough." Never `ease-in` (feels sluggish). Spring physics for interactive elements. Rauno's `cubic-bezier(.2, .8, .2, 1)` for snappy interactions; Emil's `cubic-bezier(0.32, 0.72, 0, 1)` for sheet-like reveals.
-
-**Catalog:**
-- **Screen transitions:** Opacity + subtle translateY (8px). Fast (200ms). Not the point — just not nothing.
-- **Button feedback:** `scale(0.97)` on press, `scale(1.02)` on hover. Spring easing. Confirms the tap registered.
-- **Score climb:** Animated count from 0 to actual score. Duration scaled to value (low scores resolve fast, high scores build suspense). Feedback text fades in after climb completes.
-- **Card stagger:** Result cards appear sequentially with 80-120ms offset. Each card's swatch comparison uses a reveal (diagonal clip-path, fold, or slide).
-- **Timer bar:** Continuous width transition, not stepped. Subtle glow on the leading edge.
-- **Countdown digits:** Slide out downward + blur, new digit slides in from above. Sub-200ms.
-- **Confirm pulse:** Brief scale or brightness pulse on the confirm button when pressed — the picker value is locked in.
-
-**Not yet:** Procedural audio. Highest-effort, lowest-priority polish. Note for future.
-
-## Spatial System
-
-**Spacing:** Token-based scale replacing ad-hoc pixel values. 8-point base with adjustments (4, 8, 12, 16, 24, 32, 48, 64, 96). Every margin, padding, and gap maps to a token.
-
-**Layout:**
-- Mobile: full-viewport, edge-to-edge during gameplay. 16px edge padding on chrome (menu, results).
-- iPhone Safari gets its own guardrails: use `viewport-fit=cover`, combine `svh`/`dvh` sizing, add safe-area padding to bottom actions, and top-align tall pick/reveal layouts instead of vertically centering them when that could push confirm controls below the fold.
-- Desktop: full-width, not card-in-viewport. Educational modes (Picture It, Call It, Split It) need breathing room that a 476px card can't provide. Single breakpoint at 768px.
-- Content max-width: 480px for text-heavy screens (results, history). Picker and swatches can go wider.
-- `env(safe-area-inset-bottom)` on all bottom-positioned elements.
-
-**Elevation:** Three surface levels — background, card, raised. Differentiated by gray step, not shadow. Shadows only for floating elements (modals, tooltips if they ever exist).
+The deck should feel like one object. Avoid disconnected cards, dashboards, grids, and ornamental backgrounds.
 
 ## Picker
 
-The SB field + hue bar is a competitive advantage. It maps to the HSB mental model more spatially than dialed's three abstract strips — two dimensions at once (saturation × brightness) rather than three separate linear channels. This reduces the compose-in-your-head cognitive load.
+Play and Match It use one full-spectrum HSB control:
 
-**Polish, don't replace:**
-- Styled circular handle with subtle shadow (not browser-default)
-- Smooth canvas gradients, proper anti-aliasing
-- Hue bar: rounded, gradient-filled, 44px tall (Apple HIG touch target)
-- SB thumb: 26px with 2.5px white border, glow ring (`box-shadow: 0 0 0 3px rgba(255,255,255,0.2)`)
-- Slider variant: `.slider-track-wrap` containers hold the gradient background; `input[type="range"]` is positioned absolute inside with transparent background. Tracks have inset shadow (`inset 0 1px 3px rgba(0,0,0,0.25)`) and rounded corners. Thumbs are 6px-wide full-height white pills with the shared glow ring pattern. Label column (H/S/B) left-aligned, uppercase, dim text.
-- All interactive handles ≥44px touch target per Apple HIG
-- Glow ring is a shared visual signature across all picker handles: `box-shadow: 0 0 0 3px rgba(255,255,255,0.2–0.25)` outer ring + shadow for depth
+- Angle controls **hue**.
+- Radius controls **saturation**.
+- The outer 360° ring controls **brightness**.
+- The bottom seam is the only value discontinuity.
+- Both handles use the exact current guess color.
+- Hue/saturation and brightness remain independent for pointer and keyboard input.
 
-## Buttons
+The wheel is a learning object, not a decorative color wheel. Never combine unrelated square and circular models, truncate the value ring, or display a handle color that disagrees with the guess.
 
-**Glass overlay pattern.** Action buttons during gameplay sit inside their parent card as absolute-positioned pills, not in separate nav rows. This keeps them visually integrated and avoids dead-space footer strips.
+Split It deliberately uses neutral channel sliders because seeing the composite color would answer the exercise.
 
-- 44×44px circle, `border-radius: 999px`
-- `backdrop-filter: blur(12px) saturate(1.4)` + dark semi-transparent background (`rgba(0,0,0,0.4)`)
-- White border (`1px solid rgba(255,255,255,0.18)`) + inset highlight (`inset 0 1px 0 rgba(255,255,255,0.08)`)
-- Hover: darken background, `scale(1.08)`. Active: `scale(0.95)`.
-- Ghost variant for secondary actions: lighter background (`rgba(0,0,0,0.25)`), dimmer text (`rgba(255,255,255,0.7)`)
-- Position on display-only areas (swatches, score panels), never over interactive surfaces (pickers, sliders)
-- Icon-only with `aria-label`, SVG 18×18px, `stroke-width: 2.5`
+## Type and copy
 
-**Applied to:** confirm button (top-right of guess swatch), reveal navigation (home top-left ghost, forward top-right), and any future in-card actions.
+- Plus Jakarta Sans carries product UI and scores.
+- Instrument Serif italic is reserved for the `splash of hue` wordmark.
+- Labels are short, literal, and sentence-free where possible.
+- Use `Target` and `Guess`; avoid possessive or instructional variants.
+- Numerical detail uses tabular alignment and appears only when earned.
 
-## Results
+## Surfaces and spacing
 
-Results are the highest-stakes screen — where learning happens and where shareability lives.
+- Near-black background; neutral gray hierarchy.
+- One primary card radius and one compact control radius.
+- Hairline borders and restrained elevation separate layers.
+- Controls attach to the surface they act on.
+- Prefer negative space to extra panels.
+- Use optical centering for icons and vertical labels; do not rely on mathematical centering alone.
 
-**Score-driven presentation:** A 9.8 and a 2.1 must look and feel different. Not just the number — the visual weight, the reveal timing, the feedback tone. High scores earn a longer, more ceremonial reveal. Low scores resolve quickly (don't rub it in with a slow count on a 1.3).
+## Motion
 
-**Hero panel (shipped):** Total score with inline "/50" on the same baseline, score tier label (e.g. "SOLID EYE"), and mode + picker eyebrow (e.g. "PLAY · FIELD PICKER"). Contained in a surface panel with border and card elevation — not floating bare on the background. Tappable to toggle advanced details.
+Motion communicates state change:
 
-**Swatch comparison:** Diagonal clip-path split (target triangle vs guess triangle) — shipped. Most readable comparison pattern (dialed.gg). The diagonal forces the comparison at the boundary line. Per-card verdict text hidden by default — reserved for advanced/progressive disclosure. Result cards use a fixed 3-column grid (`repeat(3, 1fr)`) — `auto-fit` with `minmax` allowed 4 columns on wider phones.
+- Fast control response: about 150ms.
+- Screen and card transitions: 200–300ms.
+- Prefer opacity and transform; avoid layout animation.
+- No ambient motion during color judgment.
+- Reduced motion preserves state clarity without travel or spring effects.
 
-**Layout:** Top-aligned (`flex-start`), not vertically centered. Sparse results screens (few cards, short content) should anchor to the top so the eye reads downward naturally.
+## Accessibility
 
-**Educational layer (advanced view):**
-- Per-dimension deltas (ΔL', ΔC', ΔH') as a mini visualization, not just signed numbers
-- Color name for both target and guess
-- Feedback message with personality (see `specs-roadmap` "Feedback messages" for voice direction)
+- Pointer, touch, and keyboard paths are first-class.
+- Visible focus uses a deliberate high-contrast ring.
+- Interactive targets are at least 44px where layout permits.
+- Color is never the only indicator of role or state.
+- Custom controls expose truthful names, values, and independent semantics.
+- Light swatches switch label ink for readable contrast.
 
-## Competitive Positioning
+## Anti-patterns
 
-| Dimension | dialed.gg | splash-of-hue |
-|-----------|-----------|---------------|
-| Purpose | Entertainment (test) | Education (teach + test) |
-| Scoring | CIE76, hue-weighted sigmoid | CIEDE2000 + hue-recovery, per-dimension breakdown |
-| Modes | Play + Daily + Multiplayer | Play + Match It + Picture It + Call It + Split It (skill-targeted) |
-| Picker | 3 vertical strips (abstract) | SB field + hue bar (spatial) |
-| Results | Score + roast text | Score + roast + dimensional analysis |
-| Desktop | Mobile-in-a-card | Full-width, mode-appropriate layouts |
-| Visual identity | Swiss brutalism (black, Suisse Intl) | Warm achromatic (near-black, warm geometric type) |
-| Audio | Procedural Web Audio | Future |
-| Ads | Google AdSense | None |
-
-## Anti-Patterns
-
-Things to actively avoid:
-
-- **UI color during gameplay.** No accent-colored buttons, no tinted backgrounds, no colored borders while the player is perceiving or recalling color.
-- **Launcher icon as mini-UI.** Don't turn the app icon into a literal picker diagram. No brightness center, no black knob, no progress gap, no extra controls.
-- **One-export-fits-all icon thinking.** Home-screen icons and browser favicons are different surfaces with different needs. Don't force the same container treatment into both.
-- **Unnecessary font weights.** Three weights max (400/500/700). Weight 600 is excluded — too close to its neighbors. Use size and spacing for hierarchy, not weight proliferation.
-- **Decorative animation.** If it doesn't communicate, cut it.
-- **Card-in-viewport desktop.** Don't shrink the experience to a phone-shaped box on a 27" monitor.
-- **Browser-default form elements.** Range inputs, checkboxes, selects — all must be styled or replaced. Defaults break the visual language.
-- **Ad integration.** It destroys the premium feel (dialed.gg proves this).
+- Explanatory text that compensates for unclear interaction.
+- Permanent controls for optional information.
+- Decorative gradients outside color-learning surfaces.
+- Floating actions detached from their card.
+- Multiple picker models or picker-choice settings.
+- Hardware-like knobs, incomplete rings, and loading-spinner symbolism.
+- Desktop layouts that merely center a mobile card in empty space.
+- Styling that changes native button geometry without restoring focus and hit behavior.

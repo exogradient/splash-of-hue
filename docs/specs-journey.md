@@ -1,134 +1,122 @@
 ---
 title: User Journey
-description: Screen-by-screen UI spec — what the user sees and does
-stability: volatile
-responsibility: The user flow — screen by screen, what the user experiences
+description: The shipped player experience, screen by screen
+stability: evolving
+responsibility: Shipped user flow and gameplay defaults
 ---
 
 # User Journey
 
+## Home
+
+A paint-chip deck presents five modes:
+
+- **Play** is the large parchment cover.
+- **Match It**, **Picture It**, **Call It**, and **Split It** form the chromatic tabs.
+- The deck stacks vertically on mobile and fans horizontally on desktop.
+- History is the only persistent utility control.
+
+Selecting a card starts immediately. There is no picker setting or onboarding copy.
+
+## Round structure
+
+All games contain five colors.
+
+```text
+Play:       Countdown → [Memorize → Pick → Reveal] ×5 → Results
+Other modes:             [Pick → Reveal] ×5 → Results
 ```
-Menu → Countdown → [ Memorize → Pick → Reveal ] ×5 → Results
-         (play only)  (play only)
-```
 
-## Menu
+Refresh abandons the in-progress game and returns to Home.
 
-- Paint-chip card stack: **Play** hero card (parchment), **Match It** / **Picture It** / **Call It** / **Split It** as overlapping colored cards below (mobile) or fanned right (desktop)
-- **Toolbar** (bottom of stack, low opacity until hover): picker toggle, history button
-- **Join challenge** input (pill-shaped form below toolbar, low opacity until hover/focus): text input ("Enter code") + forward-arrow submit button → joins challenge via code
+### Homepage embed
 
-## Countdown (Play only)
+`/?embed=play` runs one Play round without the home screen, a round counter,
+reveal-time HSB disclosure, results history, or persistence. Continue starts a
+new one-round encounter. The host page owns the title and full-game link; see
+`homepage-embed-contract.md` for the integration boundary.
 
-- 3, 2, 1 countdown (large centered number, no text prompt)
+## Modes
 
-## Memorize (Play only)
+### Match It
 
-- Single color fills entire viewport (edge-to-edge)
-- Timer bar overlaid at bottom — 5s countdown, auto-advances to Pick when timer expires
-- Color label and memorize pill hidden in current alpha
+- Target and Guess appear side by side.
+- The full-spectrum wheel controls the guess: hue by angle, saturation by radius, brightness on the outer ring.
+- Pressing the comparison surface reveals live Guess HSB values. Target values remain hidden until the round is locked.
+- The forward action locks the guess.
 
-## Pick
+### Play
 
-- "Color N of 5" progress label
-- Mode eyebrow visible (e.g. "MEMORY", "MATCH") — identifies the active mode at a glance
-- HSB readout of current guess hidden in current alpha (picker meta hidden)
-- **Play:** preview swatch fills available space — no target visible, recreate from memory
-- **Match It:** target and guess swatches side-by-side (equal size), with visible "TARGET" / "YOUR GUESS" labels above each swatch
-- **Picture It:** target shown as HSB text (e.g. "H210 S80 B60") — tap matching color from 4 choices to instantly submit (no confirm button, no picker)
-- **Call It:** target color shown as full swatch — tap matching name from 8 choices (XKCD color survey) to instantly submit (no confirm button, no picker). Correct name = 10/10. Wrong picks scored by CIEDE2000 distance between chosen name's canonical color and the target — nearby names score higher than distant ones.
-- **Judge It** (idea — not yet implemented): target swatch on neutral gray background at top. 4 choice swatches on a colored surround below. Pick the match — surround shifts how all choices look. Reveal dissolves backgrounds to neutral, showing true colors.
-- **Play/Match It:** Picker (field or sliders, per Menu setting)
-  - **Field picker:** SB plane + hue bar. Thumb handles ≥26px with glow ring (`box-shadow: 0 0 0 3px rgba(255,255,255,0.25)`). Hue bar 44px tall (Apple HIG touch target).
-  - **Sliders picker:** Three gradient-filled tracks (H/S/B) wrapped in `.slider-track-wrap` containers with inset shadow and rounded corners. 6px white pill thumb, full-track height, glow ring matching field picker. Label column (H/S/B) left-aligned.
-- Confirm button: glass-morphism overlay pill (44×44px) positioned top-right of the guess swatch area inside `.play-stage-row`. `backdrop-filter: blur(12px) saturate(1.4)`, dark semi-transparent background, white border. Hidden in Picture It and Call It (CSS `[hidden] { display: none }` override). Advances to Reveal.
+- A three-second countdown starts the game.
+- The target fills the viewport for five seconds.
+- The target disappears; the player recreates it with the same wheel used by Match It.
+- No reference or live HSB readout is shown.
+
+### Picture It
+
+- The target is an HSB expression, not a swatch.
+- Four color choices appear in a 2×2 grid.
+- Choosing a color submits immediately.
+
+### Call It
+
+- The target appears as a swatch.
+- Eight XKCD color names are offered.
+- Choosing a name submits immediately.
+- The reveal identifies the canonical name and the player's choice.
+
+### Split It
+
+- The target appears as a swatch.
+- Neutral sliders ask for H, S, and B independently.
+- No composite preview or gradient answer cue is shown.
+- The forward action locks the estimate.
+
+## Picker
+
+Play and Match It use one wheel. Initial value is `H180 S50 B50` for every color.
+
+| Input | Pointer/touch | Keyboard |
+| --- | --- | --- |
+| Hue | Angle in the disc | Left/right arrows |
+| Saturation | Radius in the disc | Up/down arrows |
+| Brightness | Position around the outer ring | Arrow keys |
+
+Shift increases the keyboard step. Hue/saturation and brightness are independent controls.
 
 ## Reveal
 
-- Round progress visible ("1 / 5") — vertically centered layout
-- Target and guess as two side-by-side color panels (no diagonal split)
-- Score large, colored to match the target color
-- Verdict text (Perfect/Excellent/Great/Good/Okay/Keep practicing)
-- No ΔE or HSB numbers by default — score + verdict + visual comparison tell the story
-- Tap score/verdict area to toggle HSB slider detail: three gradient bars (H/S/B) with pins for target vs guess
-- Navigation: two glass-morphism overlay pills (44×44px) inside `.reveal-card` — home icon (top-left, ghost variant) quits to menu, forward arrow (top-right) continues. Same `backdrop-filter` pattern as confirm button.
-- **Call It only:** correct name and chosen name displayed between swatches and HSB detail
-- Continue → next color's Memorize (play) or Pick (match it/picture it/call it), or Results after color 5
+- Target and guess appear side by side.
+- Score is shown out of 10 with a short verdict.
+- Continue advances to the next color; Home abandons the game.
+- HSB comparison detail is hidden by default.
+- Split It reveals HSB comparison by default.
+- Match It reveals Target and Guess HSB when the player opted into live values during the pick.
 
 ## Results
 
-- Top-aligned layout, not vertically centered
-- Hero panel: total score with inline "/50" on the same baseline, score tier label (e.g. "SOLID EYE"), mode + picker eyebrow (e.g. "PLAY · FIELD PICKER") — contained in a surface panel with border and elevation. Tappable to toggle advanced details.
-- 5 result cards (fixed 3-column grid via `repeat(3, 1fr)`, top-aligned): target vs guess swatch (diagonal split), per-color score (bare number). Per-card verdict text hidden — progressive disclosure only.
-- **Call It result cards:** no per-card score. Correct name shown as link to xkcd color survey entry. Wrong picks show "you said *name*" below. Names link to `xkcd.com/color/rgb/#:~:text=<name>`.
-- **Menu** / **Play Again** / **Share** buttons
-- **Share** → name entry modal → creates challenge (or submits entry if already in a challenge) → Challenge Leaderboard screen
-
-**Default (clean):** swatches + scores + hero metadata. Verdict text reserved for advanced view.
-
-**Advanced** (tap hero or `?advanced` URL param): adds HSB slider visualization — three gradient bars (H/S/B) with pins showing target vs guess positions at a glance. Same visualization used on the Reveal screen (tap score to toggle).
+- Total score appears out of 50 with a tier.
+- Five result cards summarize the round.
+- The hero surface toggles advanced HSB comparison detail.
+- Actions: Home, Play Again, Share.
 
 ## History
 
-localStorage-backed. No server dependency. Top-aligned layout, not vertically centered.
+History is localStorage-backed and available for all five modes.
 
-- Tabs per mode (Play / Match It / Picture It / Call It)
-- Top 20 per mode, sorted by highest score
-- Each row: date, total score /50, mini color strip (5 target swatches)
-- Tap row → full Results view for that game (reuses Results layout)
-- ~500 bytes per game, capped at 20 per mode
+- Tabs filter by mode.
+- Solo games keep the best 20 per mode.
+- Challenge games are retained with their code.
+- Selecting a row reopens its results.
 
-## Challenge Sharing
+## Sharing
 
-Full design in `design-sharing`.
+Share asks for a display name, creates a six-character challenge code, and shows a leaderboard. A challenge replays the same mode and target colors. Joining is supported through challenge links/codes; each challenge accepts at most 20 unique display names.
 
-### Name Entry Modal
-
-- Bottom sheet overlay, triggered by Share button (Results) or Join submit
-- Text input (max 20 chars) + action button ("Share" for create, "Submit" for join)
-- No auth — display name only, scoped per challenge
-
-### Challenge Leaderboard
-
-- Challenge code displayed large (copyable via tap)
-- Mode label + target color swatches
-- Leaderboard: rank, name, tier, score — sorted by total_score DESC
-- "You" badge on player's own entry
-- Copy button → `navigator.clipboard.writeText(code)` → "Copied!" toast (fallback: `prompt()`)
-
-### Challenge Join Flow
-
-- Enter code on Menu join input → GET `/api/challenge/{code}` → game starts with same mode + target colors
-- After finishing → Share button → name entry → POST submits entry → leaderboard
-
----
-
-## Defaults
-
-| Setting | Default | Configurable? |
-|---------|---------|---------------|
-| Colors per round | 5 | Not yet |
-| Memorize time | 5s | Not yet |
-| Picker type | Field (hue bar + SB plane) | Yes (Menu dropdown) |
-| Countdown | 3s | Not yet |
-| Initial picker position | H180° S50% B50% | No (resets each color) |
+See `docs/design-sharing.md` for storage and trust boundaries.
 
 ## Scoring
 
-**Base curve:** Per-color 0–10 via effective-ΔE sigmoid `10 / (1 + (ΔEeff/10)^2.25)`.
+Each color scores 0–10; totals score 0–50. The client computes CIEDE2000-based perceptual distance, applies the shipped guard and hue-recovery terms, and gives immediate feedback without a server round trip.
 
-**Effective-ΔE guard:** `ΔEeff` starts from `ΔE00`, then adds structured penalty before scoring for overgenerous same-hue saturation / brightness misses and moderate-hue generous cases. Current alpha params: same-hue SB guard `0.25`, mid-hue guard `0.30`.
-
-**Hue-recovery bonus:** If hue distance ≤ 33°, recover up to 55% of lost points: `score += (10 - score) * 0.55 * (1 - hueDist/33)`. Rewards getting the right color family even when brightness/saturation drifts.
-
-**Same-hue rescue:** Disabled in the current alpha scorer.
-
-Total /50. Per-dimension deltas (ΔL', ΔC', ΔH') stored and shown in advanced view.
-
-| Total Score | Tier |
-|-------------|------|
-| ≥ 42 | Near perfect |
-| ≥ 35 | Very strong eye |
-| ≥ 25 | Solid eye |
-| ≥ 15 | Learning curve |
-| < 15 | Early reps |
+The shared scorer block in `public/index.html` is the release source. Parity checks protect its calibration copies.

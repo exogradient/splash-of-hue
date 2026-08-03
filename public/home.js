@@ -7,11 +7,28 @@
 (function () {
   'use strict';
 
+  /* Each tab earns one centered visual cue; ordinal decoration is intentionally omitted. */
   var MODES = [
-    { id: 'match',   label: 'Match It',   cls: 'home-match'   },
-    { id: 'picture', label: 'Picture It', cls: 'home-picture' },
-    { id: 'call',    label: 'Call It',    cls: 'home-call'    },
-    { id: 'split',   label: 'Split It',   cls: 'home-split'   },
+    {
+      id: 'match', label: 'Match It', cls: 'home-match',
+      detail: 'Tune beside the target',
+      cue: '<span class="home-cue-pair"><i></i><i></i></span>',
+    },
+    {
+      id: 'picture', label: 'Picture It', cls: 'home-picture',
+      detail: 'Pick the color from HSB',
+      cue: '<span class="home-cue-hsb"><i>H</i><i>S</i><i>B</i></span>',
+    },
+    {
+      id: 'call', label: 'Call It', cls: 'home-call',
+      detail: 'Choose its closest word',
+      cue: '<span class="home-cue-word">coral</span>',
+    },
+    {
+      id: 'split', label: 'Split It', cls: 'home-split',
+      detail: 'Estimate hue, saturation, brightness',
+      cue: '<span class="home-cue-bars"><i></i><i></i><i></i></span>',
+    },
   ];
 
   function buildHome() {
@@ -51,13 +68,15 @@
       var soon = COMING_SOON[m.id];
       card.className = 'home-mode ' + m.cls + (soon ? ' home-mode--soon' : '');
       card.setAttribute('data-mode', m.id);
-      card.setAttribute('aria-label', m.label + (soon ? ' (coming soon)' : ''));
+      card.setAttribute('aria-label', m.label + ' — ' + m.detail + (soon ? ' (coming soon)' : ''));
       if (soon) {
         card.disabled = true;
-        card.innerHTML = '<span class="home-mode-name">' + m.label + '</span>' +
+        card.innerHTML = '<span class="home-mode-head" aria-hidden="true">' + m.cue + '</span>' +
+          '<span class="home-mode-copy"><span class="home-mode-name">' + m.label + '</span></span>' +
           '<span class="home-mode-soon">Soon</span>';
       } else {
-        card.innerHTML = '<span class="home-mode-name">' + m.label + '</span>';
+        card.innerHTML = '<span class="home-mode-head" aria-hidden="true">' + m.cue + '</span>' +
+          '<span class="home-mode-copy"><span class="home-mode-name">' + m.label + '</span></span>';
         card.addEventListener('click', function () { startGame(m.id); });
       }
       cards.appendChild(card);
@@ -74,8 +93,6 @@
     menu.innerHTML = '';
     menu.appendChild(shell);
 
-    /* Sync picker toggle state */
-    if (typeof updatePickerControl === 'function') updatePickerControl();
   }
 
   if (document.readyState === 'loading') {
