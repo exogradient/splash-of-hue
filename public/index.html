@@ -957,6 +957,13 @@
     height: 100%;
     border-radius: 0;
   }
+  body[data-embed="play"] .spectrum-control {
+    width: min(
+      calc(100vw - clamp(14px, 3vmin, 24px) - clamp(14px, 3vmin, 24px)),
+      calc(100dvh - clamp(140px, 28svh, 240px) - clamp(14px, 3vmin, 24px) - clamp(14px, 3vmin, 24px)),
+      680px
+    );
+  }
   body[data-embed="play"] .reveal-shell {
     align-self: stretch;
     flex: 1;
