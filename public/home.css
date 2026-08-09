@@ -241,8 +241,8 @@
 }
 
 #menu .utility-history {
-  width: 30px;
-  height: 30px;
+  width: var(--control-hit);
+  height: var(--control-hit);
   padding: 0;
 }
 .home-tools:hover,
@@ -379,7 +379,7 @@
 @media (max-width: 380px) {
   .home-mode-head { display: none; }
   .home-mode { grid-template-columns: 1fr; }
-  #menu .utility-history { width: 30px; padding: 0; justify-content: center; }
+  #menu .utility-history { width: var(--control-hit); padding: 0; justify-content: center; }
 }
 
 /* ═══════════════════════════════════════════════

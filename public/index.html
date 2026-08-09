@@ -99,12 +99,24 @@
 
     --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.22);
     --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.2);
+    --embed-canvas: transparent;
+    --embed-boundary: 0;
+    --embed-elevation: none;
     --shell-max: 1180px;
     --content-max: 560px;
+    --game-stage-inset: clamp(var(--space-4), 4vw, var(--space-6));
+    --game-stage-width: min(100%, 980px);
+    --game-stage-height: min(720px, calc(100dvh - clamp(32px, 8vw, 72px)));
+    --control-hit: 44px;
+    --role-label-control-offset: 0.667rem;
+    --focus-ring: rgba(244, 237, 227, 0.92);
+    --focus-ring-offset: 3px;
     --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 
   html { background: var(--bg); }
+  html[data-embed="play"],
+  body[data-embed="play"] { background: var(--embed-canvas); }
 
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -162,7 +174,36 @@
     display: flex;
     animation: screen-in var(--duration-normal) var(--ease-out);
   }
+  .screen-focus-target:focus { outline: none; }
 
+  .round-exit-btn {
+    position: absolute;
+    z-index: 12;
+    top: max(var(--space-5), env(safe-area-inset-top));
+    right: max(var(--space-5), env(safe-area-inset-right));
+    width: var(--control-hit);
+    height: var(--control-hit);
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--radius-pill);
+    color: rgba(255, 255, 255, 0.94);
+    background: rgba(0, 0, 0, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  }
+  .round-exit-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .round-exit-btn:hover { background: rgba(0, 0, 0, 0.5); }
   @keyframes screen-in {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
@@ -224,8 +265,8 @@
   button:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
   button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
   button:focus-visible {
-    outline: 2px solid rgba(244, 237, 227, 0.92);
-    outline-offset: 3px;
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
   }
   button.secondary {
     background: rgba(255, 255, 255, 0.04);
@@ -388,6 +429,7 @@
 
   #countdown {
     text-align: center;
+    position: relative;
   }
   .countdown-shell {
     display: grid;
@@ -442,65 +484,62 @@
   }
   .memorize-overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--space-4) var(--space-5);
+    inset: 0;
+    padding: calc(max(var(--space-5), env(safe-area-inset-top)) + var(--role-label-control-offset)) var(--space-5) max(var(--space-5), env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    align-items: flex-start;
+    color: #fff;
+    pointer-events: none;
   }
-  .memorize-overlay.on-dark {
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  .memorize-overlay.dark-ink {
+    color: #050505;
   }
   .memorize-pill {
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-pill);
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(14px);
-    font-size: 0.76rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    color: inherit;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
   }
-  .on-dark .memorize-pill {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.25);
+  .play-instruction {
+    margin-top: 0.38rem;
+    color: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    opacity: 0.76;
   }
   .memorize-pill,
   #timerText {
     display: none;
   }
+  body[data-mode="play"][data-play-guidance="seen"] .play-instruction {
+    display: none;
+  }
   .timer-bar {
-    width: min(320px, 82vw);
+    position: absolute;
+    right: var(--space-5);
+    bottom: max(var(--space-5), env(safe-area-inset-bottom));
+    left: var(--space-5);
+    width: auto;
     height: 4px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 2px;
+    max-width: none;
+    background: color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: 0;
     overflow: hidden;
   }
   .timer-fill {
     height: 100%;
-    background: rgba(255,255,255,0.82);
+    background: currentColor;
     transition: width 0.1s linear;
     position: relative;
-  }
-  .timer-fill::after {
-    content: '';
-    position: absolute;
-    right: -2px;
-    top: -3px;
-    width: 6px;
-    height: 10px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.9);
-    box-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 16px rgba(255,255,255,0.2);
   }
 
   #pick {
     width: 100%;
-    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    padding: var(--game-stage-inset);
     align-items: stretch;
     justify-content: flex-start;
   }
@@ -522,14 +561,12 @@
     font-variant-numeric: tabular-nums;
   }
   .reveal-progress {
-    font-size: clamp(1rem, 3vw, 1.25rem);
+    font-size: 0.78rem;
     font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-  .reveal-progress-dim {
+    line-height: 1.2;
+    letter-spacing: 0.015em;
     color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
   }
   /* pick-readout-wrap hidden via .play-header { display: none } */
   .pick-hsb {
@@ -550,13 +587,6 @@
       var(--shadow-card);
     border-radius: var(--radius-lg);
     overflow: hidden;
-  }
-  #pick[data-mode="picture"] {
-    align-items: center;
-    justify-content: center;
-  }
-  #pick[data-mode="picture"] .play-shell {
-    align-content: center;
   }
   /* play-header already hidden globally */
   #pick[data-mode="picture"] .play-stage-row {
@@ -581,6 +611,47 @@
     min-height: clamp(140px, 28svh, 240px);
     border-radius: 0;
     border: none;
+    position: relative;
+  }
+  .play-topline { display: contents; }
+  .play-actions { display: contents; }
+  .play-swatch-copy { display: none; }
+  body[data-mode="play"] .play-topline {
+    position: absolute;
+    z-index: 6;
+    top: max(var(--space-5), env(safe-area-inset-top));
+    right: var(--space-5);
+    left: var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--play-ink, #fff);
+    pointer-events: none;
+  }
+  body[data-mode="play"] .play-actions,
+  body[data-mode="match"] .play-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    pointer-events: auto;
+  }
+  body[data-mode="play"] .play-actions .round-exit-btn,
+  body[data-mode="match"] .play-actions .round-exit-btn {
+    position: relative;
+    inset: auto;
+    flex: 0 0 44px;
+  }
+  body[data-mode="play"] .play-swatch-copy {
+    display: block;
+    color: inherit;
+  }
+  .play-swatch-copy strong {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
   }
   .picker-panel {
     padding: 0;
@@ -597,6 +668,54 @@
   }
   .picker-panel .slider-group {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  #pick[data-mode="match"] .play-shell {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  #pick[data-mode="match"] .play-stage-row {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(240px, 0.72fr) minmax(420px, 1.28fr);
+    background: var(--surface);
+  }
+  #pick[data-mode="match"] .stage-panel {
+    grid-column: 1;
+    grid-row: 1;
+    height: 100%;
+  }
+  #pick[data-mode="match"] .picker-panel,
+  #pick[data-mode="match"] .play-topline {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  #pick[data-mode="match"] .picker-panel {
+    background: var(--match-guess, #808080);
+  }
+  #pick[data-mode="match"] #pickerContainer,
+  #pick[data-mode="match"] .wheel-picker {
+    height: 100%;
+    min-height: 0;
+  }
+  #pick[data-mode="match"] .wheel-picker {
+    padding: clamp(20px, 3.5vmin, 36px);
+    border: 0;
+    background: transparent;
+  }
+  #pick[data-mode="match"] .spectrum-control {
+    width: min(calc(100% - 2rem), 64dvh, 520px);
+  }
+  #pick[data-mode="match"] .play-topline {
+    position: relative;
+    z-index: 6;
+    align-self: start;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    color: var(--match-ink, #fff);
+    pointer-events: none;
   }
   /* swatchArea is .stage-panel — styled there */
   .stage-frame {
@@ -649,8 +768,8 @@
     z-index: 2;
     top: var(--space-2);
     right: var(--space-2);
-    width: 44px;
-    height: 44px;
+    width: var(--control-hit);
+    height: var(--control-hit);
     padding: 0;
     display: inline-grid;
     place-items: center;
@@ -685,6 +804,96 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  .confirm-copy { display: none; }
+  body[data-mode="play"] .confirm-btn {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    min-width: 6.2rem;
+    height: 44px;
+    padding: 0 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 9%, transparent);
+    color: inherit;
+    box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, #000 14%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+    transform: none;
+  }
+  body[data-mode="play"] .confirm-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, currentColor 15%, transparent);
+    transform: none;
+  }
+  body[data-mode="play"] .confirm-btn:active:not(:disabled) {
+    background: color-mix(in srgb, currentColor 21%, transparent);
+    transform: scale(0.98);
+  }
+  body[data-mode="play"] .confirm-btn svg {
+    display: none;
+  }
+  body[data-mode="play"] .confirm-copy {
+    display: inline;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  body[data-mode="match"] .confirm-btn {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    min-width: 6.2rem;
+    height: 44px;
+    padding: 0 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+    background: color-mix(in srgb, currentColor 9%, transparent);
+    color: inherit;
+    font-size: 0.92rem;
+    box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, #000 14%, transparent);
+    pointer-events: auto;
+    transform: none;
+  }
+  body[data-mode="match"] .confirm-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, currentColor 15%, transparent);
+    transform: none;
+  }
+  body[data-mode="match"] .confirm-btn:active:not(:disabled) {
+    background: color-mix(in srgb, currentColor 21%, transparent);
+    transform: scale(0.98);
+  }
+  body[data-mode="split"] .confirm-btn {
+    top: var(--space-5);
+    right: calc(var(--space-5) + 52px);
+    width: auto;
+    min-width: 6.2rem;
+    padding-inline: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.92rem;
+  }
+  body[data-mode="match"] .confirm-btn svg,
+  body[data-mode="split"] .confirm-btn svg {
+    display: none;
+  }
+  body[data-mode="match"] .confirm-copy,
+  body[data-mode="split"] .confirm-copy {
+    display: inline;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
   .confirm-btn:disabled {
     opacity: 0;
     pointer-events: none;
@@ -693,13 +902,32 @@
     display: none;
   }
   .picture-target {
-    font-size: clamp(1.7rem, 7vw, 2.5rem);
+    min-height: 92px;
+    padding: var(--space-4) 76px var(--space-4) var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .picture-prompt,
+  .split-prompt {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .picture-prompt {
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+  .picture-hsb {
+    font-size: clamp(1.15rem, 4.8vw, 2.5rem);
     line-height: 1;
-    text-align: center;
+    text-align: right;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
-    word-spacing: 0.15em;
-    padding: var(--space-4) var(--space-5);
+    word-spacing: 0.06em;
+    white-space: nowrap;
   }
   .hsb-label {
     color: var(--text-muted);
@@ -723,10 +951,11 @@
   }
   .picture-choice {
     min-width: 0;
+    min-height: 0;
     padding: 0;
     border-radius: 0;
     cursor: pointer;
-    aspect-ratio: 1.2;
+    aspect-ratio: auto;
     border: none;
     appearance: none;
     -webkit-appearance: none;
@@ -744,14 +973,6 @@
   }
 
   /* ═══════ SPLIT IT ═══════ */
-  #pick[data-mode="split"] {
-    align-items: center;
-    justify-content: center;
-  }
-  #pick[data-mode="split"] .play-shell {
-    width: min(100%, 560px);
-    align-content: center;
-  }
   #pick[data-mode="split"] .play-stage-row {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -759,13 +980,18 @@
     display: none;
   }
   .split-stage {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 0;
   }
   .split-swatch {
+    position: relative;
     width: 100%;
-    aspect-ratio: 1.5;
+    min-height: 0;
+    flex: 1;
+    aspect-ratio: auto;
   }
   .split-sliders {
     display: flex;
@@ -773,6 +999,7 @@
     gap: var(--space-3);
     padding: var(--space-4);
   }
+  .split-prompt { margin-bottom: var(--space-1); }
   .split-slider-row {
     display: flex;
     flex-direction: column;
@@ -852,13 +1079,6 @@
   }
 
   /* ═══════ CALL IT ═══════ */
-  #pick[data-mode="call"] {
-    align-items: center;
-    justify-content: center;
-  }
-  #pick[data-mode="call"] .play-shell {
-    align-content: center;
-  }
   #pick[data-mode="call"] .play-stage-row {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -867,46 +1087,82 @@
   }
   .call-stage {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    display: grid;
+    grid-template-rows: minmax(260px, 43%) minmax(0, 1fr);
     min-height: 100%;
+    background: var(--surface);
   }
   .call-swatch {
+    position: relative;
     width: 100%;
-    min-height: clamp(120px, 22svh, 200px);
-    flex-shrink: 0;
+    min-height: 0;
+  }
+  .call-answer-tray {
+    min-height: 0;
+    padding: var(--space-5);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    background: var(--surface);
+  }
+  .call-prompt {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.25;
   }
   .call-choices {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1px;
+    grid-template-rows: repeat(4, minmax(52px, 1fr));
+    gap: var(--space-3);
     width: 100%;
-    flex: 1;
-    background: rgba(255, 255, 255, 0.06);
+    min-height: 0;
   }
   .call-choice {
-    border-radius: 0;
-    background: var(--surface);
+    min-width: 0;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.045);
     color: var(--text);
-    border: none;
-    padding: var(--space-4) var(--space-3);
-    font-size: clamp(1rem, 3.5vw, 1.15rem);
+    font-size: clamp(1rem, 2.2vw, 1.08rem);
     font-weight: 500;
     text-align: center;
     cursor: pointer;
     line-height: 1.25;
-    min-height: 44px;
     display: grid;
     place-items: center;
     box-shadow: none;
     transition:
       background var(--duration-fast) var(--ease-out),
-      color var(--duration-fast);
+      border-color var(--duration-fast) var(--ease-out);
   }
   .call-choice:active {
-    background: var(--surface-elevated);
+    background: rgba(255, 255, 255, 0.12);
     transform: none;
+  }
+  .call-choice:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.94);
+    outline-offset: 2px;
+  }
+
+  #pick[data-mode] {
+    align-items: center;
+    justify-content: center;
+  }
+  #pick[data-mode] .play-shell {
+    width: var(--game-stage-width);
+    height: var(--game-stage-height);
+    grid-template-rows: minmax(0, 1fr);
+    align-content: stretch;
+  }
+  #pick[data-mode] .play-stage-row,
+  #pick[data-mode] .stage-panel {
+    height: 100%;
+    min-height: 0;
   }
 
   /* Reveal — call mode name bar */
@@ -932,8 +1188,13 @@
   .reveal-call-name.call-correct { color: var(--tier-strong); }
   .reveal-call-name.call-wrong { color: var(--text-dim); }
   body[data-embed="play"] .reveal-nav-btn.ghost,
+  body[data-embed="play"] .round-exit-btn,
   body[data-embed="play"] .reveal-progress,
   body[data-embed="play"] .reveal-hsb { display: none !important; }
+
+  body[data-embed="play"] #countdown {
+    background: var(--bg);
+  }
 
   body[data-embed="play"] #reveal {
     align-items: stretch;
@@ -945,24 +1206,46 @@
     height: 100dvh;
     min-height: 100dvh;
     padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
   }
-  body[data-embed="play"] .play-shell {
+  body[data-embed="play"] #pick[data-mode] .play-shell {
     width: 100%;
     max-width: none;
     height: 100%;
     gap: 0;
     align-content: stretch;
   }
-  body[data-embed="play"] .play-stage-row {
+  body[data-mode="play"] .play-stage-row {
     height: 100%;
-    border-radius: 0;
+    background: #808080;
   }
-  body[data-embed="play"] .spectrum-control {
-    width: min(
-      calc(100vw - clamp(14px, 3vmin, 24px) - clamp(14px, 3vmin, 24px)),
-      calc(100dvh - clamp(140px, 28svh, 240px) - clamp(14px, 3vmin, 24px) - clamp(14px, 3vmin, 24px)),
-      680px
-    );
+  body[data-mode="play"] .stage-panel,
+  body[data-mode="play"] .stage-frame,
+  body[data-mode="play"] .preview-swatch {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+  body[data-mode="play"] .picker-panel,
+  body[data-mode="play"] #pickerContainer,
+  body[data-mode="play"] .wheel-picker {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+  body[data-mode="play"] .wheel-picker {
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+  body[data-mode="play"] .spectrum-control {
+    width: min(78vw, 64dvh, 560px);
+    pointer-events: auto;
   }
   body[data-embed="play"] .reveal-shell {
     align-self: stretch;
@@ -985,8 +1268,9 @@
   }
   body[data-embed="play"] .play-stage-row,
   body[data-embed="play"] .reveal-card {
-    border: 0;
-    box-shadow: none;
+    border: var(--embed-boundary);
+    border-radius: 0;
+    box-shadow: var(--embed-elevation);
   }
 
   .xkcd-link {
@@ -1000,49 +1284,64 @@
     text-decoration-color: rgba(255, 255, 255, 0.5);
   }
   /* preview-swatch min-height set above with stage-panel */
-  .match-compare {
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
-    width: 100%;
-    aspect-ratio: 2;
-    cursor: pointer;
-  }
-  .match-compare:focus-visible {
-    outline: 2px solid rgba(244, 237, 227, 0.94);
-    outline-offset: -4px;
-  }
-  .match-compare-divider {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .match-compare-col {
+  .match-target {
     position: relative;
-  }
-  .match-compare-swatch {
     width: 100%;
     height: 100%;
-    border-radius: 0;
-    border: none;
   }
-  .match-compare-label {
+  .swatch-role-label {
     position: absolute;
-    bottom: var(--space-2);
-    left: 0;
-    right: 0;
-    font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.84);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-align: center;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    top: calc(var(--space-5) + 0.65rem);
+    left: var(--space-5);
+    color: var(--target-ink, #fff);
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
     pointer-events: none;
   }
-  .match-compare-label.on-light {
-    color: rgba(10, 12, 15, 0.84);
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.28);
+  .match-guess-copy {
+    display: none;
   }
-  .match-compare-label.is-hsb {
-    letter-spacing: 0.045em;
-    text-transform: none;
+  body[data-mode="match"] .match-guess-copy {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0;
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.3rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    text-align: left;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  body[data-mode="match"] .match-guess-copy:hover,
+  body[data-mode="match"] .match-guess-copy:active {
+    background: transparent;
+  }
+  body[data-mode="match"] .match-guess-copy:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+  .match-guess-copy strong {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+  }
+  .match-guess-value {
+    color: inherit;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    letter-spacing: 0.015em;
+    opacity: 0.72;
     font-variant-numeric: tabular-nums;
   }
   .match-reveal-values {
@@ -1153,42 +1452,9 @@
     position: relative;
     flex: none;
   }
-  .spectrum-value {
+  .spectrum-hue {
     position: absolute;
     inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(
-      from 180deg,
-      #000 0deg,
-      var(--selected-color, hsl(180 100% 25%)) var(--value-stop, 180deg),
-      var(--value-color, hsl(180 100% 50%)) 360deg
-    );
-    cursor: crosshair;
-    touch-action: none;
-  }
-  .spectrum-value:focus-visible,
-  .spectrum-disc:focus-visible {
-    outline: 2px solid rgba(244, 237, 227, 0.94);
-    outline-offset: 5px;
-  }
-  .spectrum-value-handle,
-  .spectrum-disc-handle {
-    position: absolute;
-    z-index: 4;
-    width: 22px;
-    height: 22px;
-    border: 3px solid white;
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    box-shadow:
-      0 0 0 2px rgba(0, 0, 0, 0.38),
-      0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-  .spectrum-disc {
-    position: absolute;
-    z-index: 2;
-    inset: 9.5%;
     border-radius: 50%;
     background: conic-gradient(
       hsl(0 100% 50%),
@@ -1202,12 +1468,39 @@
     cursor: crosshair;
     touch-action: none;
     box-shadow:
-      0 12px 30px rgba(0, 0, 0, 0.42),
-      0 0 0 2px rgba(10, 12, 16, 0.9),
-      0 0 0 3px rgba(255, 255, 255, 0.14),
-      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      0 18px 48px rgba(0, 0, 0, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.34);
   }
-  .spectrum-disc-canvas {
+  .spectrum-hue:focus-visible,
+  .spectrum-field:focus-visible {
+    outline: 2px solid rgba(244, 237, 227, 0.94);
+    outline-offset: 5px;
+  }
+  .spectrum-hue-handle,
+  .spectrum-field-handle {
+    position: absolute;
+    z-index: 4;
+    width: 24px;
+    height: 24px;
+    border: 3px solid white;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 0 2px rgba(0, 0, 0, 0.38),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  .spectrum-field {
+    position: absolute;
+    z-index: 2;
+    inset: 16.5%;
+    border-radius: 50%;
+    overflow: visible;
+    background: var(--selected-color, hsl(180 50% 50%));
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .spectrum-field-canvas {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1215,8 +1508,28 @@
     border-radius: inherit;
     pointer-events: none;
   }
-  .spectrum-disc-handle {
+  .spectrum-field-handle {
     z-index: 3;
+  }
+  .spectrum-control[data-active="false"] .spectrum-hue {
+    opacity: 0.28;
+    filter: saturate(0.24) contrast(0.94);
+  }
+  .spectrum-control[data-active="false"] .spectrum-field {
+    opacity: 0.2;
+    filter: saturate(0.16) contrast(0.92);
+  }
+  .spectrum-control[data-active="false"] .spectrum-hue-handle,
+  .spectrum-control[data-active="false"] .spectrum-field-handle {
+    opacity: 0.9;
+  }
+  .spectrum-hue,
+  .spectrum-field,
+  .spectrum-hue-handle,
+  .spectrum-field-handle {
+    transition:
+      opacity 360ms var(--ease-out),
+      filter 360ms var(--ease-out);
   }
 
   #results {
@@ -1237,7 +1550,6 @@
     padding: var(--space-5);
     display: grid;
     gap: var(--space-2);
-    cursor: pointer;
     background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
@@ -1246,6 +1558,31 @@
       var(--shadow-card);
     border-radius: var(--radius-lg);
   }
+  .results-disclosure {
+    min-height: 44px;
+    width: max-content;
+    margin-top: var(--space-2);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-dim);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    font-size: 0.84rem;
+  }
+  .results-disclosure:hover { color: var(--text); background: transparent; }
+  .results-disclosure svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .results-disclosure[aria-expanded="true"] svg { transform: rotate(90deg); }
   .results-hero-head {
     display: flex;
     align-items: end;
@@ -1289,11 +1626,6 @@
   .score-tier.tier-elite { color: var(--tier-elite); }
   .score-tier.tier-strong { color: var(--tier-strong); }
   .score-tier.tier-solid { color: var(--tier-solid); }
-  .analysis-hint {
-    color: var(--text-muted);
-    font-size: 0.82rem;
-  }
-  .analysis-hint,
   .feedback-text,
   .result-names,
   .result-verdict {
@@ -1306,7 +1638,7 @@
     grid-template-columns: 1fr auto;
     gap: 12px;
     align-items: end;
-    cursor: pointer;
+    cursor: default;
     animation: card-in var(--duration-slow) var(--ease-out) backwards;
   }
   .result-card > div:first-child {
@@ -1442,12 +1774,19 @@
     justify-content: flex-start;
   }
   .results-icon-btn {
-    width: 52px;
+    width: auto;
+    min-width: 52px;
     height: 52px;
-    padding: 0;
+    padding: 0 var(--space-4);
     border-radius: 999px;
-    display: inline-grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--text-soft);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     box-shadow: var(--glow-inner);
   }
   .results-icon-btn:hover {
@@ -1463,6 +1802,7 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  .results-action-copy { line-height: 1; }
 
   .history-shell {
     width: min(100%, 760px);
@@ -1530,8 +1870,8 @@
     stroke-linejoin: round;
   }
   .icon-btn {
-    width: 42px;
-    height: 42px;
+    width: var(--control-hit);
+    height: var(--control-hit);
     padding: 0;
     border-radius: 999px;
     display: inline-grid;
@@ -1658,7 +1998,8 @@
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
     }
     .call-choice:hover {
-      background: var(--surface-raised);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.24);
     }
   }
 
@@ -1688,13 +2029,28 @@
     .play-shell {
       gap: var(--space-3);
     }
+    .call-stage {
+      grid-template-rows: 42% minmax(0, 1fr);
+    }
+    .call-answer-tray {
+      padding: var(--space-4);
+      gap: var(--space-3);
+    }
+    .call-choices {
+      gap: 9px;
+    }
+    .call-choice {
+      padding-inline: var(--space-3);
+    }
     /* stage-panel is transparent — card treatment on .play-stage-row */
-    /* match-compare is always side-by-side */
     .result-card {
       grid-template-columns: 1fr;
     }
     .result-score {
       text-align: left;
+    }
+    #results.analysis-open #resultCards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .results-hero-head {
       flex-direction: column;
@@ -1718,6 +2074,28 @@
     }
   }
 
+  @media (max-width: 700px) {
+    :root {
+      --game-stage-height: min(760px, calc(100dvh - (2 * var(--space-4))));
+    }
+    #pick[data-mode="match"] .play-stage-row {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: clamp(112px, 22svh, 168px) minmax(0, 1fr);
+    }
+    #pick[data-mode="match"] .stage-panel {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    #pick[data-mode="match"] .picker-panel,
+    #pick[data-mode="match"] .play-topline {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    #pick[data-mode="match"] .spectrum-control {
+      width: min(calc(100% - 2rem), 48svh, 420px);
+    }
+  }
+
   #pick, #results, #historyScreen, #reveal, #challenge {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(var(--space-4), 4vw, var(--space-6)));
   }
@@ -1730,21 +2108,25 @@
     padding-top: clamp(var(--space-5), 6vw, var(--space-8));
   }
   .reveal-shell {
-    width: min(100%, 560px);
+    width: var(--game-stage-width);
+    height: var(--game-stage-height);
     display: grid;
     gap: var(--space-4);
   }
+  #reveal { padding: var(--game-stage-inset); }
   .reveal-card {
     position: relative;
+    height: 100%;
     background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     overflow: hidden;
   }
   .reveal-swatches {
+    min-height: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    aspect-ratio: 1.5;
+    aspect-ratio: auto;
   }
   .reveal-swatches > div {
     min-height: 0;
@@ -1752,10 +2134,47 @@
   .reveal-meta {
     padding: var(--space-4) var(--space-5);
     display: flex;
+    flex: 1;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .reveal-band {
+    min-height: 112px;
+    display: flex;
+    align-items: center;
+    background: #111310;
+  }
+  .reveal-outcome {
+    display: grid;
+    gap: 0.35rem;
   }
   .reveal-meta.has-detail { cursor: pointer; }
+  .reveal-meta.has-detail:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -3px;
+  }
+  .reveal-verdict-cluster {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .reveal-detail-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: rotate(90deg);
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+  .reveal-meta.has-detail .reveal-detail-icon { opacity: 0.62; }
+  .reveal-meta.has-detail[aria-expanded="true"] .reveal-detail-icon {
+    transform: rotate(-90deg);
+  }
   .reveal-score-cluster {
     display: flex;
     align-items: baseline;
@@ -1768,6 +2187,7 @@
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
+  .reveal-score-num:focus { outline: none; }
   .reveal-score-max {
     font-size: 0.82rem;
     color: var(--text-muted);
@@ -1787,6 +2207,7 @@
   }
   .history-tabs::-webkit-scrollbar { display: none; }
   button.history-tab {
+    min-height: var(--control-hit);
     padding: 8px 14px;
     border-radius: var(--radius-pill);
     background: rgba(255, 255, 255, 0.04);
@@ -2050,6 +2471,100 @@
     white-space: nowrap;
   }
 
+  .reveal-swatch-label,
+  .reveal-nav-copy { display: none; }
+  body[data-mode="play"] .memorize-pill { display: block; }
+  .reveal-progress {
+    color: rgba(241, 238, 231, 0.52);
+  }
+  .reveal-card {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+  }
+  .reveal-swatches > div { position: relative; }
+  .reveal-swatch-label {
+    position: absolute;
+    top: calc(var(--space-5) + var(--role-label-control-offset));
+    left: var(--space-5);
+    display: block;
+    color: var(--swatch-ink, #fff);
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+  }
+  .reveal-meta { min-height: 112px; }
+  .reveal-score-num {
+    color: #f1eee7 !important;
+    font-size: clamp(2.35rem, 9vw, 3.2rem);
+    font-weight: 500;
+  }
+  .reveal-score-max {
+    color: rgba(241, 238, 231, 0.52);
+  }
+  .reveal-verdict {
+    max-width: 12rem;
+    color: rgba(241, 238, 231, 0.66);
+    font-size: 0.82rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-align: right;
+    text-transform: none;
+  }
+  .reveal-band .reveal-nav-btn:not(.ghost) {
+    position: static;
+    flex: 0 0 auto;
+    margin-right: var(--space-5);
+    width: auto;
+    min-width: 5.4rem;
+    height: 44px;
+    padding: 0 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 250, 242, 0.42);
+    border-radius: 999px;
+    background: rgba(255, 250, 242, 0.06);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transform: none;
+  }
+  .reveal-band .reveal-nav-btn:not(.ghost):hover,
+  .reveal-band .reveal-nav-btn:not(.ghost):active {
+    background: rgba(255, 250, 242, 0.12);
+    transform: none;
+  }
+  .reveal-band .reveal-nav-btn:not(.ghost) svg {
+    display: none;
+  }
+  .reveal-nav-btn.ghost {
+    top: var(--space-5);
+    right: var(--space-5);
+    left: auto;
+  }
+  .reveal-nav-copy {
+    display: inline;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  body[data-embed="play"] .reveal-card {
+    grid-template-rows: minmax(0, 1fr) auto auto;
+  }
+
+  @media (max-width: 540px) {
+    body:not([data-embed="play"]) #reveal { padding: var(--space-4); }
+    .reveal-band { min-height: 104px; }
+    .reveal-meta {
+      min-height: 104px;
+      padding: var(--space-4);
+    }
+    .reveal-band .reveal-nav-btn:not(.ghost) { margin-right: var(--space-4); }
+    .reveal-verdict { font-size: 0.76rem; }
+  }
+
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
@@ -2066,11 +2581,16 @@
     body { transition: none; }
     .error-toast, .success-toast { transition: none; }
     .name-sheet, .name-sheet-panel { transition: none; }
+    .reveal-detail-icon { transition: none; }
     button:active { transform: none; }
     button:hover {
       transform: none;
     }
     .countdown-num { transition: none; }
+    .spectrum-hue,
+    .spectrum-field,
+    .spectrum-hue-handle,
+    .spectrum-field-handle { transition: none; }
   }
 </style>
 <script src="https://us-assets.i.posthog.com/static/array.js" async></script>
@@ -2078,6 +2598,19 @@
 <script src="xkcd-colors.js"></script>
 </head>
 <body>
+
+<noscript>
+  <style>
+    body { opacity: 1; }
+    body > .screen, body > .name-sheet, body > .success-toast, body > .error-toast { display: none !important; }
+    .noscript-message { min-height: 100dvh; display: grid; place-content: center; gap: 0.5rem; padding: 2rem; text-align: center; }
+    .noscript-message p { color: #949494; }
+  </style>
+  <main class="noscript-message">
+    <h1>Splash of Hue</h1>
+    <p>This color instrument needs JavaScript to run.</p>
+  </main>
+</noscript>
 
 <!-- MENU — card stack built by home.js, toolbar stays in markup -->
 <div id="menu" class="screen active">
@@ -2094,8 +2627,11 @@
 
 <!-- COUNTDOWN -->
 <div id="countdown" class="screen">
+  <button class="round-exit-btn" type="button" onclick="goMenu()" aria-label="Return to games">
+    <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
+  </button>
   <div class="countdown-shell">
-    <div class="countdown-num" id="countdownNum">3</div>
+    <div class="countdown-num" id="countdownNum" role="status" aria-live="polite" aria-atomic="true">3</div>
   </div>
 </div>
 
@@ -2103,10 +2639,14 @@
 <div id="memorize" class="screen">
   <div class="color-grid" id="memorizeGrid"></div>
   <div class="memorize-overlay">
-    <p id="memorizeLabel" class="memorize-pill"></p>
+    <p id="memorizeLabel" class="memorize-pill screen-focus-target" tabindex="-1"></p>
+    <p class="play-instruction">Remember</p>
     <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
     <p id="timerText" style="font-size:0.82rem;color:rgba(255,255,255,0.86);"></p>
   </div>
+  <button class="round-exit-btn" type="button" onclick="goMenu()" aria-label="Return to games">
+    <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
+  </button>
 </div>
 
 <!-- PICK -->
@@ -2133,9 +2673,26 @@
         </div>
         <div id="pickerContainer"></div>
       </div>
-      <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Lock in guess">
-        <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
-      </button>
+      <div class="play-topline">
+        <div class="play-swatch-copy">
+          <strong>Guess</strong>
+          <p class="play-instruction">Match from memory</p>
+        </div>
+        <button id="matchGuessDisclosure" class="match-guess-copy" type="button"
+                aria-expanded="false" aria-label="Show live Guess HSB values"
+                onclick="toggleMatchHSB(event)">
+          <strong>Guess</strong>
+          <span class="match-guess-value" id="matchGuessValue" hidden></span>
+        </button>
+        <div class="play-actions">
+          <button id="confirmBtn" class="confirm-btn" onclick="confirmPick()" aria-label="Compare target and guess">
+            <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
+          </button>
+          <button class="round-exit-btn" type="button" onclick="goMenu()" aria-label="Return to games">
+            <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2143,18 +2700,29 @@
 <!-- REVEAL -->
 <div id="reveal" class="screen">
   <div class="reveal-shell">
-    <p class="reveal-progress" id="revealProgress">1 / 5</p>
     <div class="reveal-card">
       <div class="reveal-swatches">
-        <div id="revealTarget"></div>
-        <div id="revealGuess"></div>
+        <div id="revealTarget"><span class="reveal-swatch-label">Target</span></div>
+        <div id="revealGuess"><span class="reveal-swatch-label">Guess</span></div>
       </div>
-      <div class="reveal-meta" id="revealMeta">
-        <div class="reveal-score-cluster">
-          <div class="reveal-score-num" id="revealScore" tabindex="-1"></div>
-          <div class="reveal-score-max">/ 10</div>
+      <div class="reveal-band">
+        <div class="reveal-meta" id="revealMeta">
+          <div class="reveal-outcome">
+            <p class="reveal-progress" id="revealProgress">Round 1 of 5</p>
+            <div class="reveal-score-cluster">
+              <div class="reveal-score-num" id="revealScore" tabindex="-1"></div>
+              <div class="reveal-score-max">/ 10</div>
+            </div>
+          </div>
+          <div class="reveal-verdict-cluster">
+            <div class="reveal-verdict" id="revealVerdict"></div>
+            <svg class="reveal-detail-icon" aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
+          </div>
         </div>
-        <div class="reveal-verdict" id="revealVerdict"></div>
+        <button class="reveal-nav-btn" onclick="continueAfterReveal()" aria-label="Continue">
+          <span class="reveal-nav-copy" id="revealNavCopy"></span>
+          <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
+        </button>
       </div>
       <div class="reveal-call-names" id="revealCallNames" style="display:none">
         <span class="reveal-call-label">Correct</span>
@@ -2166,9 +2734,6 @@
       <button class="reveal-nav-btn ghost" onclick="goMenu()" aria-label="Quit to menu">
         <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
       </button>
-      <button class="reveal-nav-btn" onclick="continueAfterReveal()" aria-label="Continue">
-        <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
-      </button>
     </div>
   </div>
 </div>
@@ -2176,28 +2741,35 @@
 <!-- RESULTS -->
 <div id="results" class="screen">
   <div class="results-shell">
-    <section class="results-hero panel" id="resultsHero" onclick="toggleAdvanced()">
+    <section class="results-hero panel" id="resultsHero">
       <p class="eyebrow" id="resultsMeta">Round complete</p>
       <div class="results-hero-head">
         <div class="score-cluster">
-          <div class="total-score" id="totalScore"></div>
+          <div class="total-score screen-focus-target" id="totalScore" tabindex="-1"></div>
           <div class="total-label">/ 50</div>
         </div>
         <div class="score-tier" id="scoreTier">Solid eye</div>
       </div>
-      <p class="analysis-hint" id="advancedHint">Tap to reveal analysis.</p>
       <p class="feedback-text" id="totalFeedback"></p>
+      <button class="results-disclosure" id="resultsDisclosure" type="button"
+              onclick="toggleAdvanced()" aria-expanded="false" aria-controls="resultCards totalFeedback">
+        <span id="advancedHint">Show breakdown</span>
+        <svg aria-hidden="true"><use href="icons.svg#icon-forward"></use></svg>
+      </button>
     </section>
     <div id="resultCards"></div>
     <div class="btn-row results-actions">
       <button class="secondary results-icon-btn" onclick="goMenu()" aria-label="Menu">
         <svg aria-hidden="true"><use href="icons.svg#icon-home"></use></svg>
+        <span class="results-action-copy">Menu</span>
       </button>
       <button class="secondary results-icon-btn" onclick="startGame(lastMode)" aria-label="Play again">
         <svg aria-hidden="true"><use href="icons.svg#icon-replay"></use></svg>
+        <span class="results-action-copy">Again</span>
       </button>
       <button class="secondary results-icon-btn" onclick="shareGame()" aria-label="Share">
         <svg aria-hidden="true"><use href="icons.svg#icon-share"></use></svg>
+        <span class="results-action-copy">Share</span>
       </button>
     </div>
   </div>
@@ -2282,10 +2854,15 @@ let targetColors, guesses, currentPick, lastMode, pictureChoices, callChoices, s
 let roundResults = [];
 let showHistoryMode = 'play';
 let memorizeTimer = null;
+let countdownTimer = null;
+let countdownTransitionTimer = null;
+let menuReturnSelector = '.home-play';
+let menuReturnPending = false;
 let pickerType = 'wheel';
 let currentHSB = { h: 180, s: 50, b: 50 };
 let matchHSBVisible = false;
 const spectrumImageCache = new Map();
+let playGuidanceSeen = false;
 let showAdvanced = new URLSearchParams(window.location.search).has('advanced');
 const isEmbedPlay = new URLSearchParams(window.location.search).get('embed') === 'play';
 let challengeCode = null;
@@ -2293,22 +2870,134 @@ let challengePlayerName = null;
 let _nameCallback = null;
 
 document.body.dataset.screen = 'menu';
-if (isEmbedPlay) document.body.dataset.embed = 'play';
+if (isEmbedPlay) {
+  document.documentElement.dataset.embed = 'play';
+  document.body.dataset.embed = 'play';
+}
+
+function postEmbedHostEvent(phase, kind, deltaY) {
+  if (!isEmbedPlay || window.parent === window) return;
+  let targetOrigin = '*';
+  try {
+    if (document.referrer) targetOrigin = new URL(document.referrer).origin;
+  } catch (_) {
+    // The event carries no user data; an unknown referrer can safely use '*'.
+  }
+  window.parent.postMessage({
+    type: 'exogradient:splash-engagement',
+    version: 1,
+    phase: phase,
+    kind: kind,
+    deltaY: Number.isFinite(deltaY) ? Math.round(deltaY) : undefined
+  }, targetOrigin);
+}
+
+function notifyEmbedEngagement(kind) {
+  postEmbedHostEvent('complete', kind);
+}
+
+function notifyEmbedReady() {
+  postEmbedHostEvent('ready', 'play');
+}
+
+function notifyEmbedDismissal(kind, deltaY) {
+  postEmbedHostEvent('dismiss', kind, deltaY);
+}
+
+window.addEventListener('message', function(event) {
+  if (!isEmbedPlay || event.source !== window.parent) return;
+  if (document.referrer) {
+    try {
+      if (event.origin !== new URL(document.referrer).origin) return;
+    } catch (_) {
+      return;
+    }
+  }
+  const message = event.data;
+  if (!message || message.type !== 'exogradient:splash-host' || message.version !== 1) return;
+  if (message.phase === 'probe' && message.kind === 'ready') notifyEmbedReady();
+});
+
+let embedWheelIntent = 0;
+let embedWheelReset = null;
+document.addEventListener('wheel', function(event) {
+  if (!isEmbedPlay) return;
+  embedWheelIntent += event.deltaY;
+  clearTimeout(embedWheelReset);
+  embedWheelReset = setTimeout(function() { embedWheelIntent = 0; }, 140);
+  if (Math.abs(embedWheelIntent) < 36) return;
+  const deltaY = Math.max(-240, Math.min(240, embedWheelIntent));
+  embedWheelIntent = 0;
+  notifyEmbedDismissal('scroll', deltaY);
+}, { passive: true });
 
 
 // --- Navigation ---
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(function(screen) {
+    const active = screen.id === id;
+    screen.classList.toggle('active', active);
+    screen.toggleAttribute('inert', !active);
+    screen.setAttribute('aria-hidden', String(!active));
+  });
   document.body.dataset.screen = id;
 }
-function goMenu() {
-  analytics.gameAbandoned(lastMode, pickerType, guesses ? guesses.length : 0, document.body.dataset.screen);
+
+function focusAfterRender(target) {
+  requestAnimationFrame(function() {
+    const el = typeof target === 'string' ? document.querySelector(target) : target;
+    if (el && !el.closest('[inert]')) el.focus({ preventScroll: true });
+  });
+}
+
+function focusPickEntry() {
+  const selector = lastMode === 'picture' ? '.picture-prompt'
+    : lastMode === 'call' ? '.call-prompt'
+    : lastMode === 'split' ? '.split-prompt'
+    : '.spectrum-hue';
+  focusAfterRender(selector);
+}
+
+function cancelRoundTimers() {
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  if (countdownTransitionTimer) { clearTimeout(countdownTransitionTimer); countdownTransitionTimer = null; }
   if (memorizeTimer) { clearInterval(memorizeTimer); memorizeTimer = null; }
+}
+
+function finishMenuReturn() {
+  cancelRoundTimers();
   challengeCode = null;
   challengePlayerName = null;
+  delete document.body.dataset.mode;
   showScreen('menu');
+  menuReturnPending = false;
+  focusAfterRender(menuReturnSelector);
 }
+
+function acknowledgePlayGuidance() {
+  if (lastMode !== 'play' || playGuidanceSeen) return;
+  playGuidanceSeen = true;
+  document.body.dataset.playGuidance = 'seen';
+}
+
+function goMenu() {
+  analytics.gameAbandoned(lastMode, pickerType, guesses ? guesses.length : 0, document.body.dataset.screen);
+  cancelRoundTimers();
+  if (!isEmbedPlay && history.state && (history.state.splashGame === true || history.state.splashView)) {
+    menuReturnPending = true;
+    history.back();
+    return;
+  }
+  finishMenuReturn();
+}
+
+window.addEventListener('popstate', function() {
+  if (isEmbedPlay || document.body.dataset.screen === 'menu') return;
+  if (!menuReturnPending) {
+    analytics.gameAbandoned(lastMode, pickerType, guesses ? guesses.length : 0, document.body.dataset.screen);
+  }
+  finishMenuReturn();
+});
 
 function modeLabel(mode) {
   const labels = { play: 'Play', match: 'Match It', picture: 'Picture It', call: 'Call It', split: 'Split It' };
@@ -2326,8 +3015,8 @@ function pickerLabel(type) {
   return type === 'wheel' ? 'Wheel' : type;
 }
 
-function confirmIconMarkup() {
-  return icon('forward');
+function confirmIconMarkup(showCopy = false) {
+  return `${showCopy ? '<span class="confirm-copy">Compare</span>' : ''}${icon('forward')}`;
 }
 
 function clamp(value, min, max) {
@@ -2425,9 +3114,8 @@ function deltaMeter(label, value) {
 }
 
 function updateAdvancedHint() {
-  document.getElementById('advancedHint').textContent = showAdvanced
-    ? 'Tap to hide analysis.'
-    : 'Tap to reveal analysis.';
+  document.getElementById('advancedHint').textContent = showAdvanced ? 'Hide breakdown' : 'Show breakdown';
+  document.getElementById('resultsDisclosure').setAttribute('aria-expanded', String(showAdvanced));
 }
 
 // --- HSB to CSS ---
@@ -2631,7 +3319,7 @@ function scoreGuess(target, guess) {
 function swatchNeedsDarkInk(color) {
   const [r, g, b] = hsbToRgb(color.h, color.s, color.b);
   const luminance = 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
-  return luminance > 0.2;
+  return luminance > 0.1825;
 }
 
 function deltaE76(lab1, lab2) {
@@ -2770,9 +3458,15 @@ function retryLastMode() {
 
 // --- Game Flow ---
 function startGame(mode) {
+  const startingFromMenu = document.body.dataset.screen === 'menu';
+  if (!isEmbedPlay && startingFromMenu) {
+    menuReturnSelector = `[data-mode="${mode}"]`;
+    history.pushState({ ...(history.state || {}), splashGame: true }, '', location.href);
+  }
   challengeCode = null;
   challengePlayerName = null;
   lastMode = mode;
+  document.body.dataset.mode = mode;
   if (mode === 'play' || mode === 'match') pickerType = 'wheel';
   hideError();
   targetColors = generateColors(isEmbedPlay && mode === 'play' ? 1 : 5);
@@ -2802,17 +3496,22 @@ function startGame(mode) {
 }
 
 function runCountdown() {
+  cancelRoundTimers();
   showScreen('countdown');
   let count = 3;
   const el = document.getElementById('countdownNum');
   el.textContent = count;
   el.className = 'countdown-num enter';
-  const iv = setInterval(() => {
+  countdownTimer = setInterval(() => {
     count--;
     if (count <= 0) {
-      clearInterval(iv);
+      clearInterval(countdownTimer);
+      countdownTimer = null;
       el.className = 'countdown-num exit';
-      setTimeout(startMemorize, 150);
+      countdownTransitionTimer = setTimeout(function() {
+        countdownTransitionTimer = null;
+        startMemorize();
+      }, 150);
     } else {
       el.className = 'countdown-num exit';
       setTimeout(() => {
@@ -2824,21 +3523,21 @@ function runCountdown() {
 }
 
 function startMemorize() {
+  cancelRoundTimers();
   analytics.memorizeStarted();
   showScreen('memorize');
   const grid = document.getElementById('memorizeGrid');
   grid.innerHTML = '';
   const c = targetColors[currentPick];
-  document.getElementById('memorizeLabel').textContent = isEmbedPlay
-    ? 'Memorize'
-    : `Color ${currentPick + 1} of ${targetColors.length} — memorize!`;
-  // Adaptive overlay: lighten pill on dark targets so text stays readable
+  document.getElementById('memorizeLabel').textContent = 'Target';
+  document.body.dataset.playGuidance = playGuidanceSeen ? 'seen' : 'visible';
   const overlay = document.getElementById('memorize').querySelector('.memorize-overlay');
-  overlay.classList.toggle('on-dark', c.b < 40 || (c.b < 55 && c.s < 30));
+  overlay.classList.toggle('dark-ink', swatchNeedsDarkInk(c));
   const div = document.createElement('div');
   div.className = 'color-swatch';
   div.style.background = hsbToHsl(c.h, c.s, c.b);
   grid.appendChild(div);
+  focusAfterRender(document.getElementById('memorizeLabel'));
 
   let remaining = 5;
   let lastCeil = 5;
@@ -2863,8 +3562,10 @@ function startMemorize() {
 
 // --- Picking ---
 function startPicking() {
+  cancelRoundTimers();
   analytics.pickStarted();
   showScreen('pick');
+  document.body.dataset.playGuidance = playGuidanceSeen ? 'seen' : 'visible';
   currentHSB = { h: 180, s: 50, b: 50 };
   matchHSBVisible = false;
   selectedChoice = -1;
@@ -2881,14 +3582,24 @@ function startPicking() {
   }
   const confirmBtn = document.getElementById('confirmBtn');
   confirmBtn.hidden = lastMode === 'picture' || lastMode === 'call';
-  confirmBtn.innerHTML = confirmIconMarkup();
-  confirmBtn.setAttribute('aria-label', lastMode === 'split' ? 'Lock in estimate' : noPicker ? 'Confirm choice' : 'Lock in guess');
+  confirmBtn.innerHTML = confirmIconMarkup(['play', 'match', 'split'].includes(lastMode));
+  confirmBtn.setAttribute(
+    'aria-label',
+    ['play', 'match', 'split'].includes(lastMode)
+      ? 'Compare target and guess'
+      : noPicker
+          ? 'Confirm choice'
+          : 'Confirm guess',
+  );
   initPickStage();
+  focusPickEntry();
 }
 
 function initPickStage() {
   const area = document.getElementById('swatchArea');
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
+  const playStage = document.querySelector('.play-stage-row');
+  playStage.style.setProperty('--play-ink', swatchNeedsDarkInk(currentHSB) ? '#050505' : '#fff');
   document.getElementById('pickProgress').textContent = `${currentPick + 1}/${targetColors.length}`;
   document.getElementById('pickModeEyebrow').textContent = pickEyebrow(lastMode);
   var noPickerMode = lastMode === 'picture' || lastMode === 'call' || lastMode === 'split';
@@ -2902,8 +3613,12 @@ function initPickStage() {
     const tc = targetColors[currentPick];
     area.innerHTML = `
       <div class="split-stage">
-        <div class="split-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)}"></div>
-        <div class="split-sliders" id="splitSliders"></div>
+        <div class="split-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)};--target-ink:${swatchNeedsDarkInk(tc) ? '#050505' : '#fff'}">
+          <strong class="swatch-role-label">Target</strong>
+        </div>
+        <div class="split-sliders" id="splitSliders">
+          <p class="split-prompt screen-focus-target" tabindex="-1">Estimate HSB</p>
+        </div>
       </div>`;
     renderSplitSliders();
     document.getElementById('confirmBtn').disabled = false;
@@ -2912,7 +3627,10 @@ function initPickStage() {
     const choices = pictureOptionsFor(currentPick);
     area.innerHTML = `
       <div class="picture-stage">
-        <div class="picture-target">${formatHSBCompact(tc)}</div>
+        <div class="picture-target">
+          <span class="picture-prompt screen-focus-target" tabindex="-1">Choose the color</span>
+          <span class="picture-hsb">${formatHSBCompact(tc)}</span>
+        </div>
         <div class="picture-choices">${choices.map((c, i) =>
           `<button class="picture-choice" type="button" aria-label="Color option ${i + 1}"
                 onclick="selectChoice(${i})"
@@ -2924,28 +3642,25 @@ function initPickStage() {
     const { choices } = callChoices[currentPick];
     area.innerHTML = `
       <div class="call-stage">
-        <div class="call-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)}"></div>
-        <div class="call-choices">${choices.map((c, i) =>
-          `<button class="call-choice" onclick="selectChoice(${i})">${c.name}</button>`
-        ).join('')}</div>
+        <div class="call-swatch" style="background:${hsbToHsl(tc.h, tc.s, tc.b)};--target-ink:${swatchNeedsDarkInk(tc) ? '#050505' : '#fff'}">
+          <strong class="swatch-role-label">Target</strong>
+        </div>
+        <div class="call-answer-tray">
+          <p class="call-prompt screen-focus-target" tabindex="-1">Choose a name</p>
+          <div class="call-choices">${choices.map((c, i) =>
+            `<button class="call-choice" type="button" onclick="selectChoice(${i})">${c.name}</button>`
+          ).join('')}</div>
+        </div>
       </div>`;
   } else if (lastMode === 'match') {
     const tc = targetColors[currentPick];
     const targetCss = hsbToHsl(tc.h, tc.s, tc.b);
+    playStage.style.setProperty('--match-guess', guessCss);
+    playStage.style.setProperty('--match-ink', swatchNeedsDarkInk(currentHSB) ? '#050505' : '#fff');
     area.innerHTML = `
       <div class="stage-frame">
-        <div class="match-compare" id="matchCompare" role="button" tabindex="0"
-             aria-pressed="false" aria-label="Show HSB values" title="Show HSB values"
-             onclick="toggleMatchHSB(event)" onkeydown="handleMatchHSBKey(event)">
-          <div class="match-compare-col">
-            <div class="match-compare-swatch" id="targetSwatch" style="background:${targetCss}"></div>
-            <div class="match-compare-label${swatchNeedsDarkInk(tc) ? ' on-light' : ''}" id="targetLabel">Target</div>
-          </div>
-          <div class="match-compare-divider"></div>
-          <div class="match-compare-col">
-            <div class="match-compare-swatch" id="guessSwatch" style="background:${guessCss}"></div>
-            <div class="match-compare-label${swatchNeedsDarkInk(currentHSB) ? ' on-light' : ''}" id="guessLabel">Guess</div>
-          </div>
+        <div class="match-target" id="targetSwatch" style="background:${targetCss};--target-ink:${swatchNeedsDarkInk(tc) ? '#050505' : '#fff'}">
+          <strong class="swatch-role-label">Target</strong>
         </div>
       </div>`;
     updateMatchHSBDisclosure();
@@ -2963,17 +3678,19 @@ function updatePickUI() {
   if (lastMode === 'split' || lastMode === 'picture' || lastMode === 'call') return;
   const guessCss = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
   if (lastMode === 'match') {
-    const el = document.getElementById('guessSwatch');
-    if (el) {
-      el.style.background = guessCss;
-      const label = document.getElementById('guessLabel');
-      if (label) label.classList.toggle('on-light', swatchNeedsDarkInk(currentHSB));
-      updateMatchHSBDisclosure();
-      return;
-    }
+    const playStage = document.querySelector('.play-stage-row');
+    playStage.style.setProperty('--match-guess', guessCss);
+    playStage.style.setProperty('--match-ink', swatchNeedsDarkInk(currentHSB) ? '#050505' : '#fff');
+    updateMatchHSBDisclosure();
+    return;
   } else {
     const el = document.getElementById('previewSwatch');
-    if (el) { el.style.background = guessCss; return; }
+    if (el) {
+      el.style.background = guessCss;
+      const playStage = document.querySelector('.play-stage-row');
+      playStage.style.setProperty('--play-ink', swatchNeedsDarkInk(currentHSB) ? '#050505' : '#fff');
+      return;
+    }
   }
   initPickStage();
 }
@@ -2984,16 +3701,16 @@ function formatHSBInline(color) {
 
 function updateMatchHSBDisclosure() {
   if (lastMode !== 'match') return;
-  const surface = document.getElementById('matchCompare');
-  const guessLabel = document.getElementById('guessLabel');
-  if (surface) {
-    surface.setAttribute('aria-pressed', String(matchHSBVisible));
-    surface.setAttribute('aria-label', matchHSBVisible ? 'Hide HSB values' : 'Show HSB values');
-    surface.title = matchHSBVisible ? 'Hide HSB values' : 'Show HSB values';
+  const disclosure = document.getElementById('matchGuessDisclosure');
+  const value = document.getElementById('matchGuessValue');
+  if (disclosure) {
+    disclosure.setAttribute('aria-expanded', String(matchHSBVisible));
+    disclosure.setAttribute('aria-label', matchHSBVisible ? 'Hide live Guess HSB values' : 'Show live Guess HSB values');
+    disclosure.title = matchHSBVisible ? 'Hide live Guess HSB values' : 'Show live Guess HSB values';
   }
-  if (guessLabel) {
-    guessLabel.textContent = matchHSBVisible ? formatHSBInline(currentHSB) : 'Guess';
-    guessLabel.classList.toggle('is-hsb', matchHSBVisible);
+  if (value) {
+    value.hidden = !matchHSBVisible;
+    value.textContent = formatHSBInline(currentHSB);
   }
 }
 
@@ -3059,6 +3776,7 @@ function confirmPick() {
     callChosenName, callCorrectName);
 
   showReveal(result, currentPick);
+  notifyEmbedEngagement('guess');
 }
 
 function selectChoice(idx) {
@@ -3068,15 +3786,29 @@ function selectChoice(idx) {
 
 function showReveal(result, roundIndex) {
   showScreen('reveal');
-  document.getElementById('revealProgress').innerHTML = `${roundIndex + 1} <span class="reveal-progress-dim">/ ${targetColors.length}</span>`;
+  if (lastMode === 'play') {
+    playGuidanceSeen = true;
+    document.body.dataset.playGuidance = 'seen';
+  }
+  const revealAction = isEmbedPlay
+    ? 'Again'
+    : roundIndex + 1 < targetColors.length ? 'Next' : 'Results';
+  document.getElementById('revealNavCopy').textContent = revealAction;
+  document.querySelector('.reveal-nav-btn:not(.ghost)').setAttribute(
+    'aria-label',
+    revealAction === 'Again' ? 'Play another round' : revealAction,
+  );
+  document.getElementById('revealProgress').textContent = `Round ${roundIndex + 1} of ${targetColors.length}`;
   const scoreEl = document.getElementById('revealScore');
   scoreEl.className = 'reveal-score-num';
   scoreEl.style.color = hsbToHsl(result.target.h, result.target.s, result.target.b);
   animateScore(scoreEl, result.score, 200, 500, 50);
-  document.getElementById('revealTarget').style.background =
-    hsbToHsl(result.target.h, result.target.s, result.target.b);
-  document.getElementById('revealGuess').style.background =
-    hsbToHsl(result.guess.h, result.guess.s, result.guess.b);
+  const revealTarget = document.getElementById('revealTarget');
+  const revealGuess = document.getElementById('revealGuess');
+  revealTarget.style.background = hsbToHsl(result.target.h, result.target.s, result.target.b);
+  revealGuess.style.background = hsbToHsl(result.guess.h, result.guess.s, result.guess.b);
+  revealTarget.style.setProperty('--swatch-ink', swatchNeedsDarkInk(result.target) ? '#050505' : '#fff');
+  revealGuess.style.setProperty('--swatch-ink', swatchNeedsDarkInk(result.guess) ? '#050505' : '#fff');
   document.getElementById('revealVerdict').textContent = colorFeedbackText(result.score);
 
   // Call It: show correct name vs chosen name
@@ -3095,6 +3827,9 @@ function showReveal(result, roundIndex) {
   const hsbEl = document.getElementById('revealHSB');
   if (lastMode === 'split') {
     hsbEl.style.display = '';
+    hsbEl.innerHTML = revealSliders(result.target, result.guess);
+  } else if (lastMode === 'play' && !isEmbedPlay) {
+    hsbEl.style.display = 'none';
     hsbEl.innerHTML = revealSliders(result.target, result.guess);
   } else if (lastMode === 'match' && matchHSBVisible) {
     hsbEl.style.display = '';
@@ -3115,10 +3850,12 @@ function showReveal(result, roundIndex) {
     revealMeta.setAttribute('role', 'button');
     revealMeta.setAttribute('tabindex', '0');
     revealMeta.setAttribute('aria-expanded', String(hsbEl.style.display !== 'none'));
+    updateRevealDetailLabel();
   } else {
     revealMeta.removeAttribute('role');
     revealMeta.removeAttribute('tabindex');
     revealMeta.removeAttribute('aria-expanded');
+    revealMeta.removeAttribute('aria-label');
   }
   if (!isEmbedPlay) scoreEl.focus({ preventScroll: true });
 }
@@ -3154,6 +3891,13 @@ function toggleRevealDetail() {
   if (isEmbedPlay || !el.innerHTML.trim()) return;
   el.style.display = el.style.display === 'none' ? '' : 'none';
   document.getElementById('revealMeta').setAttribute('aria-expanded', String(el.style.display !== 'none'));
+  updateRevealDetailLabel();
+}
+
+function updateRevealDetailLabel() {
+  const revealMeta = document.getElementById('revealMeta');
+  const expanded = revealMeta.getAttribute('aria-expanded') === 'true';
+  revealMeta.setAttribute('aria-label', `${expanded ? 'Hide' : 'Show'} Target and Guess HSB breakdown`);
 }
 
 function handleRevealDetailKey(event) {
@@ -3245,6 +3989,7 @@ function renderSplitSliders() {
     { pos: 300, label: 'Prp' }, { pos: 330, label: 'Pnk' },
   ];
   container.innerHTML = `
+    <p class="split-prompt screen-focus-target" tabindex="-1">Estimate HSB</p>
     <div class="split-slider-row">
       <div class="split-slider-head">
         <span class="split-slider-dim">Hue</span>
@@ -3321,73 +4066,115 @@ function renderWheelPicker(container) {
   if (container._pickerResizeObserver) container._pickerResizeObserver.disconnect();
   container.innerHTML = `
     <div class="wheel-picker">
-      <div class="spectrum-control">
-        <div class="spectrum-value" id="spectrumValue" role="slider" tabindex="0"
-             aria-label="Brightness" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(currentHSB.b)}">
-          <div class="spectrum-value-handle" id="spectrumValueHandle" aria-hidden="true"></div>
+      <div class="spectrum-control" data-active="true">
+        <div class="spectrum-hue" id="spectrumHue" role="slider" tabindex="0"
+             aria-label="Hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="${Math.round(currentHSB.h)}">
+          <div class="spectrum-hue-handle" id="spectrumHueHandle" aria-hidden="true"></div>
         </div>
-        <div class="spectrum-disc" id="spectrumDisc" role="slider" tabindex="0"
-             aria-label="Hue and saturation" aria-valuemin="0" aria-valuemax="360"
-             aria-valuenow="${Math.round(currentHSB.h)}">
-          <canvas class="spectrum-disc-canvas" id="spectrumDiscCanvas" aria-hidden="true"></canvas>
-          <div class="spectrum-disc-handle" id="spectrumDiscHandle" aria-hidden="true"></div>
+        <div class="spectrum-field" id="spectrumField" role="slider" tabindex="0"
+             aria-label="Saturation and brightness" aria-valuemin="0" aria-valuemax="100"
+             aria-valuenow="${Math.round(currentHSB.s)}">
+          <canvas class="spectrum-field-canvas" id="spectrumFieldCanvas" aria-hidden="true"></canvas>
+          <div class="spectrum-field-handle" id="spectrumFieldHandle" aria-hidden="true"></div>
         </div>
       </div>
     </div>`;
 
-  const valueRing = document.getElementById('spectrumValue');
-  const valueHandle = document.getElementById('spectrumValueHandle');
-  const spectrum = document.getElementById('spectrumDisc');
-  const spectrumCanvas = document.getElementById('spectrumDiscCanvas');
-  const spectrumHandle = document.getElementById('spectrumDiscHandle');
-  // A complete circular ramp: minimum and maximum meet at the bottom seam.
-  const VALUE_START = 180;
-  const VALUE_SWEEP = 360;
+  const control = container.querySelector('.spectrum-control');
+  const hueRing = document.getElementById('spectrumHue');
+  const hueHandle = document.getElementById('spectrumHueHandle');
+  const field = document.getElementById('spectrumField');
+  const fieldCanvas = document.getElementById('spectrumFieldCanvas');
+  const fieldHandle = document.getElementById('spectrumFieldHandle');
+  let quietTimer = null;
+  const instrumentQuietHoldMs = 5000;
+  let fieldDrawFrame = null;
+  let fieldCanvasSize = 0;
+  let drawnHue = -1;
+
+  function squareToDisc(a, b) {
+    return {
+      x: a * Math.sqrt(Math.max(0, 1 - b * b / 2)),
+      y: b * Math.sqrt(Math.max(0, 1 - a * a / 2)),
+    };
+  }
+
+  function discToSquare(x, y) {
+    const rootTwo = Math.sqrt(2);
+    const xTerm = 2 + x * x - y * y;
+    const yTerm = 2 - x * x + y * y;
+    const a = 0.5 * (
+      Math.sqrt(Math.max(0, xTerm + 2 * rootTwo * x)) -
+      Math.sqrt(Math.max(0, xTerm - 2 * rootTwo * x))
+    );
+    const b = 0.5 * (
+      Math.sqrt(Math.max(0, yTerm + 2 * rootTwo * y)) -
+      Math.sqrt(Math.max(0, yTerm - 2 * rootTwo * y))
+    );
+    return { a: clamp(a, -1, 1), b: clamp(b, -1, 1) };
+  }
+
+  function hsbChannels(hue, saturation, brightness) {
+    const chroma = brightness * saturation;
+    const segment = (hue % 360) / 60;
+    const secondary = chroma * (1 - Math.abs(segment % 2 - 1));
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    if (segment < 1) { red = chroma; green = secondary; }
+    else if (segment < 2) { red = secondary; green = chroma; }
+    else if (segment < 3) { green = chroma; blue = secondary; }
+    else if (segment < 4) { green = secondary; blue = chroma; }
+    else if (segment < 5) { red = secondary; blue = chroma; }
+    else { red = chroma; blue = secondary; }
+    const offset = brightness - chroma;
+    return [red + offset, green + offset, blue + offset];
+  }
 
   function updateAccessibility() {
-    valueRing.setAttribute('aria-valuenow', Math.round(currentHSB.b));
-    valueRing.setAttribute('aria-valuetext', Math.round(currentHSB.b) + ' percent brightness');
-    spectrum.setAttribute('aria-valuenow', Math.round(currentHSB.h));
-    spectrum.setAttribute('aria-valuetext', Math.round(currentHSB.h) + ' degrees hue, ' + Math.round(currentHSB.s) + ' percent saturation');
+    hueRing.setAttribute('aria-valuenow', Math.round(currentHSB.h));
+    hueRing.setAttribute('aria-valuetext', Math.round(currentHSB.h) + ' degrees');
+    field.setAttribute('aria-valuenow', Math.round(currentHSB.s));
+    field.setAttribute('aria-valuetext', Math.round(currentHSB.s) + ' percent saturation, ' + Math.round(currentHSB.b) + ' percent brightness');
   }
 
   function updateVisuals() {
-    const ringSize = valueRing.clientWidth;
-    const spectrumSize = spectrum.clientWidth;
-    if (!ringSize || !spectrumSize) return;
+    const ringSize = hueRing.clientWidth;
+    const fieldSize = field.clientWidth;
+    if (!ringSize || !fieldSize) return;
 
     const selectedColor = hsbToHsl(currentHSB.h, currentHSB.s, currentHSB.b);
-    const fullBrightnessColor = hsbToHsl(currentHSB.h, currentHSB.s, 100);
-    valueRing.style.setProperty('--selected-color', selectedColor);
-    valueRing.style.setProperty('--value-stop', (currentHSB.b / 100 * VALUE_SWEEP) + 'deg');
-    valueRing.style.setProperty('--value-color', fullBrightnessColor);
-
-    const valueAngle = (VALUE_START + currentHSB.b / 100 * VALUE_SWEEP) * Math.PI / 180;
-    const valueRadius = ringSize * 0.455;
-    valueHandle.style.left = (ringSize / 2 + Math.sin(valueAngle) * valueRadius) + 'px';
-    valueHandle.style.top = (ringSize / 2 - Math.cos(valueAngle) * valueRadius) + 'px';
-    valueHandle.style.background = selectedColor;
+    field.style.setProperty('--selected-color', selectedColor);
 
     const hueAngle = currentHSB.h * Math.PI / 180;
-    const spectrumRadius = (spectrumSize / 2 - 11) * currentHSB.s / 100;
-    spectrumHandle.style.left = (spectrumSize / 2 + Math.sin(hueAngle) * spectrumRadius) + 'px';
-    spectrumHandle.style.top = (spectrumSize / 2 - Math.cos(hueAngle) * spectrumRadius) + 'px';
-    spectrumHandle.style.background = selectedColor;
+    const hueRadius = ringSize * 0.4175;
+    hueHandle.style.left = (ringSize / 2 + Math.sin(hueAngle) * hueRadius) + 'px';
+    hueHandle.style.top = (ringSize / 2 - Math.cos(hueAngle) * hueRadius) + 'px';
+    hueHandle.style.background = selectedColor;
+
+    const squarePoint = squareToDisc(
+      currentHSB.s / 50 - 1,
+      1 - currentHSB.b / 50,
+    );
+    fieldHandle.style.left = (fieldSize / 2 + squarePoint.x * fieldSize / 2) + 'px';
+    fieldHandle.style.top = (fieldSize / 2 + squarePoint.y * fieldSize / 2) + 'px';
+    fieldHandle.style.background = selectedColor;
   }
 
-  let spectrumCanvasSize = 0;
-  function drawSpectrum() {
-    const cssSize = Math.round(spectrum.clientWidth);
+  function drawField() {
+    const cssSize = Math.round(field.clientWidth);
     if (!cssSize) return;
-    const scale = Math.min(window.devicePixelRatio || 1, 2);
-    const size = Math.max(1, Math.round(cssSize * scale));
-    if (size === spectrumCanvasSize) return;
-    spectrumCanvasSize = size;
-    spectrumCanvas.width = size;
-    spectrumCanvas.height = size;
+    const size = Math.max(1, Math.min(280, Math.round(cssSize * Math.min(window.devicePixelRatio || 1, 2))));
+    const hue = Math.round(currentHSB.h) % 360;
+    if (size === fieldCanvasSize && hue === drawnHue) return;
+    fieldCanvasSize = size;
+    drawnHue = hue;
+    fieldCanvas.width = size;
+    fieldCanvas.height = size;
 
-    const ctx = spectrumCanvas.getContext('2d');
-    const cachedSpectrum = spectrumImageCache.get(size);
+    const ctx = fieldCanvas.getContext('2d');
+    const cacheKey = size + ':' + hue;
+    const cachedSpectrum = spectrumImageCache.get(cacheKey);
     if (cachedSpectrum) {
       ctx.putImageData(cachedSpectrum, 0, 0);
       return;
@@ -3401,116 +4188,158 @@ function renderWheelPicker(container) {
       for (let x = 0; x < size; x++) {
         const dx = (x - center) / radius;
         const dy = (y - center) / radius;
-        const saturation = Math.min(Math.hypot(dx, dy), 1);
-        let hue = Math.atan2(dx, -dy) * 180 / Math.PI;
-        if (hue < 0) hue += 360;
-
-        const chroma = saturation;
-        const segment = hue / 60;
-        const secondary = chroma * (1 - Math.abs(segment % 2 - 1));
-        let red = 0, green = 0, blue = 0;
-        if (segment < 1) { red = chroma; green = secondary; }
-        else if (segment < 2) { red = secondary; green = chroma; }
-        else if (segment < 3) { green = chroma; blue = secondary; }
-        else if (segment < 4) { green = secondary; blue = chroma; }
-        else if (segment < 5) { red = secondary; blue = chroma; }
-        else { red = chroma; blue = secondary; }
-
-        const white = 1 - chroma;
+        const square = discToSquare(dx, dy);
+        const saturation = (square.a + 1) / 2;
+        const brightness = (1 - square.b) / 2;
+        const [red, green, blue] = hsbChannels(hue, saturation, brightness);
         const index = (y * size + x) * 4;
-        pixels[index] = Math.round((red + white) * 255);
-        pixels[index + 1] = Math.round((green + white) * 255);
-        pixels[index + 2] = Math.round((blue + white) * 255);
+        pixels[index] = Math.round(red * 255);
+        pixels[index + 1] = Math.round(green * 255);
+        pixels[index + 2] = Math.round(blue * 255);
         pixels[index + 3] = 255;
       }
     }
     ctx.putImageData(image, 0, 0);
-    spectrumImageCache.set(size, image);
-    if (spectrumImageCache.size > 4) {
+    spectrumImageCache.set(cacheKey, image);
+    if (spectrumImageCache.size > 6) {
       spectrumImageCache.delete(spectrumImageCache.keys().next().value);
     }
   }
 
+  function scheduleFieldDraw() {
+    if (fieldDrawFrame !== null) return;
+    fieldDrawFrame = requestAnimationFrame(() => {
+      fieldDrawFrame = null;
+      drawField();
+    });
+  }
+
+  function setInstrumentActive(active) {
+    clearTimeout(quietTimer);
+    control.dataset.active = active ? 'true' : 'false';
+  }
+
+  function scheduleInstrumentQuiet() {
+    clearTimeout(quietTimer);
+    quietTimer = setTimeout(() => {
+      control.dataset.active = 'false';
+    }, instrumentQuietHoldMs);
+  }
+
   function commitUpdate() {
+    acknowledgePlayGuidance();
     updateVisuals();
     updateAccessibility();
     updatePickUI();
+    scheduleFieldDraw();
     analytics.pickerAdjusted();
   }
 
-  function handleSpectrumPointer(e) {
-    const rect = spectrum.getBoundingClientRect();
+  function handleFieldPointer(e) {
+    const rect = field.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    const distance = Math.hypot(dx, dy);
+    const radius = rect.width / 2;
+    const scale = distance > radius ? radius / distance : 1;
+    const square = discToSquare(dx * scale / radius, dy * scale / radius);
+    currentHSB.s = Math.round((square.a + 1) * 50);
+    currentHSB.b = Math.round((1 - square.b) * 50);
+    commitUpdate();
+  }
+
+  function handleHuePointer(e) {
+    const rect = hueRing.getBoundingClientRect();
     const dx = e.clientX - (rect.left + rect.width / 2);
     const dy = e.clientY - (rect.top + rect.height / 2);
     let degrees = Math.atan2(dx, -dy) * 180 / Math.PI;
     if (degrees < 0) degrees += 360;
-    currentHSB.h = Math.round(degrees);
-    currentHSB.s = Math.round(clamp(Math.hypot(dx, dy) / (rect.width / 2 - 11), 0, 1) * 100);
+    currentHSB.h = Math.round(degrees) % 360;
     commitUpdate();
   }
 
-  function handleValuePointer(e) {
-    const rect = valueRing.getBoundingClientRect();
-    const dx = e.clientX - (rect.left + rect.width / 2);
-    const dy = e.clientY - (rect.top + rect.height / 2);
-    let degrees = Math.atan2(dx, -dy) * 180 / Math.PI;
-    if (degrees < 0) degrees += 360;
-    const delta = (degrees - VALUE_START + 360) % 360;
-    const progress = delta / VALUE_SWEEP;
-    currentHSB.b = Math.round(progress * 100);
-    commitUpdate();
-  }
-
-  let valueDown = false;
-  valueRing.addEventListener('pointerdown', e => {
-    valueDown = true;
-    valueRing.setPointerCapture(e.pointerId);
-    handleValuePointer(e);
+  let hueDown = false;
+  hueRing.addEventListener('pointerdown', e => {
+    setInstrumentActive(true);
+    hueDown = true;
+    hueRing.setPointerCapture(e.pointerId);
+    handleHuePointer(e);
   });
-  valueRing.addEventListener('pointermove', e => { if (valueDown) handleValuePointer(e); });
-  valueRing.addEventListener('pointerup', () => { valueDown = false; });
-  valueRing.addEventListener('pointercancel', () => { valueDown = false; });
-  valueRing.addEventListener('keydown', e => {
+  hueRing.addEventListener('pointermove', e => { if (hueDown) handleHuePointer(e); });
+  hueRing.addEventListener('pointerup', () => {
+    if (!hueDown) return;
+    hueDown = false;
+    notifyEmbedEngagement('color');
+    scheduleInstrumentQuiet();
+  });
+  hueRing.addEventListener('pointercancel', () => {
+    hueDown = false;
+    scheduleInstrumentQuiet();
+  });
+  hueRing.addEventListener('keydown', e => {
     const step = e.shiftKey ? 10 : 2;
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
     e.preventDefault();
+    setInstrumentActive(true);
     const direction = e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 1;
-    currentHSB.b = clamp(currentHSB.b + direction * step, 0, 100);
+    currentHSB.h = (currentHSB.h + direction * step + 360) % 360;
     commitUpdate();
   });
-
-  let spectrumDown = false;
-  spectrum.addEventListener('pointerdown', e => {
-    e.stopPropagation();
-    spectrumDown = true;
-    spectrum.setPointerCapture(e.pointerId);
-    handleSpectrumPointer(e);
+  hueRing.addEventListener('keyup', e => {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      notifyEmbedEngagement('color');
+      scheduleInstrumentQuiet();
+    }
   });
-  spectrum.addEventListener('pointermove', e => { if (spectrumDown) handleSpectrumPointer(e); });
-  spectrum.addEventListener('pointerup', () => { spectrumDown = false; });
-  spectrum.addEventListener('pointercancel', () => { spectrumDown = false; });
-  spectrum.addEventListener('keydown', e => {
+
+  let fieldDown = false;
+  field.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    setInstrumentActive(true);
+    fieldDown = true;
+    field.setPointerCapture(e.pointerId);
+    handleFieldPointer(e);
+  });
+  field.addEventListener('pointermove', e => { if (fieldDown) handleFieldPointer(e); });
+  field.addEventListener('pointerup', () => {
+    if (!fieldDown) return;
+    fieldDown = false;
+    notifyEmbedEngagement('color');
+    scheduleInstrumentQuiet();
+  });
+  field.addEventListener('pointercancel', () => {
+    fieldDown = false;
+    scheduleInstrumentQuiet();
+  });
+  field.addEventListener('keydown', e => {
     const step = e.shiftKey ? 10 : 2;
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
     e.preventDefault();
     e.stopPropagation();
-    if (e.key === 'ArrowLeft') currentHSB.h = (currentHSB.h - step + 360) % 360;
-    if (e.key === 'ArrowRight') currentHSB.h = (currentHSB.h + step) % 360;
-    if (e.key === 'ArrowUp') currentHSB.s = clamp(currentHSB.s + step, 0, 100);
-    if (e.key === 'ArrowDown') currentHSB.s = clamp(currentHSB.s - step, 0, 100);
+    setInstrumentActive(true);
+    if (e.key === 'ArrowLeft') currentHSB.s = clamp(currentHSB.s - step, 0, 100);
+    if (e.key === 'ArrowRight') currentHSB.s = clamp(currentHSB.s + step, 0, 100);
+    if (e.key === 'ArrowUp') currentHSB.b = clamp(currentHSB.b + step, 0, 100);
+    if (e.key === 'ArrowDown') currentHSB.b = clamp(currentHSB.b - step, 0, 100);
     commitUpdate();
+  });
+  field.addEventListener('keyup', e => {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      notifyEmbedEngagement('color');
+      scheduleInstrumentQuiet();
+    }
   });
 
   const resizeObserver = new ResizeObserver(() => {
-    drawSpectrum();
+    scheduleFieldDraw();
     updateVisuals();
   });
-  resizeObserver.observe(valueRing);
-  resizeObserver.observe(spectrum);
+  resizeObserver.observe(hueRing);
+  resizeObserver.observe(field);
   container._pickerResizeObserver = resizeObserver;
 
   requestAnimationFrame(() => {
-    drawSpectrum();
+    drawField();
     updateVisuals();
     updateAccessibility();
   });
@@ -3519,11 +4348,8 @@ function renderWheelPicker(container) {
 // --- Results ---
 function showResults(data) {
   showScreen('results');
-  var metaDetail = lastMode === 'call' ? 'name matching'
-    : lastMode === 'picture' ? 'multiple choice'
-    : lastMode === 'split' ? 'slider estimation'
-    : `${pickerLabel(pickerType)} picker`;
-  document.getElementById('resultsMeta').textContent = `${modeLabel(lastMode)} · ${metaDetail}`;
+  document.getElementById('resultsMeta').textContent = modeLabel(lastMode);
+  document.getElementById('results').classList.toggle('analysis-open', showAdvanced);
   const tier = totalTierClass(data.total_score);
   const tierEl = document.getElementById('scoreTier');
   tierEl.textContent = scoreTierText(data.total_score);
@@ -3548,18 +4374,6 @@ function showResults(data) {
     card.style.animationDelay = `${100 * (i + 1)}ms`;
     const tCss = hsbToHsl(r.target.h, r.target.s, r.target.b);
     const gCss = hsbToHsl(r.guess.h, r.guess.s, r.guess.b);
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('role', 'button');
-    card.setAttribute('aria-expanded', String(showAdvanced));
-    card.onclick = () => {
-      const wrap = card.querySelector('.result-detail-wrap');
-      const next = !wrap.classList.contains('visible');
-      wrap.classList.toggle('visible', next);
-      card.setAttribute('aria-expanded', String(next));
-    };
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
-    });
     var callNameHtml = '';
     if (isCall) {
       var wasRight = r.call_chosen_name === r.call_correct_name;
@@ -3588,16 +4402,15 @@ function showResults(data) {
       <div class="result-score"><span>${r.score.toFixed(1)}</span></div>`;
     cards.appendChild(card);
   });
+  focusAfterRender(scoreEl);
 }
 
 function toggleAdvanced() {
   showAdvanced = !showAdvanced;
+  document.getElementById('results').classList.toggle('analysis-open', showAdvanced);
   document.getElementById('totalFeedback').style.display = showAdvanced ? '' : 'none';
   document.querySelectorAll('.result-detail-wrap').forEach(el => {
     el.classList.toggle('visible', showAdvanced);
-  });
-  document.querySelectorAll('.result-card').forEach(card => {
-    card.setAttribute('aria-expanded', String(showAdvanced));
   });
   updateAdvancedHint();
 }
@@ -3621,6 +4434,10 @@ function totalFeedbackText(score) {
 
 // --- History (localStorage) ---
 function showHistory() {
+  if (!isEmbedPlay && document.body.dataset.screen === 'menu') {
+    menuReturnSelector = '.utility-history';
+    history.pushState({ ...(history.state || {}), splashView: 'history' }, '', location.href);
+  }
   showScreen('historyScreen');
   let all;
   try { all = JSON.parse(localStorage.getItem('gameHistory') || '[]'); }
@@ -3664,6 +4481,7 @@ function showHistory() {
     }).join('');
   }
   list.innerHTML = content;
+  focusAfterRender(list.querySelector('.history-tab'));
 }
 
 function switchHistoryMode(mode) {
@@ -3821,6 +4639,10 @@ function joinChallenge(code) {
 }
 
 function startChallengeGame(data) {
+  if (!isEmbedPlay && !(history.state && history.state.splashGame === true)) {
+    menuReturnSelector = `[data-mode="${data.mode}"]`;
+    history.pushState({ ...(history.state || {}), splashGame: true }, '', location.href);
+  }
   lastMode = data.mode;
   if (data.mode === 'play' || data.mode === 'match') pickerType = 'wheel';
   hideError();
@@ -3905,6 +4727,7 @@ function showChallengeScreen(data) {
       '<span class="lb-score">' + score.toFixed(1) + '</span>';
     lb.appendChild(row);
   });
+  focusAfterRender(document.querySelector('#challenge .challenge-code'));
 }
 
 function escapeHtml(str) {
@@ -3941,23 +4764,37 @@ function showToast(msg) {
 document.getElementById('nameSheet').addEventListener('click', function(e) {
   if (e.target === this) hideNameEntry();
 });
-document.addEventListener('keydown', function(e) {
+window.addEventListener('keydown', function(e) {
+  var handledEscape = false;
   if (e.key === 'Escape' && document.getElementById('nameSheet').classList.contains('visible')) {
     hideNameEntry();
+    handledEscape = true;
   }
   if (e.key === 'Escape' && matchHSBVisible && document.body.dataset.screen === 'pick' && lastMode === 'match') {
     matchHSBVisible = false;
     updateMatchHSBDisclosure();
+    handledEscape = true;
   }
-});
+  if (e.key === 'Escape' && !handledEscape) {
+    if (isEmbedPlay) {
+      notifyEmbedDismissal('escape');
+    } else if (document.body.dataset.screen !== 'menu') {
+      goMenu();
+    }
+  }
+}, true);
 document.getElementById('nameInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); submitName(); }
 });
 
 updateAdvancedHint();
+showScreen('menu');
 
 if (isEmbedPlay) {
-  window.addEventListener('load', function() { startGame('play'); }, { once: true });
+  window.addEventListener('load', function() {
+    startGame('play');
+    notifyEmbedReady();
+  }, { once: true });
 }
 
 // --- Deep link: ?challenge=CODE → auto-join challenge ---

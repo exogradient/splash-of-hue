@@ -8,3 +8,8 @@ dependencies = [
     "fastapi>=0.135.2",
     "uvicorn[standard]>=0.42.0",
 ]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.62.0",
+]

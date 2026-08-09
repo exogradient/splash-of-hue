@@ -55,14 +55,30 @@ The deck should feel like one object. Avoid disconnected cards, dashboards, grid
 
 ## Picker
 
-Play and Match It use one full-spectrum HSB control:
+The current owner-selected implementation candidate is under final product
+review; it is shipped truth for this branch, not yet a promoted durable identity
+rule. Play and Match It use one full-spectrum HSB control:
 
-- Angle controls **hue**.
-- Radius controls **saturation**.
-- The outer 360° ring controls **brightness**.
-- The bottom seam is the only value discontinuity.
+- The outer 360° ring controls **hue**.
+- The inner circular field controls **saturation** horizontally and
+  **brightness** vertically.
+- A reversible square-to-disc mapping keeps every saturation/brightness pair
+  reachable without introducing a second picker shape.
 - Both handles use the exact current guess color.
-- Hue/saturation and brightness remain independent for pointer and keyboard input.
+- Hue and the saturation/brightness field remain independent for pointer,
+  touch, and keyboard input.
+- The ring and inner field meet without a permanent separator contour. Handles
+  explain the geometry; a field outline appears only for keyboard focus.
+- In Play, the control is superimposed on the Guess field and becomes visually
+  quiet after input without moving, shrinking, or requiring an activation-only
+  gesture.
+- In Match It, Guess is likewise the instrument's working surface. Target stays
+  visible as the fixed reference beside it on wider layouts and as a shallow
+  reference strip on phone; a separate dark picker panel is prohibited.
+
+The prior angle/radius hue-saturation disc with a brightness ring remains the
+comparison control and reversal candidate until the owner completes this final
+review.
 
 The wheel is a learning object, not a decorative color wheel. Never combine unrelated square and circular models, truncate the value ring, or display a handle color that disagrees with the guess.
 
@@ -74,6 +90,10 @@ Split It deliberately uses neutral channel sliders because seeing the composite 
 - Instrument Serif italic is reserved for the `splash of hue` wordmark.
 - Labels are short, literal, and sentence-free where possible.
 - Use `Target` and `Guess`; avoid possessive or instructional variants.
+- Render those role labels in one title-case typographic system across Play,
+  Match It, and Reveal; do not fall back to tiny tracked uppercase metadata.
+- Name outcome-specific actions (`Compare`, `Next`, `Results`) in text. Reserve
+  standalone icons for familiar persistent navigation such as Home.
 - Numerical detail uses tabular alignment and appears only when earned.
 
 ## Surfaces and spacing
@@ -100,7 +120,12 @@ Motion communicates state change:
 - Pointer, touch, and keyboard paths are first-class.
 - Visible focus uses a deliberate high-contrast ring.
 - Interactive targets are at least 44px where layout permits.
+- `--control-hit`, `--focus-ring`, and `--focus-ring-offset` are the shared
+  control contracts; local screen styling must not silently shrink or replace
+  them.
 - Color is never the only indicator of role or state.
+- Only the active screen remains in the focus order. Screen transitions move
+  focus to the new task or outcome; returning restores the initiating mode.
 - Custom controls expose truthful names, values, and independent semantics.
 - Light swatches switch label ink for readable contrast.
 

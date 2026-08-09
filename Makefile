@@ -1,4 +1,4 @@
-.PHONY: help dev docs check-docs check-scoring check-calibration-runner calibrate calibrate-release extract-population promote-fixtures
+.PHONY: help dev docs check-docs check-scoring check-calibration-runner check-stage check-stage-browser calibrate calibrate-release extract-population promote-fixtures
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*##' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -32,6 +32,12 @@ check-scoring: ## Verify calibration scorer matches the app scorer
 
 check-calibration-runner: ## Verify Python calibration runner matches the JS scorer
 	uv run python tools/check_calibration_runner_parity.py
+
+check-stage: ## Verify Pick and Reveal share one outer geometry contract
+	node tools/check_stage_contract.mjs
+
+check-stage-browser: ## Verify rendered stage geometry, focus, navigation, and disclosure
+	uv run python tools/check_stage_geometry.py
 
 calibrate: ## Run calibration search against exported JSON (usage: make calibrate FILE=path/to/export.json)
 	@if [ -z "$(FILE)" ]; then \
